@@ -37,8 +37,8 @@ In addition, the following methods are implemented, but I suspect that my exampl
 
 ```C++
 // BMI Model Information Functions
-int GetInputVarNameCount()
-int GetOutputVarNameCount()
+int GetInputVarNameCount();
+int GetOutputVarNameCount();
 void GetInputVarNames(char * const * const names);
 void GetOutputVarNames(char * const * const names);
 ```
