@@ -1,0 +1,9 @@
+Deltares NuGet Packages available from the following ftp server:
+
+Host name   = ftp.deltares.nl
+Ftp account = olw_im
+Password    = qsut247
+
+The URL representation of the account, e.g., for use in a browser, is:
+
+    ftp://olw_im:qsut247@ftp.deltares.nl
