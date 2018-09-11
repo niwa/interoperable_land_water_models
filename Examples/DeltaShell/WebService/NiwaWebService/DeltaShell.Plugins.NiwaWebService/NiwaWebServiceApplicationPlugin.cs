@@ -1,6 +1,7 @@
 using DelftTools.Shell.Core;
 using Mono.Addins;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace DeltaShell.Plugins.NiwaWebService
 {
@@ -35,6 +36,13 @@ namespace DeltaShell.Plugins.NiwaWebService
                 Category = "Web Services",
                 CreateModel = o => new Models.NiwaWebService()
             };
+        }
+        public override Image Image
+        {
+            get
+            {
+                return new Bitmap(Properties.Resources.net32);
+            }
         }
     }
 }

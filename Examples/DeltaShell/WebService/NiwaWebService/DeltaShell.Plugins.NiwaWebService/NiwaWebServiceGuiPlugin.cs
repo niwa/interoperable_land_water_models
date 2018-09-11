@@ -1,6 +1,7 @@
 ﻿using DelftTools.Shell.Core;
 using DelftTools.Shell.Gui;
 using Mono.Addins;
+using System.Drawing;
 
 namespace DeltaShell.Plugins.NiwaWebService
 {
@@ -27,6 +28,13 @@ namespace DeltaShell.Plugins.NiwaWebService
         public override string FileFormatVersion
         {
             get { return "1.0"; }
+        }
+        public override Image Image
+        {
+            get
+            {
+                return new Bitmap(Properties.Resources.net32);
+            }
         }
     }
 }
