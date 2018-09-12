@@ -1,0 +1,13 @@
+# YML config file for Muskingum routing model 
+# This model is a test case for BMI integration
+
+# Muskingum routing parameters
+
+time step: 1.0 # [hours]
+start time: 0.0
+end time: 6.0
+
+reaches:
+  - name: r1
+    K : 2.3   # [hours]
+    X : 0.15  # [non-dimensional]
