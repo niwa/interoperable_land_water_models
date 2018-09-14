@@ -93,7 +93,7 @@ namespace DeltaShell.Plugins.NiwaWebService.Models
                 throw we;
             }
 
-            List<TimeSeries> tsList = TSfromSosXml(xmlContent);
+            List<TimeSeries> tsList = TSfromSosXmlString(xmlContent);
 
             var flowItems = this.GetDataItemSetByTag("FlowTag").AsEventedList<TimeSeries>();
             var stageItems = this.GetDataItemSetByTag("StageTag").AsEventedList<TimeSeries>();
@@ -126,7 +126,19 @@ namespace DeltaShell.Plugins.NiwaWebService.Models
             return false;
         }
 
-        public static List<TimeSeries>TSfromSosXml(string waterMLcontent)
+        public static List<TimeSeries> TSfromSosXmlString(string XmlContent)
+        {
+            //          Introducing an error into the XML for a test
+            /*          Char[] sep = { ':' };
+                        var woo = XmlContent.Split(sep, 2);
+                        waterMLcontent = woo[0] + "x:" + woo[1];
+            */
+            MemoryStream XmlStream = new MemoryStream(System.Text.Encoding.Default.GetBytes(XmlContent));
+            return TSfromSosXmlStream(XmlStream);
+
+        }
+
+        public static List<TimeSeries>TSfromSosXmlStream(Stream XmlStream)
         {
             //Create setting for XML reader based on SOS observation schema 
             // TODO: This is time-consuming because adding the schema requires a 
@@ -150,13 +162,7 @@ namespace DeltaShell.Plugins.NiwaWebService.Models
                 Log.Error(e.Message);
                 throw e;
             }
-            //          Introducing an error into the XML for a test
-            /*          Char[] sep = { ':' };
-                        var woo = waterMLcontent.Split(sep, 2);
-                        waterMLcontent = woo[0] + "x:" + woo[1];
-            */
-            MemoryStream wmlStream = new MemoryStream(System.Text.Encoding.Default.GetBytes(waterMLcontent));
-            XmlReader reader = XmlReader.Create(wmlStream, sosXmlSettings);
+            XmlReader reader = XmlReader.Create(XmlStream, sosXmlSettings);
 
             // Create an empty list of time series objects to be returned on successful 
             // decoding of the contents of the waterML string
