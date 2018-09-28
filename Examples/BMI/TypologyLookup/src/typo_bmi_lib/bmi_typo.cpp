@@ -7,6 +7,16 @@ using namespace Typology;
 
 
 void BmiLookup::
+Initialize(std::string csv_file)
+{
+    if (csv_file != "")
+    {
+        _lookup.LoadCsvTable(csv_file);
+    }
+}
+
+
+void BmiLookup::
 GetVarType(const char * name, char * type)
 {
     if (strcmp(name, "typology") == 0)
@@ -151,8 +161,8 @@ SetValue (const char * name, char *src)
         memcpy(dest, src, nbytes);
 
         // Update lookup values to reflect change
-        this->nitrogen = this->_lookup.GetLoad(this->typology, "N");
-        this->phosphorus = this->_lookup.GetLoad(this->typology, "P");
+        this->nitrogen = this->_lookup.GetValue(this->typology, "N");
+        this->phosphorus = this->_lookup.GetValue(this->typology, "P");
     }
 }
 

@@ -12,7 +12,7 @@ int main()
     */
 
     auto lookup = Typology::BmiLookup();
-    lookup.Initialize("");
+    lookup.Initialize("typologies_test.csv");
     std::cout << "BMI component initialized.\n";
 
 
@@ -77,7 +77,7 @@ int main()
         double n_value;
         double p_value;
 
-        strncpy(typology, "typo_1", 128);
+        strncpy(typology, "typology_1", 128);
         std::cout << "Looking up values for typology '" << typology << "':\n";
         lookup.SetValue(input_names[0], typology);
         lookup.GetValue(output_names[0], (char*)&n_value);
@@ -85,7 +85,7 @@ int main()
         std::cout << "\tValue for " << output_names[0] << "\t: " << n_value << "\n";
         std::cout << "\tValue for " << output_names[1] << "\t: " << p_value << "\n";
 
-        strncpy(typology, "typo_2", 128);
+        strncpy(typology, "typology_2", 128);
         std::cout << "Looking up values for typology '" << typology << "':\n";
         lookup.SetValue(input_names[0], typology);
         lookup.GetValue(output_names[0], (char*)&n_value);
@@ -93,7 +93,7 @@ int main()
         std::cout << "\tValue for " << output_names[0] << "\t: " << n_value << "\n";
         std::cout << "\tValue for " << output_names[1] << "\t: " << p_value << "\n";
 
-        strncpy(typology, "typo_3", 128);
+        strncpy(typology, "typology_3", 128);
         std::cout << "Looking up values for typology '" << typology << "':\n";
         lookup.SetValue(input_names[0], typology);
         lookup.GetValue(output_names[0], (char*)&n_value);
@@ -120,19 +120,21 @@ int main()
         int nb_of_typologies = size / nb_of_substances;
 
         table = new double*[nb_of_typologies];
-        for (int i=0; i<nb_of_typologies; i++)
+        table[0] = new double[nb_of_typologies * nb_of_substances];
+        for (int i=1; i<nb_of_typologies; i++)
         {
-            table[i] = new double[nb_of_substances];
+            table[i] = table[i-1] + nb_of_substances;
         }
 
         lookup.GetValue("table", (char*)table);
 
         std::cout << "\t\tN\tP\n";
-        std::cout << "\ttypo_1\t" << table[0][0] << "\t" << table[0][1] << "\n";
-        std::cout << "\ttypo_2\t" << table[1][0] << "\t" << table[1][1] << "\n";
-        std::cout << "\ttypo_3\t" << table[2][0] << "\t" << table[2][1] << "\n";
- 
-		delete table;
+        std::cout << "\ttypology_1\t" << table[0][0] << "\t" << table[0][1] << "\n";
+        std::cout << "\ttypology_2\t" << table[1][0] << "\t" << table[1][1] << "\n";
+        std::cout << "\ttypology_3\t" << table[2][0] << "\t" << table[2][1] << "\n";
+        std::cout << "Done.\n";
+
+        delete[] table[0];
+        delete[] table;
     }
 }
-

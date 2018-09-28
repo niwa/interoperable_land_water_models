@@ -18,3 +18,10 @@ IF (WIN32 AND NOT MSVC)
             ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libgcc_s_seh-1.dll
     )
 ENDIF (WIN32 AND NOT MSVC)
+
+# Copy csv data file
+add_custom_command(TARGET typo_app POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${TYPO_DATA_DIR}/typologies_test.csv
+        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/typologies_test.csv
+    )

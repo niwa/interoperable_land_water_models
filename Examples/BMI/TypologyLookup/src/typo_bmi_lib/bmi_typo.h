@@ -15,7 +15,7 @@ namespace Typology{
             this->output_var_names[2] = "table";
         };
 
-        void Initialize (std::string config_file) {};
+        void Initialize (std::string csv_file);
         void Update() {};
         void UpdateUntil(double) {};
         void UpdateFrac(double) {};

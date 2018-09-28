@@ -51,7 +51,7 @@ To process the table, the consumer will need to know it's dimensions. While the 
 ## ToDo's
 
 - [ ] Choose units (kg_ha-1 or BMI's preferred g_m2)
-- [ ] Load data from file during initialization
+- [x] Load data from file during initialization
 - [ ] Expose row and column size and labels
 - [ ] Spatial queries (see below)
 - [ ] Tests

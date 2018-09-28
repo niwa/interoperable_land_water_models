@@ -1,5 +1,6 @@
-#include <string>
 #include <array>
+#include <string>
+#include <vector>
 
 namespace Typology
 {
@@ -12,11 +13,20 @@ namespace Typology
         int GetNumberOfTypologies() {return nbTypologies;};
         int GetNumberOfSubstances() {return nbSubstances;};
 
+
+        /* Load lookup table from csv file.
+
+           Csv file expected with ';' separator and header Typology;N;P
+        */
+        void LoadCsvTable(std::string csvFileName);
+
+
+
         /* Get load in kg/ha/yr.
 
            Returns load for given typology and substance or -999 if no match.
         */
-        double GetLoad(std::string typology, std::string substance);
+        double GetValue(std::string typology, std::string substance);
 
 
         /* Get full data table.
@@ -30,9 +40,15 @@ namespace Typology
         double** GetTablePtr(){return this->table;};
 
     private:
-        static int constexpr nbTypologies = 3;
+        /* Drop all previously loaded data.
+
+        */
+        void Clear();
+
+    private:
+        int nbTypologies = 0;
         static int constexpr nbSubstances = 2;
-        std::string typologies[nbTypologies] {"typo_1", "typo_2", "typo_3"};
+        std::vector<std::string> typologies;
         std::string substances[nbSubstances] {"N", "P"};
         double** table;
     };

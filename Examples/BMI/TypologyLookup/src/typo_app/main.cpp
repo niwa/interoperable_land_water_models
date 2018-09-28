@@ -8,7 +8,9 @@ int main()
 
     auto lookup = Typology::Lookup();
 
-    std::cout << "'P' value for 'typo_1': " << lookup.GetLoad("typo_1", "P") << std::endl;
+    lookup.LoadCsvTable("typologies_test.csv");
+
+    std::cout << "'P' value for 'typology_1': " << lookup.GetValue("typology_1", "P") << std::endl;
 
     double** table = lookup.GetTablePtr();
 
