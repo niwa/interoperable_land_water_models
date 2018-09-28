@@ -63,9 +63,39 @@ namespace DeltaShell.Plugins.TypologyLookup.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap plugin32 {
+        internal static System.Drawing.Bitmap import_csv16 {
             get {
-                object obj = ResourceManager.GetObject("plugin32", resourceCulture);
+                object obj = ResourceManager.GetObject("import_csv16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap import_csv32 {
+            get {
+                object obj = ResourceManager.GetObject("import_csv32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap plugin_icon32 {
+            get {
+                object obj = ResourceManager.GetObject("plugin_icon32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap table16 {
+            get {
+                object obj = ResourceManager.GetObject("table16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
