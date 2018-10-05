@@ -142,7 +142,11 @@ GetValuePtr (const char * name, char **dest)
     else if (strcmp(name, "phosphorus") == 0)
         *dest = (char*) &(this->phosphorus);
     else if (strcmp(name, "table") == 0)
-        *dest = (char*) this->_lookup.GetTablePtr();
+    {
+        double** table = this->_lookup.GetTablePtr();
+        *dest = (char*) table[0];
+    }
+
     else
         *dest = NULL;
 }

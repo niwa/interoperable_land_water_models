@@ -1,3 +1,6 @@
+#ifndef TYPO_LIB_H
+#define TYPO_LIB_H
+
 #include <array>
 #include <string>
 #include <vector>
@@ -53,3 +56,4 @@ namespace Typology
         double** table;
     };
 }
+#endif //TYPO_LIB_H

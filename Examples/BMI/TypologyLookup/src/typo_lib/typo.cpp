@@ -8,18 +8,30 @@
 using namespace Typology;
 
 
-Lookup::Lookup(){}
+Lookup::Lookup()
+{
+    table = nullptr;
+}
 
 
-Lookup::~Lookup(){}
+Lookup::~Lookup()
+{
+    if (table != nullptr)
+    {
+        delete[] table[0];
+        delete table;
+    }
+}
 
 
 void Lookup::Clear()
 {
-    if (nbTypologies == 0) return;
-
-    delete[] table[0];
-    delete[] table;
+    if (table != nullptr)
+    {
+        delete[] table[0];
+        delete[] table;
+        table = nullptr;
+    }
 
     typologies.clear();
     nbTypologies = 0;

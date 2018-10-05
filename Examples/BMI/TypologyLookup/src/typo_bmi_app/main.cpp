@@ -126,7 +126,7 @@ int main()
             table[i] = table[i-1] + nb_of_substances;
         }
 
-        lookup.GetValue("table", (char*)table);
+        lookup.GetValue("table", (char*)table[0]);
 
         std::cout << "\t\tN\tP\n";
         std::cout << "\ttypology_1\t" << table[0][0] << "\t" << table[0][1] << "\n";
