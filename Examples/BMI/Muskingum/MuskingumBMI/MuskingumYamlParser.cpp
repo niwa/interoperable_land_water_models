@@ -55,6 +55,7 @@ int MuskingumYamlParser::readReachesFromYamlDoc(yaml_document_t *document_p, yam
 			else
 			{
 				muskingumModel->_reachVector.push_back(*(new MuskingumRouter()));
+				muskingumModel->_reachVector.back().reset(NAN);
 				readReachesFromYamlDoc(document_p, next_node_p, muskingumModel);
 			}
 			// TODO: Better handling of non-mapping-node cases
@@ -93,6 +94,11 @@ int MuskingumYamlParser::readReachesFromYamlDoc(yaml_document_t *document_p, yam
 			}
 			else if (keyStack.top() == "X") {
 				muskingumModel->_reachVector.back().muskX(atof((char*)next_node_p->data.scalar.value));
+				keyStack.pop();
+				node_n++;
+			}
+			else if (keyStack.top() == "InitialFlow") {
+				muskingumModel->_reachVector.back().reset(atof((char*)next_node_p->data.scalar.value));
 				keyStack.pop();
 				node_n++;
 			}
@@ -140,6 +146,8 @@ void MuskingumYamlParser::initializeFromYaml(const char * yaml_filename, Musking
 	if (!yaml_parser_initialize(&parser))
 		throw std::runtime_error("Failed to initialize yaml parser!");
 	yaml_parser_set_input_file(&parser, fh);
+	if (parser.error != YAML_NO_ERROR)
+		throw std::runtime_error("Errors in yaml file!");
 
 	yaml_document_t doc;
 	yaml_parser_load(&parser, &doc);
