@@ -11,8 +11,8 @@ public:
 
 	// sets
 	void reachName(std::string aName) { _reachName = aName; }
-	void inputVarName(std::string aName) { _reachName = aName; }
-	void outputVarName(std::string aName) { _reachName = aName; }
+	void inputVarName(std::string aName) { _inputVarName = aName; }
+	void outputVarName(std::string aName) { _outputVarName = aName; }
 	void muskX(double x) { _muskX = x; }
 	void muskK(double x) { _muskK = x;}
 	void startTime(double x) { _lastTime = x; }

@@ -7,8 +7,8 @@ MuskingumRouter::MuskingumRouter()
 {
 	_lastTime = 0.;
 	_lastOutflow = 0.;
-	_inputVarName = "STD_IN";
-	_outputVarName = "STD_OUT";
+	_inputVarName = "volume_inflow_rate";
+	_outputVarName = "volume_outflow_rate";
 }
 
 MuskingumRouter::MuskingumRouter(double init_time, double init_flow)
@@ -24,9 +24,11 @@ MuskingumRouter::~MuskingumRouter()
 
 double MuskingumRouter::flow(double time, double inflow)
 {
-	// TODO: Consider exceptions, rather than using return values to report error condition
-	if (time < 0. || time < _lastTime) return -1.;
-	if (_muskK <= 0. || _muskX <= 0.) return -2.;
+	if (time < 0. || time < _lastTime)
+	{
+		std::string msg = "Reverse time not supported.";
+		throw std::runtime_error(msg);
+	}
 
 	// special case for time 0 if not initialized: initial flow is assumed to be 
 	// steady-state, so flow now is the same as inflow, and 

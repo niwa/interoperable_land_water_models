@@ -1,0 +1,14 @@
+*.tlog
+*.log
+*.obj
+*.idb
+*.pch
+*.ipch
+Browse.VC.db
+*.pdb
+*.dll
+*.exe
+*.lib
+!yaml.lib
+!yaml.dll
+
