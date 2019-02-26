@@ -1,8 +1,0 @@
-# Build output
-build/
-build_msvc/
-bin/
-bin_msvc/
-
-# Sublime Text project files
-*.sublime*

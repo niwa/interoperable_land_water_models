@@ -1,0 +1,62 @@
+#====================================================================
+# Lookup format.
+#====================================================================
+# Inputs must have a type.
+# All outputs are doubles, type attribute will be ignored.
+# String inputs can have a mapping.
+# Double inputs must have a mapping.
+# Double input mappings assumed lower bound.
+#====================================================================
+
+inputs:
+  climate: {type: str}
+  rainfall: {type: double, units: mm_year-1}
+  irrigation : {type: str}
+  slope: {type: double, units: %}
+  soil: {type: str}
+
+outputs:
+  TN: {type: double, units: kg/ha}
+  TP: {type: double, units: kg/ha}
+
+mappings:
+  # REC climate to typology climate
+  climate:
+    WX: warm # Warm-Extremely-Wet
+    WW: warm # Warm-Wet
+    WD: warm # Warm-Dry
+    CX: cool # Cool-Extremely-Wet
+    CW: cool # Cool-Wet
+    CD: cool # Cool-Dry
+
+  # TODO: Soil to drainage class
+  soil:
+    todo1: very-poor
+    todo2: poor
+    todo3: imperfect
+    todo4: well
+
+  slope:
+    0: low      # >=  0
+    7: moderate # >=  7
+    15: steep   # >= 15
+
+  rainfall:
+    0: 1700-    # >= 0
+    1700: 1700+ # >= 1700
+
+  # TODO:
+  irrigation: null
+
+
+lookup:
+  warm:
+    imperfect:
+      low:
+        irrigated:
+          1700-: [1.1, 1.2]
+          1700+: [2.1, 2.1]
+
+lookup_bis:
+  warm_imperfect_low_irrigated_1700-: [1.1, 1.2]
+  warm_imperfect_low_irrigated_1700+: [1.1, 1.2]
