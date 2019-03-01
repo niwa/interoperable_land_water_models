@@ -1,2 +1,9 @@
-﻿     Creating library C:\Users\evansta\source\Muskingum\MuskingumBMI\Debug\MuskingumBMI.lib and object C:\Users\evansta\source\Muskingum\MuskingumBMI\Debug\MuskingumBMI.exp
-  MuskingumBMI.vcxproj -> C:\Users\evansta\source\Muskingum\MuskingumBMI\Debug\MuskingumBMI.dll
+﻿  MuskingumBMI.cpp
+c:\users\evansta\git\niwa_github\interoperable_land_water_models\examples\bmi\muskingum\muskingumbmi\muskingumbmi.cpp(139): warning C4018: '<': signed/unsigned mismatch
+c:\users\evansta\git\niwa_github\interoperable_land_water_models\examples\bmi\muskingum\muskingumbmi\muskingumbmi.cpp(226): warning C4018: '<': signed/unsigned mismatch
+c:\users\evansta\git\niwa_github\interoperable_land_water_models\examples\bmi\muskingum\muskingumbmi\muskingumbmi.cpp(246): warning C4018: '<': signed/unsigned mismatch
+c:\users\evansta\git\niwa_github\interoperable_land_water_models\examples\bmi\muskingum\muskingumbmi\muskingumbmi.cpp(265): warning C4018: '<': signed/unsigned mismatch
+  MuskingumYamlParser.cpp
+  Generating Code...
+     Creating library C:\Users\evansta\Git\NIWA_GitHub\interoperable_land_water_models\Examples\BMI\Muskingum\MuskingumBMI\Debug\MuskingumBMI.lib and object C:\Users\evansta\Git\NIWA_GitHub\interoperable_land_water_models\Examples\BMI\Muskingum\MuskingumBMI\Debug\MuskingumBMI.exp
+  MuskingumBMI.vcxproj -> C:\Users\evansta\Git\NIWA_GitHub\interoperable_land_water_models\Examples\BMI\Muskingum\MuskingumBMI\Debug\MuskingumBMI.dll

@@ -1,0 +1,3 @@
+relayFile: "arrayData.yaml"
+shape: [4, 4]
+message: "Hello Yaml!"

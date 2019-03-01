@@ -1,1 +1,3 @@
-﻿
+﻿  BMIRoutingApp.cpp
+c:\users\evansta\git\niwa_github\interoperable_land_water_models\examples\bmi\muskingum\bmiroutingapp\bmiroutingapp.cpp(53): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+  BMIRoutingApp.vcxproj -> C:\Users\evansta\Git\NIWA_GitHub\interoperable_land_water_models\Examples\BMI\Muskingum\MuskingumBMI\Debug\BMIRoutingApp.exe

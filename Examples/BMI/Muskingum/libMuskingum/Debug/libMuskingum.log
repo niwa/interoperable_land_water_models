@@ -1,1 +1,3 @@
-﻿  libMuskingum.vcxproj -> C:\Users\evansta\source\Muskingum\libMuskingum\Debug\libMuskingum.lib
+﻿  stdafx.cpp
+  MuskingumRouter.cpp
+  libMuskingum.vcxproj -> C:\Users\evansta\Git\NIWA_GitHub\interoperable_land_water_models\Examples\BMI\Muskingum\MuskingumBMI\Debug\libMuskingum.lib
