@@ -4,9 +4,10 @@ rem set PATH=c:\Users\evansta\DeltaShell\SVN_repos\delft3d\src\engines_gpl\dimr\
 set PATH=..\bin;%PATH%
 
 rem Add the path to the ArrayBuilder DLL and dependencies
-set PATH=..\Debug;..\lib;%PATH%
+set PATH=..\lib;%PATH%
 
 rem run DIMR with arguments from the command line of this batch file
 dimr %*
 
-set /p scratch="Press enter to finish..."
+pause
+
