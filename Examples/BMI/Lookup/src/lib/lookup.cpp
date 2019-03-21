@@ -33,6 +33,8 @@ public:
 private:
     std::vector<std::string> load_var_names(const std::string &key);
 
+    void enforce_mappings_for_numeric_inputs();
+
     void load_var_attrs();
 
     std::string map_input(std::string const &name, std::string const &value);
@@ -54,6 +56,7 @@ _Lookup::_Lookup(std::string &filename) {
     _inputs = load_var_names("inputs");
     _outputs = load_var_names("outputs");
     load_var_attrs();
+    enforce_mappings_for_numeric_inputs();
 }
 
 
@@ -76,7 +79,7 @@ std::string _Lookup::map_input(std::string const &name, double const &value) {
 
     /* Ensure value not lower than lower bound */
     if (value < map.begin()->first.as<double>()) {
-        throw std:: invalid_argument("Double input value < lower mappin bound");
+        throw std::invalid_argument("Double input value < lower mapping bound");
     }
 
     auto cls = std::string();
@@ -89,8 +92,9 @@ std::string _Lookup::map_input(std::string const &name, double const &value) {
 }
 
 
-double _Lookup::get_value(std::vector<lup::Input> inputs,
-                          const std::string &output_name) {
+double _Lookup::get_value(
+    std::vector<lup::Input> inputs,
+    const std::string &output_name) {
 
     /* Make sure requested output is valid */
     auto it = std::find(_outputs.begin(), _outputs.end(), output_name);
@@ -124,7 +128,13 @@ std::vector<double> _Lookup::get_values(std::vector<lup::Input> inputs) {
     /* Get lookup node matching classes */
     YAML::Node node = _config["lookup"];
     for (const auto &cls : classes) {
-        node.reset(node[cls]);
+        if (node[cls]) {
+            node.reset(node[cls]);
+        }
+        else
+        {
+            node.reset(node["_"]);
+        }
     }
 
     return node.as<std::vector<double> >();
@@ -139,6 +149,20 @@ std::vector<std::string> _Lookup::load_var_names(const std::string &key) {
         names.push_back(name);
     }
     return names;
+}
+
+
+void _Lookup::enforce_mappings_for_numeric_inputs() {
+    auto maps = _config["mappings"];
+    for (const auto &var : _inputs) {
+
+        /* Assuming all input types other than string are numeric*/
+        if (_types[var] == "str") continue;
+
+        if (!maps or !maps[var]) {
+            throw std::invalid_argument("Numeric inputs must have a mapping");
+        }
+    }
 }
 
 

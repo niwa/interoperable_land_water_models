@@ -1,6 +1,6 @@
 add_library(lookup STATIC lookup.cpp)
-target_include_directories(lookup PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/yaml-cpp/include)
-target_link_libraries(lookup ${CMAKE_CURRENT_SOURCE_DIR}/yaml-cpp/libyaml-cpp.a)
+target_include_directories(lookup PRIVATE ${YAML_CPP_INCLUDE})
+target_link_libraries(lookup ${YAML_CPP_LIB})
 
 add_executable(lookup_tests lookup_tests.cpp)
 target_include_directories(lookup_tests PRIVATE ${LU_CATCH_DIR})

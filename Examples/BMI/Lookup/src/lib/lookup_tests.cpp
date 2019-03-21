@@ -21,6 +21,9 @@ SCENARIO("Querying variable info")
         yamlfile << "  output_a: {type: double, units: kg}\n";
         yamlfile << "  output_b: {type: double, units: s}\n";
         yamlfile << "\n";
+        yamlfile << "mappings:\n";
+        yamlfile << "  input_2:\n";
+        yamlfile << "    0: class_2\n";
         yamlfile.close();
 
         WHEN("Initialized") {
@@ -137,7 +140,7 @@ SCENARIO("String inputs can be mapped to classes")
                         "Requested output does not exists");
             }
 
-            THEN ("Requesting an unknown mapped input value throws an exception") {
+            THEN ("Requesting an unmapped input value throws an exception") {
                 std::vector<lup::Input> inputs;
                 inputs = {{"input_a", "oooops"}, {"input_b", "b1"}};
                 REQUIRE_THROWS_AS(lookup->get_value(inputs,"output_x"),
@@ -233,7 +236,160 @@ SCENARIO("Double inputs are classified by lower bounds")
                 REQUIRE_THROWS_AS(lookup->get_value(inputs, "output_x"),
                         std::invalid_argument);
                 REQUIRE_THROWS_WITH(lookup->get_value(inputs, "output_x"),
-                        "Double input value < lower mappin bound");
+                        "Double input value < lower mapping bound");
+            }
+
+            lup::Lookup::Dispose(lookup);
+        }
+
+        /* Delete temporary file */
+        remove(filename.c_str());
+    }
+}
+
+SCENARIO("Double inputs must have a mapping")
+{
+    GIVEN("A double input without mapping") {
+        std::string const filename = "_lookup_temproary_test_file.yaml";
+        std::ofstream yamlfile;
+        yamlfile.open(filename, std::ios::out);
+        yamlfile << "inputs:\n";
+        yamlfile << "  input_a: {type: double}\n";
+        yamlfile << "  input_b: {type: double}\n";
+        yamlfile << "outputs:\n";
+        yamlfile << "  output_x: {type: double, unit: m}\n";
+        yamlfile << "  output_y: {type: double, unit: m}\n";
+        yamlfile << "mappings:\n";
+        yamlfile << "  input_a:\n";
+        yamlfile << "    1: class_a1\n";
+        yamlfile << "    5: class_a2\n";
+        yamlfile.close();
+
+        THEN("Initialization fails") {
+
+            REQUIRE_THROWS_AS(lup::Lookup::Create(filename), std::invalid_argument);
+            REQUIRE_THROWS_WITH(lup::Lookup::Create(filename),
+                    "Numeric inputs must have a mapping");
+        }
+
+        /* Delete temporary file */
+        remove(filename.c_str());
+    }
+}
+
+
+SCENARIO("Wildcards are supported")
+{
+    GIVEN("A wildcard for an unmapped string input") {
+        std::string const filename = "_lookup_temproary_test_file.yaml";
+        std::ofstream yamlfile;
+        yamlfile.open(filename, std::ios::out);
+        yamlfile << "inputs:\n";
+        yamlfile << "  input_a: {type: str}\n";
+        yamlfile << "outputs:\n";
+        yamlfile << "  output_x: {type: double, unit: m}\n";
+        yamlfile << "  output_y: {type: double, unit: m}\n";
+        yamlfile << "\n";
+        yamlfile << "lookup:\n";
+        yamlfile << "  a1: [1.1, 1.2]\n";
+        yamlfile << "  _: [2.1, 2.2]\n";
+        yamlfile << "\n";
+        yamlfile.close();
+
+        WHEN("Initialized") {
+
+            auto lookup = lup::Lookup::Create(filename);
+
+            THEN("Explicit values are matched retrieved") {
+                std::vector<lup::Input> inputs;
+                std::vector<double> outputs;
+
+                inputs = {{"input_a", "a1"}};
+                outputs = {1.1, 1.2};
+                CHECK(lookup->get_values(inputs) == outputs);
+                CHECK(lookup->get_value(inputs, "output_x") == outputs[0]);
+                CHECK(lookup->get_value(inputs, "output_y") == outputs[1]);
+            }
+
+            THEN("Unlisted values are matched by the wildcard") {
+                std::vector<lup::Input> inputs;
+                std::vector<double> outputs;
+
+                inputs = {{"input_a", "whatever"}};
+                outputs = {2.1, 2.2};
+                CHECK(lookup->get_values(inputs) == outputs);
+                CHECK(lookup->get_value(inputs, "output_x") == outputs[0]);
+                CHECK(lookup->get_value(inputs, "output_y") == outputs[1]);
+            }
+
+            lup::Lookup::Dispose(lookup);
+        }
+
+        /* Delete temporary file */
+        remove(filename.c_str());
+    }
+
+    GIVEN("A wildcard for a mapped input ") {
+        std::string const filename = "_lookup_temproary_test_file.yaml";
+        std::ofstream yamlfile;
+        yamlfile.open(filename, std::ios::out);
+        yamlfile << "inputs:\n";
+        yamlfile << "  input_a: {type: str}\n";
+        yamlfile << "outputs:\n";
+        yamlfile << "  output_x: {type: double, unit: m}\n";
+        yamlfile << "  output_y: {type: double, unit: m}\n";
+        yamlfile << "\n";
+        yamlfile << "mappings:\n";
+        yamlfile << "  input_a:\n";
+        yamlfile << "    a1: class_a11\n";
+        yamlfile << "    a2: class_a22\n";
+        yamlfile << "    a3: class_a33\n";
+        yamlfile << "\n";
+        yamlfile << "lookup:\n";
+        yamlfile << "  class_a11: [1.1, 1.2]\n";
+        yamlfile << "  _: [2.1, 2.2]\n";
+        yamlfile << "\n";
+        yamlfile.close();
+
+        WHEN("Initialized") {
+
+            auto lookup = lup::Lookup::Create(filename);
+
+            THEN("Explicit classes are matched") {
+                std::vector<lup::Input> inputs;
+                std::vector<double> outputs;
+
+                inputs = {{"input_a", "a1"}};
+                outputs = {1.1, 1.2};
+                CHECK(lookup->get_values(inputs) == outputs);
+                CHECK(lookup->get_value(inputs, "output_x") == outputs[0]);
+                CHECK(lookup->get_value(inputs, "output_y") == outputs[1]);
+            }
+
+            THEN("Unlisted classes are matched by the wildcard") {
+                std::vector<lup::Input> inputs;
+                std::vector<double> outputs;
+
+                inputs = {{"input_a", "a2"}};
+                outputs = {2.1, 2.2};
+                CHECK(lookup->get_values(inputs) == outputs);
+                CHECK(lookup->get_value(inputs, "output_x") == outputs[0]);
+                CHECK(lookup->get_value(inputs, "output_y") == outputs[1]);
+
+                inputs = {{"input_a", "a3"}};
+                outputs = {2.1, 2.2};
+                CHECK(lookup->get_values(inputs) == outputs);
+                CHECK(lookup->get_value(inputs, "output_x") == outputs[0]);
+                CHECK(lookup->get_value(inputs, "output_y") == outputs[1]);
+            }
+
+            THEN ("Requesting an unmapped input value throws an exception") {
+                std::vector<lup::Input> inputs;
+                inputs = {{"input_a", "oooops"}};
+                REQUIRE_THROWS_AS(lookup->get_value(inputs,"output_x"),
+                        std::invalid_argument);
+                REQUIRE_THROWS_WITH(lookup->get_value(inputs, "output_x"),
+                        "String input value not in mapping");
             }
 
             lup::Lookup::Dispose(lookup);

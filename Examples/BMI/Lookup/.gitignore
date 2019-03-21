@@ -13,3 +13,9 @@ bin_msvc/
 
 # Python files
 *.py
+
+# Local build script
+build.bat
+
+# Local cmake settings
+local.cmake

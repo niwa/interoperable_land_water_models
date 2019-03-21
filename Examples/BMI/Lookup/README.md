@@ -69,12 +69,14 @@ lookup:
     steep: [3.1, 3.2]
   cool:
     low: [4.1, 4.2]
-    moderate: [5.1, 5.2]
-    steep: [6.1, 6.2]
+    _: [5.1, 5.2]
 ```
 The nesting order if the input classess is determined by the order in which input items appear in the `inputs` sequence.
 
-The output sequences contain the output values in the same order as the `outputs` node. So 1.1 is for TN and 1.2 is for TP in the example above.
+The output sequences contain the output values in the same order as the `outputs` node. So, in the example above, 1.1 is for TN and 1.2 is for TP.
+
+An underscore character can be used to match any class of a mapped input or any value of an unmapped input. In the example above, the `_` will match both `moderate` and `steep`. 
+
 
 ### Whole file example
 
@@ -82,7 +84,7 @@ The output sequences contain the output values in the same order as the `outputs
 inputs:
   - climate: {type: str}
   - slope: {type: double, units: \"%\"}
-
+  
 outputs:
   - TN: {type: double, units: kg_ha-1}
   - TP: {type: double, units: kg_ha-1}
@@ -109,8 +111,7 @@ lookup:
     steep: [3.1, 3.2]
   cool:
     low: [4.1, 4.2]
-    moderate: [5.1, 5.2]
-    steep: [6.1, 6.2]
+    _: [5.1, 5.2]
 ```
 
 
@@ -134,6 +135,19 @@ On Windows you can choose between MSVC or GCC compilers. Use `build.bat` for GCC
 ## CMake
 
 CMake can be downloaded from https://cmake.org/download/.
+
+## Dependencies
+
+The only dependency is [YAML-CPP](https://github.com/jbeder/yaml-cpp).
+
+Download and compile it (it also uses CMake), then create a `local.cmake` next to the main `CMakeLists.txt` and set the paths to the yaml-cpp headers and compiled library in `local.cmake`. For instance like so: 
+
+```cmake
+set(YAML_CPP_ROOT c:/dev/yaml-cpp)
+set(YAML_CPP_INCLUDE ${YAML_CPP_ROOT}/include)
+set(YAML_CPP_LIB ${YAML_CPP_ROOT}/build/libyaml-cpp.a)
+```
+
 
 ## MinGW
 

@@ -6,6 +6,20 @@ set(CMAKE_CXX_STANDARD 17)
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
+# Local settings
+#
+# Should define at least the following variables
+#
+# YAML_CPP_INCLUDE : path to yaml-cpp include dir
+# YAML_CPP_LIB     : path to yaml-cpp static library
+#
+# E.g. local.cmake contents:
+#
+# set(YAML_CPP_ROOT c:/dev/yaml-cpp)
+# set(YAML_CPP_INCLUDE ${YAML_CPP_ROOT}/include)
+# set(YAML_CPP_LIB ${YAML_CPP_ROOT}/build/libyaml-cpp.a)
+include(local.cmake)
+
 # Defining some directory paths
 set(LU_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(LU_DATA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/data)
