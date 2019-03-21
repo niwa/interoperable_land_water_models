@@ -1,4 +1,4 @@
-add_library(bmi_lookup bmi_lookup.cpp)
+add_library(bmi_lookup SHARED bmi_lookup.cpp)
 target_include_directories(bmi_lookup PRIVATE ${LU_LIB_DIR})
 target_link_libraries(bmi_lookup lookup)
 
