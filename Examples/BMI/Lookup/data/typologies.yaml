@@ -11,7 +11,7 @@
 inputs:
   landuse: {type: str}
   climate: {type: str}
-  slope: {type: double, units: %}
+  slope: {type: double, units: \"%\"}
   soil: {type: str}
   irrigation : {type: str}
   rainfall: {type: double, units: mm_year-1}
