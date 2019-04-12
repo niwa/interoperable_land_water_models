@@ -1,0 +1,6 @@
+IF (WIN32)
+    set(SRCS os_win.cpp)
+ELSE()
+	set(SRCS os_nix.cpp)
+ENDIF (WIN32)
+add_library(os STATIC ${SRCS})
