@@ -32,22 +32,27 @@ SCENARIO("Reading a CSV table") {
         WHEN("Instantiating from file") {
             auto name = "input_a";
             auto path = test_file.path();
-            auto t = bmit::CsvTable<int>(name, path);
-            t.sep(';');
+            auto t = bmit::CsvTable<int>(name, path, ';');
 
             THEN("Properties are set") {
                 CHECK(t.name() == name);
                 CHECK(t.path() == path);
-                CHECK(t.sep() == ';');
-            }
-
-            THEN("Data can be loaded")
-            {
-                t.load();
                 CHECK(t.nb_cols() == 3);
                 CHECK(t.nb_rows() == 2);
-                CHECK(t.get_row(0) == std::vector<int> {11,12,13});
-                CHECK(t.get_row(1) == std::vector<int> {21,22,23});
+            }
+
+            THEN("Data can be loaded and accessed")
+            {
+                t.load();
+                int* ptr;
+                auto vals = std::vector<int> (6);
+                ptr = (int*) t.cell_ptr(0,0); vals[0] = *ptr;
+                ptr = (int*) t.cell_ptr(0,1); vals[1] = *ptr;
+                ptr = (int*) t.cell_ptr(0,2); vals[2] = *ptr;
+                ptr = (int*) t.cell_ptr(1,0); vals[3] = *ptr;
+                ptr = (int*) t.cell_ptr(1,1); vals[4] = *ptr;
+                ptr = (int*) t.cell_ptr(1,2); vals[5] = *ptr;
+                CHECK(vals == std::vector<int> {11,12,13,21,22,23});
             }
         }
     }
@@ -64,22 +69,27 @@ SCENARIO("Reading a CSV table") {
         WHEN("Instantiating from file") {
             auto name = "input_a";
             auto path = test_file.path();
-            auto t = bmit::CsvTable<double>(name, path);
-            t.sep(';');
+            auto t = bmit::CsvTable<double>(name, path, ';');
 
             THEN("Properties are set") {
                 CHECK(t.name() == name);
                 CHECK(t.path() == path);
-                CHECK(t.sep() == ';');
-            }
-
-            THEN("Data can be loaded")
-            {
-                t.load();
                 CHECK(t.nb_cols() == 3);
                 CHECK(t.nb_rows() == 2);
-                CHECK(t.get_row(0) == std::vector<double> {1.1,1.2,1.3});
-                CHECK(t.get_row(1) == std::vector<double> {2.1,2.2,2.3});
+            }
+
+            THEN("Data can be loaded and accessed")
+            {
+                t.load();
+                double* ptr;
+                auto vals = std::vector<double> (6);
+                ptr = (double*) t.cell_ptr(0,0); vals[0] = *ptr;
+                ptr = (double*) t.cell_ptr(0,1); vals[1] = *ptr;
+                ptr = (double*) t.cell_ptr(0,2); vals[2] = *ptr;
+                ptr = (double*) t.cell_ptr(1,0); vals[3] = *ptr;
+                ptr = (double*) t.cell_ptr(1,1); vals[4] = *ptr;
+                ptr = (double*) t.cell_ptr(1,2); vals[5] = *ptr;
+                CHECK(vals == std::vector<double> {1.1,1.2,1.3,2.1,2.2,2.3});
             }
         }
     }
@@ -96,22 +106,30 @@ SCENARIO("Reading a CSV table") {
         WHEN("Instantiating from file") {
             auto name = "input_a";
             auto path = test_file.path();
-            auto t = bmit::CsvTable<std::string>(name, path);
-            t.sep(';');
+            auto t = bmit::CsvTable<std::string>(name, path, ';');
 
             THEN("Properties are set") {
                 CHECK(t.name() == name);
                 CHECK(t.path() == path);
-                CHECK(t.sep() == ';');
-            }
-
-            THEN("Data can be loaded")
-            {
-                t.load();
                 CHECK(t.nb_cols() == 3);
                 CHECK(t.nb_rows() == 2);
-                CHECK(t.get_row(0) == std::vector<std::string> {"One","Two","Three"});
-                CHECK(t.get_row(1) == std::vector<std::string> {"Four","Five","Six"});
+            }
+
+            THEN("Data can be loaded and accessed")
+            {
+                t.load();
+                std::string* ptr;
+                auto vals = std::vector<std::string> (6);
+                ptr = (std::string*) t.cell_ptr(0,0); vals[0] = *ptr;
+                ptr = (std::string*) t.cell_ptr(0,1); vals[1] = *ptr;
+                ptr = (std::string*) t.cell_ptr(0,2); vals[2] = *ptr;
+                ptr = (std::string*) t.cell_ptr(1,0); vals[3] = *ptr;
+                ptr = (std::string*) t.cell_ptr(1,1); vals[4] = *ptr;
+                ptr = (std::string*) t.cell_ptr(1,2); vals[5] = *ptr;
+                auto expected = std::vector<std::string> {
+                    "One","Two","Three",
+                    "Four","Five","Six"};
+                CHECK(vals == expected);
             }
         }
     }
@@ -128,8 +146,7 @@ SCENARIO("Writing a CSV table") {
         auto row2 = std::vector<int> {21, 22, 23};
         auto name = "output_name";
         auto test_file = TempFile("_temporary_file.csv");
-        auto t = bmit::CsvTable<int>(name, test_file.path(), rows, cols);
-        t.sep(';');
+        auto t = bmit::CsvTable<int>(name, test_file.path(), rows, cols, ';');
 
         THEN("Properties are set") {
 
@@ -137,7 +154,6 @@ SCENARIO("Writing a CSV table") {
             CHECK(t.path() == test_file.path());
             CHECK(t.nb_rows() == rows);
             CHECK(t.nb_cols() == cols);
-            CHECK(t.sep() == ';');
         }
 
         WHEN("Setting table values") {
@@ -177,8 +193,7 @@ SCENARIO("Writing a CSV table") {
         auto row2 = std::vector<double> {2.1, 2.2, 2.3};
         auto name = "output_name";
         auto test_file = TempFile("_temporary_file.csv");
-        auto t = bmit::CsvTable<double>(name, test_file.path(), rows, cols);
-        t.sep(';');
+        auto t = bmit::CsvTable<double>(name, test_file.path(), rows, cols, ';');
 
         THEN("Properties are set") {
 
@@ -186,7 +201,6 @@ SCENARIO("Writing a CSV table") {
             CHECK(t.path() == test_file.path());
             CHECK(t.nb_rows() == rows);
             CHECK(t.nb_cols() == cols);
-            CHECK(t.sep() == ';');
         }
 
         WHEN("Setting table values") {
@@ -226,8 +240,7 @@ SCENARIO("Writing a CSV table") {
         auto row2 = std::vector<std::string> {"four", "five", "six"};
         auto name = "output_name";
         auto test_file = TempFile("_temporary_file.csv");
-        auto t = bmit::CsvTable<std::string>(name, test_file.path(), rows, cols);
-        t.sep(';');
+        auto t = bmit::CsvTable<std::string>(name, test_file.path(), rows, cols, ';');
 
         THEN("Properties are set") {
 
@@ -235,7 +248,6 @@ SCENARIO("Writing a CSV table") {
             CHECK(t.path() == test_file.path());
             CHECK(t.nb_rows() == rows);
             CHECK(t.nb_cols() == cols);
-            CHECK(t.sep() == ';');
         }
 
         WHEN("Setting table values") {
@@ -639,6 +651,375 @@ SCENARIO("Writing a SQL table") {
 
                 REQUIRE(row1 == std::vector<std::string> {"one", "two", "three"});
                 REQUIRE(row2 == std::vector<std::string> {"four", "five", "six"});
+            }
+        }
+    }
+}
+
+
+SCENARIO("Reading a SQL column") {
+
+    GIVEN("A SQL column with integer data") {
+
+        auto test_file = TempFile("_temporary_file.db");
+        std::string sql;
+        sqlite3* db = nullptr;
+        sqlite3_stmt* qry = nullptr;
+        const char* qry_tail = nullptr;
+
+        REQUIRE(sqlite3_open(test_file.c_str(), &db) == SQLITE_OK);
+
+        sql = "\
+            CREATE TABLE input_a (\
+                col_1 INTEGER NOT NULL,\
+                col_2 INTEGER NOT NULL,\
+                col_3 INTEGER NOT NULL\
+            );";
+        REQUIRE(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+        REQUIRE(sqlite3_step(qry) == SQLITE_DONE);
+        REQUIRE(sqlite3_finalize(qry) == SQLITE_OK);
+
+        sql = "\
+            INSERT INTO input_a (col_1, col_2, col_3) VALUES\
+                (11, 12, 13),\
+                (21, 22, 23);";
+        REQUIRE(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+        REQUIRE(sqlite3_step(qry) == SQLITE_DONE);
+        REQUIRE(sqlite3_finalize(qry) == SQLITE_OK);
+
+        REQUIRE(sqlite3_close(db) == SQLITE_OK);
+
+        WHEN("Instantiating from file") {
+            auto name = "input_a";
+            auto path = test_file.path();
+            auto column = "col_2";
+            auto t = bmit::SqlColumn<int>(name, path, column);
+
+            THEN("Properties are set") {
+                CHECK(t.name() == name);
+                CHECK(t.path() == path);
+                CHECK(t.column() == column);
+                CHECK(t.nb_cols() == 1);
+                CHECK(t.nb_rows() == 2);
+            }
+
+            AND_THEN("Data can be accessed")
+            {
+                t.load();
+                int* valp = nullptr;
+                valp = (int*) t.cell_ptr(0, 0); REQUIRE(*valp == 12);
+                valp = (int*) t.cell_ptr(1, 0); REQUIRE(*valp == 22);
+            }
+        }
+    }
+
+    GIVEN("A SQL column with double data") {
+
+        auto test_file = TempFile("_temporary_file.db");
+        std::string sql;
+        sqlite3* db = nullptr;
+        sqlite3_stmt* qry = nullptr;
+        const char* qry_tail = nullptr;
+
+        REQUIRE(sqlite3_open(test_file.c_str(), &db) == SQLITE_OK);
+
+        sql = "\
+            CREATE TABLE input_a (\
+                col_1 DOUBLE NOT NULL,\
+                col_2 DOUBLE NOT NULL,\
+                col_3 DOUBLE NOT NULL\
+            );";
+        REQUIRE(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+        REQUIRE(sqlite3_step(qry) == SQLITE_DONE);
+        REQUIRE(sqlite3_finalize(qry) == SQLITE_OK);
+
+        sql = "\
+            INSERT INTO input_a (col_1, col_2, col_3) VALUES\
+                (1.1, 1.2, 1.3),\
+                (2.1, 2.2, 2.3);";
+        REQUIRE(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+        REQUIRE(sqlite3_step(qry) == SQLITE_DONE);
+        REQUIRE(sqlite3_finalize(qry) == SQLITE_OK);
+
+        REQUIRE(sqlite3_close(db) == SQLITE_OK);
+
+        WHEN("Instantiating from file") {
+            auto name = "input_a";
+            auto path = test_file.path();
+            auto column = "col_2";
+            auto t = bmit::SqlColumn<double>(name, path, column);
+
+            THEN("Properties are set") {
+                CHECK(t.name() == name);
+                CHECK(t.path() == path);
+                CHECK(t.column() == column);
+                CHECK(t.nb_cols() == 1);
+                CHECK(t.nb_rows() == 2);
+            }
+
+            AND_THEN("Data can be accessed")
+            {
+                t.load();
+                double* valp = nullptr;
+                valp = (double*) t.cell_ptr(0, 0); REQUIRE(*valp == 1.2);
+                valp = (double*) t.cell_ptr(1, 0); REQUIRE(*valp == 2.2);
+            }
+        }
+    }
+
+    GIVEN("A SQL column with str data") {
+
+        auto test_file = TempFile("_temporary_file.db");
+        std::string sql;
+        sqlite3* db = nullptr;
+        sqlite3_stmt* qry = nullptr;
+        const char* qry_tail = nullptr;
+
+        REQUIRE(sqlite3_open(test_file.c_str(), &db) == SQLITE_OK);
+
+        sql = "\
+            CREATE TABLE input_a (\
+                col_1 TEXT NOT NULL,\
+                col_2 TEXT NOT NULL,\
+                col_3 TEXT NOT NULL\
+            );";
+        REQUIRE(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+        REQUIRE(sqlite3_step(qry) == SQLITE_DONE);
+        REQUIRE(sqlite3_finalize(qry) == SQLITE_OK);
+
+        sql = "\
+            INSERT INTO input_a (col_1, col_2, col_3) VALUES\
+                ('one', 'two', 'three'),\
+                ('four', 'five', 'six');";
+        REQUIRE(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+        REQUIRE(sqlite3_step(qry) == SQLITE_DONE);
+        REQUIRE(sqlite3_finalize(qry) == SQLITE_OK);
+
+        REQUIRE(sqlite3_close(db) == SQLITE_OK);
+
+        WHEN("Instantiating from file") {
+            auto name = "input_a";
+            auto path = test_file.path();
+            auto column = "col_2";
+            auto t = bmit::SqlColumn<std::string>(name, path, column);
+
+            THEN("Properties are set") {
+                CHECK(t.name() == name);
+                CHECK(t.path() == path);
+                CHECK(t.column() == column);
+                CHECK(t.nb_cols() == 1);
+                CHECK(t.nb_rows() == 2);
+            }
+
+            AND_THEN("Data can be accessed")
+            {
+                t.load();
+                std::string* valp = nullptr;
+                valp = (std::string*) t.cell_ptr(0, 0); REQUIRE(*valp == "two");
+                valp = (std::string*) t.cell_ptr(1, 0); REQUIRE(*valp == "five");
+            }
+        }
+    }
+}
+
+
+SCENARIO("Writing a SQL column") {
+
+    GIVEN("A SqlColumn and int data") {
+
+        const int rows = 3;
+        auto values = std::vector<int> {1, 2, 3};
+        auto name = std::string("table_name");
+        auto column = std::string("col_2") ;
+        auto test_file = TempFile("_temporary_file.db");
+        auto t = bmit::SqlColumn<int>(name, test_file.path(), column, rows);
+
+        THEN("Properties are set") {
+
+            CHECK(t.name() == name);
+            CHECK(t.path() == test_file.path());
+            CHECK(t.column() == column);
+            CHECK(t.nb_rows() == rows);
+            CHECK(t.nb_cols() == 1);
+        }
+
+        WHEN("Setting table values") {
+
+            int* p;
+            p = (int*) t.cell_ptr(0, 0); *p = values[0];
+            p = (int*) t.cell_ptr(1, 0); *p = values[1];
+            p = (int*) t.cell_ptr(2, 0); *p = values[2];
+
+            THEN("Column data can be written to existing table")
+            {
+                std::string sql;
+                sqlite3* db = nullptr;
+                sqlite3_stmt* qry = nullptr;
+                const char* qry_tail = nullptr;
+
+                // First create table without column
+                REQUIRE(sqlite3_open(test_file.c_str(), &db) == SQLITE_OK);
+                sql = "\
+                    CREATE TABLE table_name (\
+                        col_1 INTEGER,\
+                        col_3 INTEGER\
+                    );";
+                REQUIRE(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+                REQUIRE(sqlite3_step(qry) == SQLITE_DONE);
+                REQUIRE(sqlite3_finalize(qry) == SQLITE_OK);
+                REQUIRE(sqlite3_close(db) == SQLITE_OK);
+
+                // Now call write
+                t.write();
+
+                // And check table was indeed altered
+                REQUIRE(sqlite3_open_v2(test_file.c_str(), &db, SQLITE_OPEN_READONLY, nullptr) == SQLITE_OK);
+                sql = "SELECT " + column + " FROM " + name + ";";
+                REQUIRE(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+
+                auto vals = std::vector<int> (rows);
+                for (int i = 0; i < rows; i++) {
+                    REQUIRE(sqlite3_step(qry) == SQLITE_ROW);
+                    vals[i] = sqlite3_column_int(qry, 0);
+                }
+                REQUIRE(sqlite3_step(qry) == SQLITE_DONE);
+                REQUIRE(sqlite3_finalize(qry) == SQLITE_OK);
+                REQUIRE(sqlite3_close(db) == SQLITE_OK);
+
+                REQUIRE(vals == std::vector<int> {1, 2, 3});
+            }
+        }
+    }
+
+    GIVEN("A SqlColumn and double data") {
+
+        const int rows = 3;
+        auto values = std::vector<double> {1.1, 2.2, 3.3};
+        auto name = std::string("table_name");
+        auto column = std::string("col_2") ;
+        auto test_file = TempFile("_temporary_file.db");
+        auto t = bmit::SqlColumn<double>(name, test_file.path(), column, rows);
+
+        THEN("Properties are set") {
+
+            CHECK(t.name() == name);
+            CHECK(t.path() == test_file.path());
+            CHECK(t.column() == column);
+            CHECK(t.nb_rows() == rows);
+            CHECK(t.nb_cols() == 1);
+        }
+
+        WHEN("Setting table values") {
+
+            double* p;
+            p = (double*) t.cell_ptr(0, 0); *p = values[0];
+            p = (double*) t.cell_ptr(1, 0); *p = values[1];
+            p = (double*) t.cell_ptr(2, 0); *p = values[2];
+
+            THEN("Column data can be written to existing table")
+            {
+                std::string sql;
+                sqlite3* db = nullptr;
+                sqlite3_stmt* qry = nullptr;
+                const char* qry_tail = nullptr;
+
+                // First create table without column
+                REQUIRE(sqlite3_open(test_file.c_str(), &db) == SQLITE_OK);
+                sql = "\
+                    CREATE TABLE table_name (\
+                        col_1 DOUBLE,\
+                        col_3 DOUBLE\
+                    );";
+                REQUIRE(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+                REQUIRE(sqlite3_step(qry) == SQLITE_DONE);
+                REQUIRE(sqlite3_finalize(qry) == SQLITE_OK);
+                REQUIRE(sqlite3_close(db) == SQLITE_OK);
+
+                // Now call write
+                t.write();
+
+                // And check table was indeed altered
+                REQUIRE(sqlite3_open_v2(test_file.c_str(), &db, SQLITE_OPEN_READONLY, nullptr) == SQLITE_OK);
+                sql = "SELECT " + column + " FROM " + name + ";";
+                REQUIRE(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+
+                auto vals = std::vector<double> (rows);
+                for (int i = 0; i < rows; i++) {
+                    REQUIRE(sqlite3_step(qry) == SQLITE_ROW);
+                    vals[i] = sqlite3_column_double(qry, 0);
+                }
+                REQUIRE(sqlite3_step(qry) == SQLITE_DONE);
+                REQUIRE(sqlite3_finalize(qry) == SQLITE_OK);
+                REQUIRE(sqlite3_close(db) == SQLITE_OK);
+
+                REQUIRE(vals == std::vector<double> {1.1, 2.2, 3.3});
+            }
+        }
+    }
+
+    GIVEN("A SqlColumn and str data") {
+
+        const int rows = 3;
+        auto values = std::vector<std::string> {"one","two","three"};
+        auto name = std::string("table_name");
+        auto column = std::string("col_2") ;
+        auto test_file = TempFile("_temporary_file.db");
+        auto t = bmit::SqlColumn<std::string>(name, test_file.path(), column, rows);
+
+        THEN("Properties are set") {
+
+            CHECK(t.name() == name);
+            CHECK(t.path() == test_file.path());
+            CHECK(t.column() == column);
+            CHECK(t.nb_rows() == rows);
+            CHECK(t.nb_cols() == 1);
+        }
+
+        WHEN("Setting table values") {
+
+            std::string* p;
+            p = (std::string*) t.cell_ptr(0, 0); *p = values[0];
+            p = (std::string*) t.cell_ptr(1, 0); *p = values[1];
+            p = (std::string*) t.cell_ptr(2, 0); *p = values[2];
+
+            THEN("Column data can be written to existing table")
+            {
+                std::string sql;
+                sqlite3* db = nullptr;
+                sqlite3_stmt* qry = nullptr;
+                const char* qry_tail = nullptr;
+
+                // First create table without column
+                REQUIRE(sqlite3_open(test_file.c_str(), &db) == SQLITE_OK);
+                sql = "\
+                    CREATE TABLE table_name (\
+                        col_1 TEXT,\
+                        col_3 TEXT\
+                    );";
+                REQUIRE(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+                REQUIRE(sqlite3_step(qry) == SQLITE_DONE);
+                REQUIRE(sqlite3_finalize(qry) == SQLITE_OK);
+                REQUIRE(sqlite3_close(db) == SQLITE_OK);
+
+                // Now call write
+                t.write();
+
+                // And check table was indeed altered
+                REQUIRE(sqlite3_open_v2(test_file.c_str(), &db, SQLITE_OPEN_READONLY, nullptr) == SQLITE_OK);
+                sql = "SELECT " + column + " FROM " + name + ";";
+                REQUIRE(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+
+                auto vals = std::vector<std::string> (rows);
+                for (int i = 0; i < rows; i++) {
+                    REQUIRE(sqlite3_step(qry) == SQLITE_ROW);
+                    auto c = sqlite3_column_text(qry, 0);
+                    vals[i] = std::string(reinterpret_cast<const char*>(c));
+                }
+                REQUIRE(sqlite3_step(qry) == SQLITE_DONE);
+                REQUIRE(sqlite3_finalize(qry) == SQLITE_OK);
+                REQUIRE(sqlite3_close(db) == SQLITE_OK);
+
+                REQUIRE(vals == std::vector<std::string> {"one","two","three"});
             }
         }
     }

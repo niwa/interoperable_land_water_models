@@ -183,23 +183,55 @@ bmit::Target::get_output_var_names() {
 }
 
 
-void bmit::Target::get_var_units(const char* name, char* units) {
-	// get_var_units(const char* name, char* units);
+std::string bmit::Target::get_var_type(const std::string& name) {
+	if (m_get_var_type == nullptr) {
+		throw "get_var_type symbol not loaded";
+	}
+	auto f = (bmi_get_var_type*) m_get_var_type;
+
+	char type[MAXSTRINGLEN];
+	f(name.c_str(), type);
+
+	return std::string(type);
 }
 
 
-void bmit::Target::get_var_type(const char* name, char* type) {
-	// get_var_type(const char* name, char* type);
+std::string bmit::Target::get_var_units(const std::string& name) {
+	if (m_get_var_units == nullptr) {
+		throw "get_var_units symbol not loaded";
+	}
+	auto f = (bmi_get_var_units*) m_get_var_units;
+
+	char units[MAXSTRINGLEN];
+	f(name.c_str(), units);
+
+	return std::string(units);
 }
 
 
-void bmit::Target::get_var_itemsize(const char* name, int* itemsize) {
-	// get_var_itemsize(const char* name, int* itemsize);
+int bmit::Target::get_var_itemsize(const std::string& name) {
+	if (m_get_var_itemsize == nullptr) {
+		throw "get_var_itemsize symbol not loaded";
+	}
+	auto f = (bmi_get_var_itemsize*) m_get_var_itemsize;
+
+	int itemsize;
+	f(name.c_str(), &itemsize);
+
+	return itemsize;
 }
 
 
-void bmit::Target::get_var_rank(const char* name, int* rank) {
-	// get_var_rank(const char* name, int* rank);
+int bmit::Target::get_var_rank(const std::string& name) {
+	if (m_get_var_rank == nullptr) {
+		throw "get_var_rank symbol not loaded";
+	}
+	auto f = (bmi_get_var_rank*) m_get_var_rank;
+
+	int rank;
+	f(name.c_str(), &rank);
+
+	return rank;
 }
 
 

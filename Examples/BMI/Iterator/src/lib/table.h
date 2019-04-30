@@ -1,3 +1,19 @@
+/*
+ * table.h - Provides access to 1D/2D datasets of various formats.
+ *
+ * ITable      Common interface for all dataset formats
+ *    ^
+ *    |
+ *    |
+ *  Table      Implements storage for all formats.
+ *    ^
+ *    |
+ *    |
+ * CsvTable
+ * SqlTable    Implement IO aspects specific to each format.
+ * CqlColumn
+ */
+
 #ifndef BMIT_TABLE_H
 #define BMIT_TABLE_H
 
@@ -5,6 +21,8 @@
 #include <vector>
 
 #include "sqlite3.h"
+
+#define DEFAULT_CSV_SEP ','
 
 namespace bmit {
 
@@ -16,7 +34,7 @@ namespace bmit {
         ITable(const ITable&& other) = delete;
         ITable& operator=(const ITable& other) = delete;
         ITable&& operator=(const ITable&& other) = delete;
-        ~ITable() = default;
+        virtual ~ITable() = default;
 
         virtual int nb_cols() = 0;
         virtual int nb_rows() = 0;
@@ -37,7 +55,7 @@ namespace bmit {
         virtual void write() = 0;
     };
 
-
+    // Implements common table functionality
     template<class T>
     class Table : public ITable {
     public:
@@ -48,27 +66,42 @@ namespace bmit {
         Table&& operator=(const Table&& other) = delete;
         ~Table() = default;
 
-        virtual void* cell_ptr(const int irow, const int icol) {return &(m_data[irow][icol]);};
+        virtual int nb_cols() {return m_nb_cols;}
+        virtual int nb_rows() {return m_nb_rows;}
+
+        virtual void* cell_ptr(const int irow, const int icol) {return &(m_data[irow * m_nb_cols + icol]);};
     protected:
-        std::vector<std::vector<T>> m_data;
+        // Default access is readonly
+        bool m_readonly = true;
+
+        // Data is stored in a single vector.
+        // Column dimension changes fastest: row1-col1, row1-col2, ..., rowM-colN
+        std::vector<T> m_data;
+        int m_nb_rows = 0;
+        int m_nb_cols = 0;
     };
 
 
     template<class T>
     class CsvTable : public Table<T> {
+        using Table<T>::m_readonly;
         using Table<T>::m_data;
+        using Table<T>::m_nb_rows;
+        using Table<T>::m_nb_cols;
     public:
-        /* Input tables */
+        // Readonly
         explicit CsvTable(
             const std::string& name,
-            const std::string& path) : m_name(name), m_path(path) {};
+            const std::string& path,
+            const char sep = DEFAULT_CSV_SEP);
 
-        /* Output tables */
+        // Read/Write
         explicit CsvTable(
             const std::string& name,
             const std::string& path,
             const int rows,
-            const int cols);
+            const int cols,
+            const char sep = DEFAULT_CSV_SEP);
 
         CsvTable(const CsvTable &) = delete;
         CsvTable(CsvTable &&) noexcept = delete;
@@ -77,29 +110,15 @@ namespace bmit {
         ~CsvTable() {};
 
         const std::string& path() {return m_path;}
-        const std::vector<std::string>& column_names() {return m_column_names;}
-
-        void load();
-        void write();
-
-        std::vector<T> get_row(const int index);
-
-        // CSV separator
-        char sep() {return m_sep;};
-        void sep(const char sep) {this->m_sep = sep;};
 
         // ITable functions
-        virtual int nb_cols() {return m_nb_cols;}
-        virtual int nb_rows() {return m_nb_rows;}
         virtual const std::string& name() {return m_name;}
+        virtual void load();
+        virtual void write();
     private:
-        bool m_writable = false;
         std::string m_name;
         std::string m_path;
-        int m_nb_cols = 0;
-        int m_nb_rows = 0;
-        std::vector<std::string> m_column_names;
-        char m_sep = ',';
+        char m_sep = DEFAULT_CSV_SEP;
         // Split CSV line in items
         std::vector<std::string> split_csv_line(std::string& line);
     };
@@ -107,17 +126,30 @@ namespace bmit {
 
     template<class T>
     class SqlTable : public Table<T> {
+        using Table<T>::m_readonly;
         using Table<T>::m_data;
+        using Table<T>::m_nb_rows;
+        using Table<T>::m_nb_cols;
     public:
         /* Readonly from db file */
         explicit SqlTable(
             const std::string& name,
             const std::string& path);
 
+        /* Readonly from db pointer */
+        explicit SqlTable(const std::string& name, sqlite3* db);
+
         /* Read/Write from db file */
         explicit SqlTable(
             const std::string& name,
             const std::string& path,
+            const int rows,
+            const int cols);
+
+        /* Read/Write from db pointer */
+        explicit SqlTable(
+            const std::string& name,
+            sqlite3* db,
             const int rows,
             const int cols);
 
@@ -129,20 +161,68 @@ namespace bmit {
 
         const std::string& path() {return m_path;}
 
-        void load();
-        void write();
-
         // ITable functions
-        virtual int nb_cols() {return m_nb_cols;}
-        virtual int nb_rows() {return m_nb_rows;}
         virtual const std::string& name() {return m_name;}
+        virtual void load();
+        virtual void write();
     private:
-        bool m_readonly = true;
         std::string m_name;
         std::string m_path;
         sqlite3* m_db = nullptr;
-        int m_nb_cols = 0;
-        int m_nb_rows = 0;
+    };
+
+
+    template<class T>
+    class SqlColumn : public Table<T> {
+        using Table<T>::m_readonly;
+        using Table<T>::m_data;
+        using Table<T>::m_nb_rows;
+        using Table<T>::m_nb_cols;
+    public:
+        /* Readonly from db file */
+        explicit SqlColumn(
+            const std::string& name,
+            const std::string& path,
+            const std::string& column);
+
+        /* Readonly from db pointer */
+        explicit SqlColumn(
+            const std::string& name,
+            sqlite3* db,
+            const std::string& column);
+
+        /* Read/Write from db file */
+        explicit SqlColumn(
+            const std::string& name,
+            const std::string& path,
+            const std::string& column,
+            const int rows);
+
+        /* Read/Write from db pointer */
+        explicit SqlColumn(
+            const std::string& name,
+            sqlite3* db,
+            const std::string& column,
+            const int rows);
+
+        SqlColumn(const SqlColumn &) = delete;
+        SqlColumn(SqlColumn &&) noexcept = delete;
+        SqlColumn& operator=(const SqlColumn &) = delete;
+        SqlColumn& operator=(SqlColumn &&) noexcept = delete;
+        ~SqlColumn() {sqlite3_close(m_db);};
+
+        const std::string& path() {return m_path;}
+        const std::string& column() {return m_column;}
+
+        // ITable functions
+        virtual const std::string& name() {return m_name;}
+        virtual void load();
+        virtual void write();
+    private:
+        std::string m_name;
+        std::string m_path;
+        std::string m_column;
+        sqlite3* m_db = nullptr;
     };
 }
 

@@ -4,5 +4,18 @@ build_msvc/
 bin/
 bin_msvc/
 
+# Sublime Text project files
+*.sublime*
+
+# CLion folders
+.idea/
+*-build-*/
+
+# Python files
+*.py
+
+# Local build script
+_*.bat
+
 # Local cmake settings
 local.cmake

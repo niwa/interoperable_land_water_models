@@ -16,6 +16,7 @@ inputs:
     type: int
     format: sqlite
     table: table_a
+    column: column_a # optional, single column instead of whole table
   input_b: # direct connection to db
     type: double
     format: sqlite
@@ -31,9 +32,6 @@ ouputs:
 target:
   library: component/libbmi_lookup.dll
   config: component/typology.yaml
-
-# Optional --------------------------
-method: naive # naive, unique (default)
 ```
 
 ### Inputs/Outputs
@@ -45,7 +43,7 @@ Input and output items point to a map describing where and how to access the dat
 - `type`: the data type, can be `int`, `double` or `str`. Applies to all columns.
 - `format` : the storage format, can be `sqlite` or `csv`
 
-Depending on the `format`,  additional fields may be required.
+Depending on the `format`,  additional fields may be required or optional.
 
 #### sqlite
 
@@ -54,6 +52,8 @@ Required:
 - `table`: the corresponding table name in the database
 
 Optional:
+
+- `column`: a specific column
 
 - `path`: the path to the SQLite database file. If not provided, a SQLite connection pointer must be passed to the iterator (after initializing it) by calling its `set_value` method for variable `sqlite_ptr`.
 
@@ -72,12 +72,15 @@ Optional:
 
 Describes the target component to be run by the iterator. `library` is the BMI compliant shared library to be loaded. `config` is the path to the config file expected by the target component.
 
-## Runner Sequence
+## BMI Interface
 
-- initialize
-- set db connection (optional, depending on config)
-- update
-- finalize
+The iterator has only one variable to be set: `sqlite__pointer`. Setting this variable is only required if one of the inputs or outputs needs it (see configuration).
+
+The iterator will expose the input and outputs of the loaded target component. However `get_value` and `set_value` on the target's variable names is not implemented at this point (the methods are available but do nothing).
+
+## Sequence
+
+![sequence-chart](../../Users/ThiangeC/Downloads/sequence.png)
 
 ## Dependencies
 

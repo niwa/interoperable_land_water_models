@@ -26,10 +26,10 @@ namespace bmit {
 		int get_output_var_name_count();
 		std::vector<std::string> get_input_var_names();
 		std::vector<std::string> get_output_var_names();
-		void get_var_units(const char* name, char* units);
-		void get_var_type(const char* name, char* type);
-		void get_var_itemsize(const char* name, int* itemsize);
-		void get_var_rank(const char* name, int* rank);
+		std::string get_var_type(const std::string& name);
+		std::string get_var_units(const std::string& name);
+		int get_var_itemsize(const std::string& name);
+		int get_var_rank(const std::string& name);
 		void get_var_size(const char* name, int* size);
 		void get_var_nbytes(const char* name, int* nbytes);
 		void get_value(const std::string& name, void* valptr);
