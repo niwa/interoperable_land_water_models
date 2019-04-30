@@ -9,17 +9,17 @@
 #====================================================================
 
 inputs:
-  landuse: {type: str}
-  climate: {type: str}
-  slope: {type: double, units: \"%\"}
-  soil: {type: str}
-  irrigation : {type: str}
-  rainfall: {type: double, units: mm_year-1}
-  asc: {type: float}
+  model_land-use-type__identification_number: {type: int}
+  model_climate-type__identification_number: {type: int}
+  model_basin__slope: {type: double, units: \"%\"}
+  model_soil-type__identification_number: {type: int}
+  model_basin_irrigation_area__fraction: {type: double}
+  atmosphere_water~10-year-average__precipitation_volume_flux: {type: double, units: mm_year-1}
+  anion_storage__capacity: {type: double, units: \"%\"}
 
 outputs:
-  TN: {type: double, units: kg_ha-1}
-  TP: {type: double, units: kg_ha-1}
+  model_basin_N__loss: {type: double, units: kg_ha-1_yr-1}
+  model_basin_N__loss: {type: double, units: kg_ha-1_yr-1}
 
 mappings:
   # Land use
