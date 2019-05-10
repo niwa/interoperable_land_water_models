@@ -27,8 +27,8 @@ cd %build_dir%
 %cmake% -G "Visual Studio 15 2017 Win64" %source_dir% ^
 		-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=TRUE ^
 		-DBUILD_SHARED_LIBS=TRUE ^
-        -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=%bin_dir% ^
-        -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=%bin_dir%
+		-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=%bin_dir% ^
+		-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=%bin_dir%
 
 		cd ..
 pause
