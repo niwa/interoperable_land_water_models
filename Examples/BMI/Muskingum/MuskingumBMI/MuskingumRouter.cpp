@@ -33,7 +33,8 @@ double MuskingumRouter::flow(double time, double inflow)
 	// special case for time 0 if not initialized: initial flow is assumed to be 
 	// steady-state, so flow now is the same as inflow, and 
 	// has been indefinitely
-	if (time == 0. && _lastTime == 0.) {
+	if (std::isnan(_lastOutflow)) {
+		std::cout << "Initial flow undefined. Initializing as steady-state." << std::endl;
 		_lastOutflow = inflow;
 		_lastInflow = inflow;
 		_lastTime = 0.;

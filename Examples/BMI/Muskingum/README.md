@@ -7,8 +7,7 @@ A simple BMI example built around the Muskingum routing method
 * **RoutingApp** -- a console application that does Muskingum routing from hand-entered inputs.
 * **MuskingumBMI** -- a dynamic library that puts a (sort of) BMI-compliant wrapper around libMuskingum
 * **include** -- holds headers for external packages used here (yaml.h)
-* **lib** -- compiled libraries (64-bit) from other sources (yaml, again)
-* **lib32** -- 32-bit versions of compiled libraries from other sources
+* **lib** -- compiled libraries from other sources (yaml, again)
 * **BMIRoutingApp** -- a console app that runs the Muskingum compute engine using BMI calls
 
 ## Notes
@@ -17,52 +16,7 @@ For this example, I uploaded the whole kaboodle of C++ source code, Visual Studi
 
 CSDMS recommends YAML for storing configurations, so the `MuskingumBMI.Initialize(configFile)` method reads the model setup from a YAML file, and uses the standard yaml.dll C library to do it. I didn't include the YAML source, but you can find it [here](https://github.com/yaml/libyaml). I *did* include compiled yaml.lib and yaml.dll files in ./lib and yaml.h in ./include. Because I'm still clumsy with VS and libraries, I wasn't able to get my BMIRoutingApp to link dynamically to the yaml.dll in the ./lib directory, so there's a copy of yaml.dll in the BMIRoutingApp directory itself.
 
-### 2 November 2018
-A large number of revisions were uploaded today in light of lessons learned from linking to Delta Shell. The most important of these lessons is that both the C# `BasicModelInterfaceLibrary` class and the DIMR model-running program will link to a BMI-compliant model through the C interface given in the *bmi.h* header in Deltares's OpenEarth repository on GitHub. That's this file [here](https://github.com/openearth/bmi/blob/master/models/include/bmi.h). I modified *MuskingumBMI.h* to include *bmi.h* and implemented the functions named in *bmi.h* in *MuskingumBMI.cpp*, mostly by wrapping the C++ methods I'd written earlier.
-
-Here are the function definitions from *bmi.h*. Note that even where the functions do exactly the same things that their corresponding CSDMS C++ methods do, there are differences in the function signatures. These are the ones that work with Delta Shell.
-
-```C
-	/* control functions. These return an error code. */
-	BMI_API int initialize(const char *config_file);
-	BMI_API int update(double dt);
-	BMI_API int finalize();
-
-	/* time control functions */
-	BMI_API void get_start_time(double *t);
-	BMI_API void get_end_time(double *t);
-	BMI_API void get_current_time(double *t);
-	BMI_API void get_time_step(double *dt);
-
-	/* variable info */
-	BMI_API void get_var_shape(const char *name, int shape[MAXDIMS]);
-	BMI_API void get_var_rank(const char *name, int *rank);
-	BMI_API void get_var_type(const char *name, char *type);
-	BMI_API void get_var_count(int *count);
-	BMI_API void get_var_name(int index, char *name);
-
-	/* get a pointer pointer - a reference to a multidimensional array */
-	BMI_API void get_var(const char *name, void **ptr);
-
-	/* Set the variable from contiguous memory referenced to by ptr */
-	BMI_API void set_var(const char *name, const void *ptr);
-
-	/* Set a slice of the variable from contiguous memory using start / count multi-dimensional indices */
-	BMI_API void set_var_slice(const char *name, const int *start, const int *count, const void *ptr);
-
-	/* logger to be set from outside so we can log messages */
-	typedef void (CALLCONV *Logger)(Level level, const char *msg);
-
-	/* set logger by setting a pointer to the log function */
-	BMI_API void set_logger(Logger logger);
-```
-
-The Muskingum example does not implement `set_var_slice` or `set_logger`.
-
-I also switched the compile options in the VS solution from 32-bit to 64-bit. Deltares isn't going to support 32-bit versions of Delta Shell or DIMR much longer. I left the 32-bit yaml library in the repository, but renamed its folder to *lib32*. The *lib* folder now contains 64-bet versions of yaml.dll and yaml.lib.
-
-### 23 August 2018
-As of today I believe that the MuskingumBMI DLL correctly implements these methods from the BMI spec:
+As of today (23 August 2018) I believe that the MuskingumBMI DLL correctly implements these methods from the BMI spec:
 
 ```C++
 // BMI Model Control Functions

@@ -23,12 +23,12 @@ extern "C" {
 		BMI_API void Finalize(void);
 
 		// BMI Model Information Functions
-		BMI_API int GetInputVarNameCount(void) { return _reachVector.size(); }  // one input and one output [time series]
-		BMI_API int GetOutputVarNameCount(void) { return _reachVector.size(); } // for each reach
+		BMI_API int GetInputVarNameCount(void) { return 3; }  // Flow, plus K and X parameters
+		BMI_API int GetOutputVarNameCount(void) { return 2; } // Flow, reach IDs
 		BMI_API void GetInputVarNames(char * const * const names);
 		BMI_API void GetOutputVarNames(char * const * const names);
 		const char* GetVarName(int i);
-		const int GetVarNameCount() { return _varCount; }
+		const int GetVarNameCount() { return 5; }
 
 		// BMI Time functions
 		BMI_API double GetTimeStep() { return timeStep; }
@@ -39,12 +39,13 @@ extern "C" {
 
 		// BMI Variable Information Functions
 		BMI_API int GetVarGrid(const char *  name);
-		BMI_API std::string GetVarUnits(const char * name) { return "m3 s-1"; } // all inputs and outputs are volume flows
+		BMI_API std::string GetVarUnits(const char * name); // { return "m3 s-1"; } // all inputs and outputs are volume flows
 		BMI_API void GetVarType(const char * name, char * type);
 		BMI_API int GetVarItemsize(const char *name);
 		BMI_API int GetVarNbytes(const char *  name);
 		BMI_API std::string GetGridType(int id) { return "uniform_rectilinear"; };
-		BMI_API int GetGridRank(const char *  name) { return 0; } // all inputs and outputs are scalar
+		BMI_API int GetGridRank(const char *  name) { return 1; } // all inputs and outputs are 1D vectors
+		BMI_API int GetGridShape(const char *  name, int* shape);
 
 		// BMI Variable Getter and Setter Functions
 		BMI_API void GetValue(std::string name, void** buffer);
@@ -59,11 +60,20 @@ extern "C" {
 
 	private:
 		std::vector<MuskingumRouter> _reachVector;
-		// std::vector<double> _varValues;
-		double* _varValues;
-		char** _varNames;
-		int _varCount;
+		int _varCount = 5;
+		const char* _varNames[5] = {
+			"channel__Muskingum_K", 
+			"channel__Muskingum_X", 
+			"channel_entrance_water_x-section__volume_flow_rate", 
+			"channel_exit_water_x-section__volume_flow_rate", 
+			"channel__name"};
+		double* _parameterK;
+		double* _parameterX;
+		double* _flowIn;
+		double* _flowOut;
+		char** _reachName;
 		const char* getQuantityName(const char* name);
+		int getVarNameIndex(const std::string);
 	};
 
 	static MuskingumBMI* muskModel;
