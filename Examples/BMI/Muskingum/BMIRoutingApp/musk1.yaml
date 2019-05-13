@@ -11,3 +11,4 @@ reaches:
   - name: r1
     K : 2.3   # [hours]
     X : 0.15  # [non-dimensional]
+    InitialFlow : 85.0 # [ft3 s-1]
