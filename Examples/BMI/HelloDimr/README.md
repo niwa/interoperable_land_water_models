@@ -1,4 +1,4 @@
-# Paasing arrays between programs with DIMR and data files
+# Passing arrays between programs with DIMR and data files
 
 ArrayBuilder and ArrayEcho are simple BMI-Compliant (mostly) programs that build and then display a 2D array.
 
