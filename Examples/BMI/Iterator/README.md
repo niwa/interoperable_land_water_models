@@ -80,7 +80,7 @@ The iterator will expose the input and outputs of the loaded target component. H
 
 ## Sequence
 
-![sequence-chart](../../Users/ThiangeC/Downloads/sequence.png)
+![sequence-chart](./sequence.png)
 
 ## Dependencies
 
