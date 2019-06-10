@@ -19,10 +19,11 @@ inputs:
 
 outputs:
   model_basin_N__loss: {type: double, units: kg_ha-1_yr-1}
-  model_basin_N__loss: {type: double, units: kg_ha-1_yr-1}
+  model_basin_P__loss: {type: double, units: kg_ha-1_yr-1}
 
 mappings:
   # Land use
+  model_land-use-type__identification_number:
   ARA: ARA #Arable
   BEF: BEF #Beef
   DAI: DAI #Dairy
@@ -37,7 +38,7 @@ mappings:
   VIT: VIT #Viticulture
 
   # REC climate to typology climate
-  climate:
+  model_climate-type__identification_number:
     WX: warm # Warm-Extremely-Wet
     WW: warm # Warm-Wet
     WD: warm # Warm-Dry
@@ -46,27 +47,27 @@ mappings:
     CD: cool # Cool-Dry
 
   # TODO: Soil to drainage class
-  soil:
+  model_soil-type__identification_number:
     todo1: light
     todo2: poor
     todo3: well
 
-  slope:
+  model_basin__slope:
     0: low      # >=  0
     7: moderate # >=  7
     15: steep   # >= 15
 
-  rainfall:
+  atmosphere_water~10-year-average__precipitation_volume_flux:
     0: dry      # >= 0
     1200: moist # >= 0
     1700: wet   # >= 1700
 
-  irrigation:
+  model_basin_irrigation_area__fraction:
     yes: irrigated
     no: not_irrigated
 
   # Anion Sorption Capacity
-  asc:
+  anion_storage__capacity:
     0: zero_to_ten
     10: ten_to_sixty
     60: greater_than_sixty
