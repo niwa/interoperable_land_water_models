@@ -7,6 +7,7 @@
 
 lup::Lookup* _lookup = nullptr;
 std::vector<lup::Input> _inputs;
+double* _outputs;
 
 extern "C" {
 
@@ -27,11 +28,25 @@ BMI_API int initialize(const char *config_file) {
         _inputs.push_back(input);
     }
 
+    // Initialize memory to store outputs
+    _outputs = (double*) malloc(_lookup->count_outputs() * sizeof(double));
+
     return 0;
 }
 
 
 BMI_API int update() {
+    try {
+        // Retrieve all outputs and copy to local mem
+        int index = 0;
+        for (auto value : _lookup->get_values(_inputs)) {
+            _outputs[index++] = value;
+        }
+    }
+    catch (std::exception e) {
+        return -1;
+    }
+
     return 0;
 }
 
@@ -39,6 +54,7 @@ BMI_API int update() {
 BMI_API int finalize() {
     _inputs.clear();
     lup::Lookup::Dispose(_lookup);
+    delete _outputs;
     return 0;
 }
 
@@ -115,13 +131,13 @@ BMI_API void get_var_nbytes(const char* name, int* nbytes) {
 
 
 /* data access */
-BMI_API void get_value(const char* name, char* buffer) {
-    auto value = _lookup->get_value(_inputs, std::string {name});
-    /* All outputs are doubles, so keeping it simple */
-    memcpy(buffer, &value, sizeof(double));
+BMI_API void get_var(const char *name, void **ptr) {
+    int index = _lookup->get_output_index(name);
+    *ptr = (void*) &(_outputs[index]);
 }
 
-BMI_API void set_value(const char* name, char* buffer) {
+
+BMI_API void set_var(const char *name, const void *ptr) {
     /* Find target input */
     lup::Input* input = nullptr;
     for (auto &_input : _inputs) {
@@ -137,12 +153,12 @@ BMI_API void set_value(const char* name, char* buffer) {
     /* OK, proceed setting input value */
     switch (input->value.index()) {
         case 0: {
-            auto value = std::string {buffer};
+            auto value = std::string {(char*) ptr};
             input->value = value;
             break;
         }
         case 1: {
-            input->value = *((double *) buffer);
+            input->value = *((double *) ptr);
             break;
         }
         default:

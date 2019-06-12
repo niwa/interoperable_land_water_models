@@ -17,6 +17,8 @@ public:
 
     int count_outputs() override {return (int) _outputs.size(); };
 
+    int get_output_index(const std::string&) override;
+
     std::vector<std::string> get_input_names() override { return _inputs; };
 
     std::vector<std::string> get_output_names() override { return _outputs; };
@@ -24,9 +26,6 @@ public:
     std::string get_var_type(std::string name) override { return _types[name]; }
 
     std::string get_var_units(std::string name) override { return _units[name]; }
-
-    double get_value(std::vector<lup::Input> inputs,
-                     const std::string &output_name) override;
 
     std::vector<double> get_values(std::vector<lup::Input> inputs) override;
 
@@ -92,17 +91,12 @@ std::string _Lookup::map_input(std::string const &name, double const &value) {
 }
 
 
-double _Lookup::get_value(
-    std::vector<lup::Input> inputs,
-    const std::string &output_name) {
-
-    /* Make sure requested output is valid */
-    auto it = std::find(_outputs.begin(), _outputs.end(), output_name);
-    if (it == _outputs.end()) throw std::invalid_argument("Requested output does not exists");
-    auto output_index = it - _outputs.begin();
-
-    auto values = get_values(inputs);
-    return values[output_index];
+int _Lookup::get_output_index(std::string const &name) {
+    auto it = std::find(_outputs.begin(), _outputs.end(), name);
+    if (it == _outputs.end()) {
+        throw std::invalid_argument("Requested output does not exists");
+    }
+    return (int) (it - _outputs.begin());
 }
 
 

@@ -115,37 +115,36 @@ SCENARIO("String inputs can be mapped to classes")
                 inputs = {{"input_a", "a1"}, {"input_b", "b1"}};
                 outputs = {1.1, 10.1};
                 CHECK(lookup->get_values(inputs) == outputs);
-                CHECK(lookup->get_value(inputs, "output_x") == outputs[0]);
-                CHECK(lookup->get_value(inputs, "output_y") == outputs[1]);
 
                 inputs = {{"input_a", "a2"}, {"input_b", "b1"}};
                 outputs = {2.1, 20.1};
                 CHECK(lookup->get_values(inputs) == outputs);
-                CHECK(lookup->get_value(inputs, "output_x") == outputs[0]);
-                CHECK(lookup->get_value(inputs, "output_y") == outputs[1]);
 
                 inputs = {{"input_a", "a3"}, {"input_b", "b2"}};
                 outputs = {2.2, 20.2};
                 CHECK(lookup->get_values(inputs) == outputs);
-                CHECK(lookup->get_value(inputs, "output_x") == outputs[0]);
-                CHECK(lookup->get_value(inputs, "output_y") == outputs[1]);
             }
 
-            THEN ("Requesting a non existing output throws an exception") {
+            THEN ("Output indexes can be retrieved") {
+                CHECK(lookup->get_output_index("output_x") == 0);
+                CHECK(lookup->get_output_index("output_y") == 1);
+            }
+
+            THEN ("Requesting a non existing output index throws an exception") {
                 std::vector<lup::Input> inputs;
                 inputs = {{"input_a", "a1"}, {"input_b", "b1"}};
-                REQUIRE_THROWS_AS(lookup->get_value(inputs, "oooops"),
+                REQUIRE_THROWS_AS(lookup->get_output_index("oooops"),
                         std::invalid_argument);
-                REQUIRE_THROWS_WITH(lookup->get_value(inputs, "oooops"),
+                REQUIRE_THROWS_WITH(lookup->get_output_index("oooops"),
                         "Requested output does not exists");
             }
 
             THEN ("Requesting an unmapped input value throws an exception") {
                 std::vector<lup::Input> inputs;
                 inputs = {{"input_a", "oooops"}, {"input_b", "b1"}};
-                REQUIRE_THROWS_AS(lookup->get_value(inputs,"output_x"),
+                REQUIRE_THROWS_AS(lookup->get_values(inputs),
                         std::invalid_argument);
-                REQUIRE_THROWS_WITH(lookup->get_value(inputs, "output_x"),
+                REQUIRE_THROWS_WITH(lookup->get_values(inputs),
                         "String input value not in mapping");
             }
 
@@ -198,44 +197,41 @@ SCENARIO("Double inputs are classified by lower bounds")
                 inputs = {{"input_a", 1.0}, {"input_b", 11}};
                 outputs = {1.1, 10.1};
                 CHECK(lookup->get_values(inputs) == outputs);
-                CHECK(lookup->get_value(inputs, "output_x") == outputs[0]);
-                CHECK(lookup->get_value(inputs, "output_y") == outputs[1]);
 
                 inputs = {{"input_a", 1.3}, {"input_b", 20}};
                 outputs = {1.2, 10.2};
                 CHECK(lookup->get_values(inputs) == outputs);
-                CHECK(lookup->get_value(inputs, "output_x") == outputs[0]);
-                CHECK(lookup->get_value(inputs, "output_y") == outputs[1]);
 
                 inputs = {{"input_a", 5}, {"input_b", 10.0}};
                 outputs = {2.1, 20.1};
                 CHECK(lookup->get_values(inputs) == outputs);
-                CHECK(lookup->get_value(inputs, "output_x") == outputs[0]);
-                CHECK(lookup->get_value(inputs, "output_y") == outputs[1]);
 
                 inputs = {{"input_a", 5.1}, {"input_b", 3000}};
                 outputs = {2.2, 20.2};
                 CHECK(lookup->get_values(inputs) == outputs);
-                CHECK(lookup->get_value(inputs, "output_x") == outputs[0]);
-                CHECK(lookup->get_value(inputs, "output_y") == outputs[1]);
             }
 
-            THEN ("Requesting a non existing output throws an exception") {
+            THEN ("Output indexes can be retrieved") {
+                CHECK(lookup->get_output_index("output_x") == 0);
+                CHECK(lookup->get_output_index("output_y") == 1);
+            }
+
+            THEN ("Requesting a non existing output index throws an exception") {
                 std::vector<lup::Input> inputs;
-                inputs = {{"input_a", 5}, {"input_b", 10.0}};
-                REQUIRE_THROWS_AS(lookup->get_value(inputs, "oooops"),
+                inputs = {{"input_a", "a1"}, {"input_b", "b1"}};
+                REQUIRE_THROWS_AS(lookup->get_output_index("oooops"),
                         std::invalid_argument);
-                REQUIRE_THROWS_WITH(lookup->get_value(inputs, "oooops"),
-                                  "Requested output does not exists");
+                REQUIRE_THROWS_WITH(lookup->get_output_index("oooops"),
+                        "Requested output does not exists");
             }
 
             THEN ("Requesting a value outside of mapping bounds throws an exception") {
                 std::vector<lup::Input> inputs;
                 // 0.0 < 1.0 !
                 inputs = {{"input_a", 0.0}, {"input_b", 10.0}};
-                REQUIRE_THROWS_AS(lookup->get_value(inputs, "output_x"),
+                REQUIRE_THROWS_AS(lookup->get_values(inputs),
                         std::invalid_argument);
-                REQUIRE_THROWS_WITH(lookup->get_value(inputs, "output_x"),
+                REQUIRE_THROWS_WITH(lookup->get_values(inputs),
                         "Double input value < lower mapping bound");
             }
 
@@ -307,8 +303,6 @@ SCENARIO("Wildcards are supported")
                 inputs = {{"input_a", "a1"}};
                 outputs = {1.1, 1.2};
                 CHECK(lookup->get_values(inputs) == outputs);
-                CHECK(lookup->get_value(inputs, "output_x") == outputs[0]);
-                CHECK(lookup->get_value(inputs, "output_y") == outputs[1]);
             }
 
             THEN("Unlisted values are matched by the wildcard") {
@@ -318,8 +312,6 @@ SCENARIO("Wildcards are supported")
                 inputs = {{"input_a", "whatever"}};
                 outputs = {2.1, 2.2};
                 CHECK(lookup->get_values(inputs) == outputs);
-                CHECK(lookup->get_value(inputs, "output_x") == outputs[0]);
-                CHECK(lookup->get_value(inputs, "output_y") == outputs[1]);
             }
 
             lup::Lookup::Dispose(lookup);
@@ -362,8 +354,6 @@ SCENARIO("Wildcards are supported")
                 inputs = {{"input_a", "a1"}};
                 outputs = {1.1, 1.2};
                 CHECK(lookup->get_values(inputs) == outputs);
-                CHECK(lookup->get_value(inputs, "output_x") == outputs[0]);
-                CHECK(lookup->get_value(inputs, "output_y") == outputs[1]);
             }
 
             THEN("Unlisted classes are matched by the wildcard") {
@@ -373,22 +363,18 @@ SCENARIO("Wildcards are supported")
                 inputs = {{"input_a", "a2"}};
                 outputs = {2.1, 2.2};
                 CHECK(lookup->get_values(inputs) == outputs);
-                CHECK(lookup->get_value(inputs, "output_x") == outputs[0]);
-                CHECK(lookup->get_value(inputs, "output_y") == outputs[1]);
 
                 inputs = {{"input_a", "a3"}};
                 outputs = {2.1, 2.2};
                 CHECK(lookup->get_values(inputs) == outputs);
-                CHECK(lookup->get_value(inputs, "output_x") == outputs[0]);
-                CHECK(lookup->get_value(inputs, "output_y") == outputs[1]);
             }
 
             THEN ("Requesting an unmapped input value throws an exception") {
                 std::vector<lup::Input> inputs;
                 inputs = {{"input_a", "oooops"}};
-                REQUIRE_THROWS_AS(lookup->get_value(inputs,"output_x"),
+                REQUIRE_THROWS_AS(lookup->get_values(inputs),
                         std::invalid_argument);
-                REQUIRE_THROWS_WITH(lookup->get_value(inputs, "output_x"),
+                REQUIRE_THROWS_WITH(lookup->get_values(inputs),
                         "String input value not in mapping");
             }
 

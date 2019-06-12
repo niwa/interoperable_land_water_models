@@ -29,32 +29,6 @@ SCENARIO("Initializing and finalizing") {
 }
 
 
-SCENARIO("Update does nothing") {
-
-    GIVEN("An initialized bmi lookup instance") {
-
-        std::string const filename = "_lookup_temproary_test_file.yaml";
-        std::ofstream yamlfile;
-        yamlfile.open(filename, std::ios::out);
-        yamlfile << "inputs:\n";
-        yamlfile << "  input_a\n";
-        yamlfile.close();
-        CHECK(initialize(filename.c_str()) == 0);
-
-        THEN("Calling update does nothing") {
-            CHECK(update() == 0);
-        }
-
-        THEN("Finalizing return no errors") {
-            CHECK(finalize() == 0);
-        }
-
-        /* Delete temporary file */
-        remove(filename.c_str());
-    }
-}
-
-
 SCENARIO("Variable info") {
 
     GIVEN("An initialized bmi lookup instance") {
@@ -249,28 +223,28 @@ SCENARIO("Data access") {
             auto d_value = double {};
 
             s_value = "a1"; // maps to class_a1
-            set_value("input_a", (char*) s_value.c_str());
+            set_var("input_a", (void*) s_value.c_str());
 
             d_value = 2.5; // maps to class_b2
-            set_value("input_b", (char*) &d_value);
+            set_var("input_b", (void*) &d_value);
 
             s_value = "c1"; // no mapping
-            set_value("input_c", (char*) s_value.c_str());
+            set_var("input_c", (void*) s_value.c_str());
 
-            THEN("Getting outputs returns expected values") {
-                auto value = double {};
+            THEN("Outputs can be retrieved after calling update") {
+                CHECK(update() == 0);
 
-                get_value("TN", (char *) &value);
-                CHECK(value == 121.1);
+                double** value;
+                get_var("TN", (void **) value);
+                CHECK(**value == 121.1);
 
-
-//                get_value("TP", (char *) &value);
-//                CHECK(value == 121.2);
+                get_var("TP", (void **) value);
+                CHECK(**value == 121.2);
             }
         }
 
 
-        THEN("Finalizing return no errors") {
+        THEN("Finalizing returns no errors") {
             CHECK(finalize() == 0);
         }
 
