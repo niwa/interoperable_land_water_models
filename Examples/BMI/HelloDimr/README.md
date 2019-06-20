@@ -10,7 +10,7 @@ The configuration and execution of the two programs is controlled by DIMR, accor
 
 Both programs are written in C++.
 
-# Toolchain
+## Toolchain
 
 ArrayBuilder and ArrayEcho are compiled and linked using CMake as build tool.
 
