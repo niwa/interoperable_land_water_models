@@ -2,28 +2,23 @@
 #include "os/os.h"
 #include <iostream>
 
-// TODO: retrieve from loaded shared lib
 #define MAXSTRINGLEN 1024
+#define MAXDIMS 6
 
 typedef int bmi_initialize(const char*);
-typedef int bmi_update();
+typedef int bmi_update(double dt);
 typedef int bmi_finalize();
 typedef void bmi_get_start_time(double*);
 typedef void bmi_get_end_time(double*);
 typedef void bmi_get_current_time(double*);
 typedef void bmi_get_time_step(double*);
-typedef void bmi_get_input_var_name_count(int*);
-typedef void bmi_get_output_var_name_count(int*);
-typedef void bmi_get_input_var_names(char**);
-typedef void bmi_get_output_var_names(char**);
-typedef void bmi_get_var_units(const char*, char*);
-typedef void bmi_get_var_type(const char*, char*);
-typedef void bmi_get_var_itemsize(const char*, int*);
+typedef void bmi_get_var_shape(const char*, int[MAXDIMS]);
 typedef void bmi_get_var_rank(const char*, int*);
-typedef void bmi_get_var_size(const char*, int*);
-typedef void bmi_get_var_nbytes(const char*, int*);
-typedef void bmi_get_value(const char*, char*);
-typedef void bmi_set_value(const char*, char*);
+typedef void bmi_get_var_type(const char*, char*);
+typedef void bmi_get_var_count(int*);
+typedef void bmi_get_var_name(int, char*);
+typedef void bmi_get_var(const char*, void**);
+typedef void bmi_set_var(const char*, const void*);
 
 
 bmit::Target::Target(const std::string &lib_path) {
@@ -39,18 +34,13 @@ bmit::Target::Target(const std::string &lib_path) {
 	m_get_end_time = (void*) load_symbol(lib, "get_end_time");
 	m_get_current_time = (void*) load_symbol(lib, "get_current_time");
 	m_get_time_step = (void*) load_symbol(lib, "get_time_step");
-	m_get_input_var_name_count = (void*) load_symbol(lib, "get_input_var_name_count");
-	m_get_output_var_name_count = (void*) load_symbol(lib, "get_output_var_name_count");
-	m_get_input_var_names = (void*) load_symbol(lib, "get_input_var_names");
-	m_get_output_var_names = (void*) load_symbol(lib, "get_output_var_names");
-	m_get_var_units = (void*) load_symbol(lib, "get_var_units");
-	m_get_var_type = (void*) load_symbol(lib, "get_var_type");
-	m_get_var_itemsize = (void*) load_symbol(lib, "get_var_itemsize");
-	m_get_var_rank = (void*) load_symbol(lib, "get_var_rank");
-	m_get_var_size = (void*) load_symbol(lib, "get_var_size");
-	m_get_var_nbytes = (void*) load_symbol(lib, "get_var_nbytes");
-	m_get_value = (void*) load_symbol(lib, "get_value");
-	m_set_value = (void*) load_symbol(lib, "set_value");
+	m_get_var_shape = (void*) load_symbol(lib, "get_var_shape");
+    m_get_var_rank = (void*) load_symbol(lib, "get_var_rank");
+    m_get_var_type = (void*) load_symbol(lib, "get_var_type");
+    m_get_var_count = (void*) load_symbol(lib, "get_var_count");
+    m_get_var_name = (void*) load_symbol(lib, "get_var_name");
+    m_get_var = (void*) load_symbol(lib, "get_var");
+	m_set_var = (void*) load_symbol(lib, "set_var");
 }
 
 
@@ -70,10 +60,10 @@ int bmit::Target::initialize(const std::string &cfg_path) {
 }
 
 
-int bmit::Target::update() {
+int bmit::Target::update(double dt) {
 	if (m_update == nullptr) throw "update symbol not loaded";
 	auto f = (bmi_update*) m_update;
-	return f();
+	return f(dt);
 }
 
 
@@ -86,139 +76,59 @@ int bmit::Target::finalize() {
 
 void bmit::Target::get_start_time(double* t) {
 	// get_start_time(double* t);
+	if (m_get_start_time == nullptr) {
+		throw "get_start_time symbol not loaded";
+	}
+	throw "target get_start_time not implemented";
 }
 
 
 void bmit::Target::get_end_time(double* t) {
 	// get_end_time(double* t);
+	if (m_get_end_time == nullptr) {
+		throw "get_end_time symbol not loaded";
+	}
+	throw "target get_end_time not implemented";
 }
 
 
 void bmit::Target::get_current_time(double* t) {
 	// get_current_time(double* t);
+	if (m_get_current_time == nullptr) {
+		throw "get_current_time symbol not loaded";
+	}
+	throw "target get_current_time not implemented";
 }
 
 
 void bmit::Target::get_time_step(double* dt) {
 	// get_time_step(double* dt);
+	if (m_get_time_step == nullptr) {
+		throw "get_time_step symbol not loaded";
+	}
+	throw "target get_time_step not implemented";
 }
 
 
-int bmit::Target::get_input_var_name_count() {
-	if (m_get_input_var_name_count == nullptr) {
-		throw "get_input_var_name_count symbol not loaded";
+std::vector<int> bmit::Target::get_var_shape(const std::string& name) {
+	if (m_get_var_shape == nullptr) {
+		throw "get_var_shape symbol not loaded";
 	}
-	auto f = (bmi_get_input_var_name_count*) m_get_input_var_name_count;
+	auto f = (bmi_get_var_shape*) m_get_var_shape;
 
-	int count;
-	f(&count);
-	return count;
-}
+	// Get shape array from dll target
+	int buff[MAXDIMS];
+	f(name.c_str(), buff);
 
-
-int bmit::Target::get_output_var_name_count() {
-	if (m_get_output_var_name_count == nullptr) {
-		throw "get_output_var_name_count symbol not loaded";
-	}
-	auto f = (bmi_get_output_var_name_count*) m_get_output_var_name_count;
-
-	int count;
-	f(&count);
-	return count;
-}
-
-
-std::vector<std::string>
-bmit::Target::get_input_var_names() {
-	if (m_get_input_var_names == nullptr) {
-		throw "get_input_var_names symbol not loaded";
-	}
-	auto f = (bmi_get_input_var_names*) m_get_input_var_names;
-
-	/* Allocate memory to retrieve names */
-	int nb_inputs = get_input_var_name_count();
-	char* names[nb_inputs];
-    for (int i = 0; i < nb_inputs; i++) {
-        names[i] = (char*) malloc(MAXSTRINGLEN * sizeof(char));
-    }
-
-    /* Library call*/
-    f(names);
-
-    /* Collect names and free allocated memory */
-	auto vec = std::vector<std::string> {};
-	for (int i = 0; i < nb_inputs; i++) {
-		vec.push_back(std::string {names[i]});
-		free (names[i]);
+	// Copy shape value to vector
+	// Stop at first 0 (assuming nobody uses a shape like [5,0,4,0,0,0])
+	auto shape = std::vector<int> {};
+	for (int i = 0; i < MAXSTRINGLEN; i++) {
+		if (buff[i] == 0) break;
+		shape.push_back(buff[i]);
 	}
 
-	return vec;
-}
-
-std::vector<std::string>
-bmit::Target::get_output_var_names() {
-	if (m_get_output_var_names == nullptr) {
-		throw "get_output_var_names symbol not loaded";
-	}
-	auto f = (bmi_get_output_var_names*) m_get_output_var_names;
-
-	/* Allocate memory to retrieve names */
-	int nb_outputs = get_output_var_name_count();
-	char* names[nb_outputs];
-    for (int i = 0; i < nb_outputs; i++) {
-        names[i] = (char*) malloc(MAXSTRINGLEN * sizeof(char));
-    }
-
-    /* Library call*/
-    f(names);
-
-    /* Collect names and free allocated memory */
-	auto vec = std::vector<std::string> {};
-	for (int i = 0; i < nb_outputs; i++) {
-		vec.push_back(std::string {names[i]});
-		free (names[i]);
-	}
-
-	return vec;
-}
-
-
-std::string bmit::Target::get_var_type(const std::string& name) {
-	if (m_get_var_type == nullptr) {
-		throw "get_var_type symbol not loaded";
-	}
-	auto f = (bmi_get_var_type*) m_get_var_type;
-
-	char type[MAXSTRINGLEN];
-	f(name.c_str(), type);
-
-	return std::string(type);
-}
-
-
-std::string bmit::Target::get_var_units(const std::string& name) {
-	if (m_get_var_units == nullptr) {
-		throw "get_var_units symbol not loaded";
-	}
-	auto f = (bmi_get_var_units*) m_get_var_units;
-
-	char units[MAXSTRINGLEN];
-	f(name.c_str(), units);
-
-	return std::string(units);
-}
-
-
-int bmit::Target::get_var_itemsize(const std::string& name) {
-	if (m_get_var_itemsize == nullptr) {
-		throw "get_var_itemsize symbol not loaded";
-	}
-	auto f = (bmi_get_var_itemsize*) m_get_var_itemsize;
-
-	int itemsize;
-	f(name.c_str(), &itemsize);
-
-	return itemsize;
+	return shape;
 }
 
 
@@ -235,31 +145,63 @@ int bmit::Target::get_var_rank(const std::string& name) {
 }
 
 
-void bmit::Target::get_var_size(const char* name, int* size) {
-	// get_var_size(const char* name, int* size);
-}
-
-
-void bmit::Target::get_var_nbytes(const char* name, int* nbytes) {
-	// get_var_nbytes(const char* name, int* nbytes);
-}
-
-
-void bmit::Target::get_value(const std::string& name, void* valptr) {
-	if (m_get_value == nullptr) {
-		throw "get_value symbol not loaded";
+std::string bmit::Target::get_var_type(const std::string& name) {
+	if (m_get_var_type == nullptr) {
+		throw "get_var_type symbol not loaded";
 	}
-	auto f = (bmi_get_value*) m_get_value;
+	auto f = (bmi_get_var_type*) m_get_var_type;
 
-	f(name.c_str(), (char*) valptr);
+	char type[MAXSTRINGLEN];
+	f(name.c_str(), type);
+
+	return std::string(type);
 }
 
 
-void bmit::Target::set_value(const std::string& name, void* valptr) {
-	if (m_set_value == nullptr) {
-		throw "set_value symbol not loaded";
+int bmit::Target::get_var_count() {
+	if (m_get_var_count == nullptr) {
+		throw "get_var_count symbol not loaded";
 	}
-	auto f = (bmi_set_value*) m_set_value;
+	auto f = (bmi_get_var_count*) m_get_var_count;
 
-	f(name.c_str(), (char*) valptr);
+	int count;
+	f(&count);
+	return count;
+}
+
+
+std::string bmit::Target::get_var_name(int index) {
+	if (m_get_var_name == nullptr) {
+		throw "get_var_name symbol not loaded";
+	}
+	auto f = (bmi_get_var_name*) m_get_var_name;
+
+	/* Allocate memory to retrieve name */
+	char name[MAXSTRINGLEN];
+
+    /* Library call*/
+    f(index, name);
+
+    /* Retrun as string */
+    return std::string {name};
+}
+
+
+void bmit::Target::get_var(const std::string& name, void** ptr) {
+	if (m_get_var == nullptr) {
+		throw "get_var symbol not loaded";
+	}
+	auto f = (bmi_get_var*) m_get_var;
+
+	f(name.c_str(), (void**) ptr);
+}
+
+
+void bmit::Target::set_var(const std::string& name, const void* ptr) {
+	if (m_set_var == nullptr) {
+		throw "set_var symbol not loaded";
+	}
+	auto f = (bmi_set_var*) m_set_var;
+
+	f(name.c_str(), (const void*) ptr);
 }

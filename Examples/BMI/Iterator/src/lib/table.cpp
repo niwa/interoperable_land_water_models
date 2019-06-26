@@ -15,6 +15,39 @@ static int sql_table_col_count(sqlite3* db, const std::string& table);
 static int sql_column_row_count(sqlite3* db, const std::string& table,
                                              const std::string& column);
 
+//-----------------------------------------------------------------------------
+// Table - General implementation
+//-----------------------------------------------------------------------------
+template<class T>
+const void* bmit::Table<T>::get_cell(const int irow, const int icol) {
+    return &(m_data[irow * m_nb_cols + icol]);
+}
+
+template<class T>
+void bmit::Table<T>::set_cell(const int irow, const int icol, const void* ptr) {
+    auto& cell = m_data[irow * m_nb_cols + icol];
+    memcpy(&cell, ptr, sizeof(T));
+}
+
+//-----------------------------------------------------------------------------
+// Table - Custom implementation for string data
+//-----------------------------------------------------------------------------
+template<>
+const void* bmit::Table<std::string>::get_cell(const int irow, const int icol) {
+    auto& s = m_data[irow * m_nb_cols + icol];
+    return s.c_str();
+}
+
+template<>
+void bmit::Table<std::string>::set_cell(const int irow, const int icol, const void* ptr) {
+    auto& cell = m_data[irow * m_nb_cols + icol];
+    cell = std::string {(char*) ptr};
+}
+
+
+//-----------------------------------------------------------------------------
+// CSV Tables
+//-----------------------------------------------------------------------------
 // CSV Table readonly ctor
 template <class T>
 bmit::CsvTable<T>::CsvTable(const std::string& name,
@@ -122,7 +155,9 @@ bmit::CsvTable<T>::split_csv_line(std::string& line) {
     return tokens;
 }
 
-
+//-----------------------------------------------------------------------------
+// SqlTable
+//-----------------------------------------------------------------------------
 template <class T>
 bmit::SqlTable<T>::SqlTable(const std::string& name, const std::string& path) {
     m_name = name;
@@ -275,7 +310,9 @@ void bmit::SqlTable<T>::write() {
         throw "Failed finalizing insert query";
 }
 
-
+//-----------------------------------------------------------------------------
+// SqlColumn
+//-----------------------------------------------------------------------------
 template <class T>
 bmit::SqlColumn<T>::SqlColumn(const std::string& name,
                               const std::string& path,
@@ -436,7 +473,9 @@ void bmit::SqlColumn<T>::write() {
         throw "Failed finalizing column insert query";
 }
 
-
+//-----------------------------------------------------------------------------
+// Helpers
+//-----------------------------------------------------------------------------
 int csv_table_row_count(const std::string& path, const char sep) {
     int number_of_lines = 0;
     std::ifstream csvfile(path);

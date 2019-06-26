@@ -44,11 +44,13 @@ namespace bmit {
         // Used on input tables only.
         virtual void load() = 0;
 
-        // Returns pointer to cell data.
-        // Row and column indexes are 0-based.
-        // In targeted use case, returned pointer will be passed
-        // directly to BMI get/set functions, which will now hot to cast it.
-        virtual void* cell_ptr(const int irow, const int icol) = 0;
+
+        // Provide read-only access to table cell memory.
+        // The returned pointer can be passed to OE-BMI set_var.
+        virtual const void* get_cell(const int irow, const int icol) = 0;
+
+        // Set table cell value from external memory.
+        virtual void set_cell(const int irow, const int icol, const void* ptr) = 0;
 
         // Write data file.
         // Used on output tables only.
@@ -69,7 +71,8 @@ namespace bmit {
         virtual int nb_cols() {return m_nb_cols;}
         virtual int nb_rows() {return m_nb_rows;}
 
-        virtual void* cell_ptr(const int irow, const int icol) {return &(m_data[irow * m_nb_cols + icol]);};
+        virtual const void* get_cell(const int irow, const int icol);
+        virtual void set_cell(const int irow, const int icol, const void* ptr);
     protected:
         // Default access is readonly
         bool m_readonly = true;

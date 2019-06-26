@@ -64,9 +64,9 @@ BMI_API void get_var_nbytes(const char* name, int* nbytes);
 
 
 /* data access */
-BMI_API void get_value(const char* name, char* buffer);
+BMI_API void get_var(const char* name, void** ptr);
 
-BMI_API void set_value(const char* name, char* buffer);
+BMI_API void set_var(const char* name, void* ptr);
 
 
 #ifdef __cplusplus

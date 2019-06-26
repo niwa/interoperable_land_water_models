@@ -44,14 +44,14 @@ SCENARIO("Reading a CSV table") {
             THEN("Data can be loaded and accessed")
             {
                 t.load();
-                int* ptr;
+                const int* ptr;
                 auto vals = std::vector<int> (6);
-                ptr = (int*) t.cell_ptr(0,0); vals[0] = *ptr;
-                ptr = (int*) t.cell_ptr(0,1); vals[1] = *ptr;
-                ptr = (int*) t.cell_ptr(0,2); vals[2] = *ptr;
-                ptr = (int*) t.cell_ptr(1,0); vals[3] = *ptr;
-                ptr = (int*) t.cell_ptr(1,1); vals[4] = *ptr;
-                ptr = (int*) t.cell_ptr(1,2); vals[5] = *ptr;
+                ptr = (const int*) t.get_cell(0,0); vals[0] = *ptr;
+                ptr = (const int*) t.get_cell(0,1); vals[1] = *ptr;
+                ptr = (const int*) t.get_cell(0,2); vals[2] = *ptr;
+                ptr = (const int*) t.get_cell(1,0); vals[3] = *ptr;
+                ptr = (const int*) t.get_cell(1,1); vals[4] = *ptr;
+                ptr = (const int*) t.get_cell(1,2); vals[5] = *ptr;
                 CHECK(vals == std::vector<int> {11,12,13,21,22,23});
             }
         }
@@ -83,12 +83,12 @@ SCENARIO("Reading a CSV table") {
                 t.load();
                 double* ptr;
                 auto vals = std::vector<double> (6);
-                ptr = (double*) t.cell_ptr(0,0); vals[0] = *ptr;
-                ptr = (double*) t.cell_ptr(0,1); vals[1] = *ptr;
-                ptr = (double*) t.cell_ptr(0,2); vals[2] = *ptr;
-                ptr = (double*) t.cell_ptr(1,0); vals[3] = *ptr;
-                ptr = (double*) t.cell_ptr(1,1); vals[4] = *ptr;
-                ptr = (double*) t.cell_ptr(1,2); vals[5] = *ptr;
+                ptr = (double*) t.get_cell(0,0); vals[0] = *ptr;
+                ptr = (double*) t.get_cell(0,1); vals[1] = *ptr;
+                ptr = (double*) t.get_cell(0,2); vals[2] = *ptr;
+                ptr = (double*) t.get_cell(1,0); vals[3] = *ptr;
+                ptr = (double*) t.get_cell(1,1); vals[4] = *ptr;
+                ptr = (double*) t.get_cell(1,2); vals[5] = *ptr;
                 CHECK(vals == std::vector<double> {1.1,1.2,1.3,2.1,2.2,2.3});
             }
         }
@@ -118,14 +118,14 @@ SCENARIO("Reading a CSV table") {
             THEN("Data can be loaded and accessed")
             {
                 t.load();
-                std::string* ptr;
+                char* ptr;
                 auto vals = std::vector<std::string> (6);
-                ptr = (std::string*) t.cell_ptr(0,0); vals[0] = *ptr;
-                ptr = (std::string*) t.cell_ptr(0,1); vals[1] = *ptr;
-                ptr = (std::string*) t.cell_ptr(0,2); vals[2] = *ptr;
-                ptr = (std::string*) t.cell_ptr(1,0); vals[3] = *ptr;
-                ptr = (std::string*) t.cell_ptr(1,1); vals[4] = *ptr;
-                ptr = (std::string*) t.cell_ptr(1,2); vals[5] = *ptr;
+                ptr = (char*) t.get_cell(0,0); vals[0] = std::string {ptr};
+                ptr = (char*) t.get_cell(0,1); vals[1] = std::string {ptr};
+                ptr = (char*) t.get_cell(0,2); vals[2] = std::string {ptr};
+                ptr = (char*) t.get_cell(1,0); vals[3] = std::string {ptr};
+                ptr = (char*) t.get_cell(1,1); vals[4] = std::string {ptr};
+                ptr = (char*) t.get_cell(1,2); vals[5] = std::string {ptr};
                 auto expected = std::vector<std::string> {
                     "One","Two","Three",
                     "Four","Five","Six"};
@@ -160,13 +160,13 @@ SCENARIO("Writing a CSV table") {
 
             /* Set first row values */
             for(int icol = 0; icol < cols; icol++) {
-                auto p = (int*) t.cell_ptr(0, icol);
-                *p = row1[icol];
+                auto ptr = &(row1[icol]);
+                t.set_cell(0, icol, (void*) ptr);
             }
             /* Set second row values */
             for(int icol = 0; icol < cols; icol++) {
-                auto p = (int*) t.cell_ptr(1, icol);
-                *p = row2[icol];
+                auto ptr = &(row2[icol]);
+                t.set_cell(1, icol, (void*) ptr);
             }
 
             THEN("Table data can be written to file")
@@ -207,13 +207,13 @@ SCENARIO("Writing a CSV table") {
 
             /* Set first row values */
             for(int icol = 0; icol < cols; icol++) {
-                auto p = (double*) t.cell_ptr(0, icol);
-                *p = row1[icol];
+                auto ptr = &(row1[icol]);
+                t.set_cell(0, icol, (void*) ptr);
             }
             /* Set second row values */
             for(int icol = 0; icol < cols; icol++) {
-                auto p = (double*) t.cell_ptr(1, icol);
-                *p = row2[icol];
+                auto ptr = &(row2[icol]);
+                t.set_cell(1, icol, (void*) ptr);
             }
 
             THEN("Table data can be written to file")
@@ -254,13 +254,13 @@ SCENARIO("Writing a CSV table") {
 
             /* Set first row values */
             for(int icol = 0; icol < cols; icol++) {
-                auto p = (std::string*) t.cell_ptr(0, icol);
-                *p = row1[icol];
+                const char* ptr = row1[icol].c_str();
+                t.set_cell(0, icol, (const void*) ptr);
             }
             /* Set second row values */
             for(int icol = 0; icol < cols; icol++) {
-                auto p = (std::string*) t.cell_ptr(1, icol);
-                *p = row2[icol];
+                const char* ptr = row2[icol].c_str();
+                t.set_cell(1, icol, (const void*) ptr);
             }
 
             THEN("Table data can be written to file")
@@ -291,7 +291,7 @@ SCENARIO("Reading a SQL table") {
         sqlite3_stmt* qry = nullptr;
         const char* qry_tail = nullptr;
 
-        REQUIRE(sqlite3_open(test_file.c_str(), &db) == SQLITE_OK);
+        CHECK(sqlite3_open(test_file.c_str(), &db) == SQLITE_OK);
 
         sql = "\
             CREATE TABLE input_a (\
@@ -299,19 +299,19 @@ SCENARIO("Reading a SQL table") {
                 col_2 INTEGER NOT NULL,\
                 col_3 INTEGER NOT NULL\
             );";
-        REQUIRE(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
-        REQUIRE(sqlite3_step(qry) == SQLITE_DONE);
-        REQUIRE(sqlite3_finalize(qry) == SQLITE_OK);
+        CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+        CHECK(sqlite3_step(qry) == SQLITE_DONE);
+        CHECK(sqlite3_finalize(qry) == SQLITE_OK);
 
         sql = "\
             INSERT INTO input_a (col_1, col_2, col_3) VALUES\
                 (11, 12, 13),\
                 (21, 22, 23);";
-        REQUIRE(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
-        REQUIRE(sqlite3_step(qry) == SQLITE_DONE);
-        REQUIRE(sqlite3_finalize(qry) == SQLITE_OK);
+        CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+        CHECK(sqlite3_step(qry) == SQLITE_DONE);
+        CHECK(sqlite3_finalize(qry) == SQLITE_OK);
 
-        REQUIRE(sqlite3_close(db) == SQLITE_OK);
+        CHECK(sqlite3_close(db) == SQLITE_OK);
 
         WHEN("Instantiating from file") {
             auto name = "input_a";
@@ -329,12 +329,12 @@ SCENARIO("Reading a SQL table") {
             {
                 t.load();
                 int* valp = nullptr;
-                valp = (int*) t.cell_ptr(0, 0); REQUIRE(*valp == 11);
-                valp = (int*) t.cell_ptr(0, 1); REQUIRE(*valp == 12);
-                valp = (int*) t.cell_ptr(0, 2); REQUIRE(*valp == 13);
-                valp = (int*) t.cell_ptr(1, 0); REQUIRE(*valp == 21);
-                valp = (int*) t.cell_ptr(1, 1); REQUIRE(*valp == 22);
-                valp = (int*) t.cell_ptr(1, 2); REQUIRE(*valp == 23);
+                valp = (int*) t.get_cell(0, 0); CHECK(*valp == 11);
+                valp = (int*) t.get_cell(0, 1); CHECK(*valp == 12);
+                valp = (int*) t.get_cell(0, 2); CHECK(*valp == 13);
+                valp = (int*) t.get_cell(1, 0); CHECK(*valp == 21);
+                valp = (int*) t.get_cell(1, 1); CHECK(*valp == 22);
+                valp = (int*) t.get_cell(1, 2); CHECK(*valp == 23);
             }
         }
     }
@@ -347,7 +347,7 @@ SCENARIO("Reading a SQL table") {
         sqlite3_stmt* qry = nullptr;
         const char* qry_tail = nullptr;
 
-        REQUIRE(sqlite3_open(test_file.c_str(), &db) == SQLITE_OK);
+        CHECK(sqlite3_open(test_file.c_str(), &db) == SQLITE_OK);
 
         sql = "\
             CREATE TABLE input_a (\
@@ -355,19 +355,19 @@ SCENARIO("Reading a SQL table") {
                 col_2 double NOT NULL,\
                 col_3 double NOT NULL\
             );";
-        REQUIRE(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
-        REQUIRE(sqlite3_step(qry) == SQLITE_DONE);
-        REQUIRE(sqlite3_finalize(qry) == SQLITE_OK);
+        CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+        CHECK(sqlite3_step(qry) == SQLITE_DONE);
+        CHECK(sqlite3_finalize(qry) == SQLITE_OK);
 
         sql = "\
             INSERT INTO input_a (col_1, col_2, col_3) VALUES\
                 (1.1, 1.2, 1.3),\
                 (2.1, 2.2, 2.3);";
-        REQUIRE(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
-        REQUIRE(sqlite3_step(qry) == SQLITE_DONE);
-        REQUIRE(sqlite3_finalize(qry) == SQLITE_OK);
+        CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+        CHECK(sqlite3_step(qry) == SQLITE_DONE);
+        CHECK(sqlite3_finalize(qry) == SQLITE_OK);
 
-        REQUIRE(sqlite3_close(db) == SQLITE_OK);
+        CHECK(sqlite3_close(db) == SQLITE_OK);
 
         WHEN("Instantiating from file") {
             auto name = "input_a";
@@ -385,12 +385,12 @@ SCENARIO("Reading a SQL table") {
             {
                 t.load();
                 double* valp = nullptr;
-                valp = (double*) t.cell_ptr(0, 0); REQUIRE(*valp == 1.1);
-                valp = (double*) t.cell_ptr(0, 1); REQUIRE(*valp == 1.2);
-                valp = (double*) t.cell_ptr(0, 2); REQUIRE(*valp == 1.3);
-                valp = (double*) t.cell_ptr(1, 0); REQUIRE(*valp == 2.1);
-                valp = (double*) t.cell_ptr(1, 1); REQUIRE(*valp == 2.2);
-                valp = (double*) t.cell_ptr(1, 2); REQUIRE(*valp == 2.3);
+                valp = (double*) t.get_cell(0, 0); CHECK(*valp == 1.1);
+                valp = (double*) t.get_cell(0, 1); CHECK(*valp == 1.2);
+                valp = (double*) t.get_cell(0, 2); CHECK(*valp == 1.3);
+                valp = (double*) t.get_cell(1, 0); CHECK(*valp == 2.1);
+                valp = (double*) t.get_cell(1, 1); CHECK(*valp == 2.2);
+                valp = (double*) t.get_cell(1, 2); CHECK(*valp == 2.3);
             }
         }
     }
@@ -403,7 +403,7 @@ SCENARIO("Reading a SQL table") {
         sqlite3_stmt* qry = nullptr;
         const char* qry_tail = nullptr;
 
-        REQUIRE(sqlite3_open(test_file.c_str(), &db) == SQLITE_OK);
+        CHECK(sqlite3_open(test_file.c_str(), &db) == SQLITE_OK);
 
         sql = "\
             CREATE TABLE input_a (\
@@ -411,19 +411,19 @@ SCENARIO("Reading a SQL table") {
                 col_2 text NOT NULL,\
                 col_3 text NOT NULL\
             );";
-        REQUIRE(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
-        REQUIRE(sqlite3_step(qry) == SQLITE_DONE);
-        REQUIRE(sqlite3_finalize(qry) == SQLITE_OK);
+        CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+        CHECK(sqlite3_step(qry) == SQLITE_DONE);
+        CHECK(sqlite3_finalize(qry) == SQLITE_OK);
 
         sql = "\
             INSERT INTO input_a (col_1, col_2, col_3) VALUES\
                 ('one', 'two', 'three'),\
                 ('four', 'five', 'six');";
-        REQUIRE(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
-        REQUIRE(sqlite3_step(qry) == SQLITE_DONE);
-        REQUIRE(sqlite3_finalize(qry) == SQLITE_OK);
+        CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+        CHECK(sqlite3_step(qry) == SQLITE_DONE);
+        CHECK(sqlite3_finalize(qry) == SQLITE_OK);
 
-        REQUIRE(sqlite3_close(db) == SQLITE_OK);
+        CHECK(sqlite3_close(db) == SQLITE_OK);
 
         WHEN("Instantiating from file") {
             auto name = "input_a";
@@ -440,13 +440,13 @@ SCENARIO("Reading a SQL table") {
             AND_THEN("Data can be accessed")
             {
                 t.load();
-                std::string* valp = nullptr;
-                valp = (std::string*) t.cell_ptr(0, 0); REQUIRE(*valp == "one");
-                valp = (std::string*) t.cell_ptr(0, 1); REQUIRE(*valp == "two");
-                valp = (std::string*) t.cell_ptr(0, 2); REQUIRE(*valp == "three");
-                valp = (std::string*) t.cell_ptr(1, 0); REQUIRE(*valp == "four");
-                valp = (std::string*) t.cell_ptr(1, 1); REQUIRE(*valp == "five");
-                valp = (std::string*) t.cell_ptr(1, 2); REQUIRE(*valp == "six");
+                char* ptr = nullptr;
+                ptr = (char*) t.get_cell(0, 0); CHECK(std::string {ptr} == "one");
+                ptr = (char*) t.get_cell(0, 1); CHECK(std::string {ptr} == "two");
+                ptr = (char*) t.get_cell(0, 2); CHECK(std::string {ptr} == "three");
+                ptr = (char*) t.get_cell(1, 0); CHECK(std::string {ptr} == "four");
+                ptr = (char*) t.get_cell(1, 1); CHECK(std::string {ptr} == "five");
+                ptr = (char*) t.get_cell(1, 2); CHECK(std::string {ptr} == "six");
             }
         }
     }
@@ -477,13 +477,13 @@ SCENARIO("Writing a SQL table") {
 
             /* Set first row values */
             for(int icol = 0; icol < cols; icol++) {
-                auto p = (int*) t.cell_ptr(0, icol);
-                *p = row1[icol];
+                auto ptr = &(row1[icol]);
+                t.set_cell(0, icol, ptr);
             }
             /* Set second row values */
             for(int icol = 0; icol < cols; icol++) {
-                auto p = (int*) t.cell_ptr(1, icol);
-                *p = row2[icol];
+                auto ptr = &(row2[icol]);
+                t.set_cell(1, icol, ptr);
             }
 
             THEN("Table data can be written to file")
@@ -495,28 +495,28 @@ SCENARIO("Writing a SQL table") {
                 sqlite3_stmt* qry = nullptr;
                 const char* qry_tail = nullptr;
 
-                REQUIRE(sqlite3_open_v2(test_file.c_str(), &db, SQLITE_OPEN_READONLY, nullptr) == SQLITE_OK);
+                CHECK(sqlite3_open_v2(test_file.c_str(), &db, SQLITE_OPEN_READONLY, nullptr) == SQLITE_OK);
                 sql = "SELECT * FROM " + name + ";";
-                REQUIRE(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
 
                 std::vector<int> row1 (3);
-                REQUIRE(sqlite3_step(qry) == SQLITE_ROW);
+                CHECK(sqlite3_step(qry) == SQLITE_ROW);
                 for (int i = 0; i < cols; i++) {
                     row1[i] = sqlite3_column_int(qry, i);
                 }
 
                 std::vector<int> row2 (3);
-                REQUIRE(sqlite3_step(qry) == SQLITE_ROW);
+                CHECK(sqlite3_step(qry) == SQLITE_ROW);
                 for (int i = 0; i < cols; i++) {
                     row2[i] = sqlite3_column_int(qry, i);
                 }
 
-                REQUIRE(sqlite3_step(qry) == SQLITE_DONE);
-                REQUIRE(sqlite3_finalize(qry) == SQLITE_OK);
-                REQUIRE(sqlite3_close(db) == SQLITE_OK);
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+                CHECK(sqlite3_close(db) == SQLITE_OK);
 
-                REQUIRE(row1 == std::vector<int> {11, 12, 13});
-                REQUIRE(row2 == std::vector<int> {21, 22, 23});
+                CHECK(row1 == std::vector<int> {11, 12, 13});
+                CHECK(row2 == std::vector<int> {21, 22, 23});
             }
         }
     }
@@ -543,13 +543,13 @@ SCENARIO("Writing a SQL table") {
 
             /* Set first row values */
             for(int icol = 0; icol < cols; icol++) {
-                auto p = (double*) t.cell_ptr(0, icol);
-                *p = row1[icol];
+                auto ptr = &(row1[icol]);
+                t.set_cell(0, icol, ptr);
             }
             /* Set second row values */
             for(int icol = 0; icol < cols; icol++) {
-                auto p = (double*) t.cell_ptr(1, icol);
-                *p = row2[icol];
+                auto ptr = &(row2[icol]);
+                t.set_cell(1, icol, ptr);
             }
 
             THEN("Table data can be written to file")
@@ -561,28 +561,28 @@ SCENARIO("Writing a SQL table") {
                 sqlite3_stmt* qry = nullptr;
                 const char* qry_tail = nullptr;
 
-                REQUIRE(sqlite3_open_v2(test_file.c_str(), &db, SQLITE_OPEN_READONLY, nullptr) == SQLITE_OK);
+                CHECK(sqlite3_open_v2(test_file.c_str(), &db, SQLITE_OPEN_READONLY, nullptr) == SQLITE_OK);
                 sql = "SELECT * FROM " + name + ";";
-                REQUIRE(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
 
                 std::vector<double> row1 (3);
-                REQUIRE(sqlite3_step(qry) == SQLITE_ROW);
+                CHECK(sqlite3_step(qry) == SQLITE_ROW);
                 for (int i = 0; i < cols; i++) {
                     row1[i] = sqlite3_column_double(qry, i);
                 }
 
                 std::vector<double> row2 (3);
-                REQUIRE(sqlite3_step(qry) == SQLITE_ROW);
+                CHECK(sqlite3_step(qry) == SQLITE_ROW);
                 for (int i = 0; i < cols; i++) {
                     row2[i] = sqlite3_column_double(qry, i);
                 }
 
-                REQUIRE(sqlite3_step(qry) == SQLITE_DONE);
-                REQUIRE(sqlite3_finalize(qry) == SQLITE_OK);
-                REQUIRE(sqlite3_close(db) == SQLITE_OK);
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+                CHECK(sqlite3_close(db) == SQLITE_OK);
 
-                REQUIRE(row1 == std::vector<double> {1.1, 1.2, 1.3});
-                REQUIRE(row2 == std::vector<double> {2.1, 2.2, 2.3});
+                CHECK(row1 == std::vector<double> {1.1, 1.2, 1.3});
+                CHECK(row2 == std::vector<double> {2.1, 2.2, 2.3});
             }
         }
     }
@@ -609,13 +609,13 @@ SCENARIO("Writing a SQL table") {
 
             /* Set first row values */
             for(int icol = 0; icol < cols; icol++) {
-                auto p = (std::string*) t.cell_ptr(0, icol);
-                *p = row1[icol];
+                const char* ptr = row1[icol].c_str();
+                t.set_cell(0, icol, (const void*) ptr);
             }
             /* Set second row values */
             for(int icol = 0; icol < cols; icol++) {
-                auto p = (std::string*) t.cell_ptr(1, icol);
-                *p = row2[icol];
+                const char* ptr = row2[icol].c_str();
+                t.set_cell(1, icol, (const void*) ptr);
             }
 
             THEN("Table data can be written to file")
@@ -627,30 +627,30 @@ SCENARIO("Writing a SQL table") {
                 sqlite3_stmt* qry = nullptr;
                 const char* qry_tail = nullptr;
 
-                REQUIRE(sqlite3_open_v2(test_file.c_str(), &db, SQLITE_OPEN_READONLY, nullptr) == SQLITE_OK);
+                CHECK(sqlite3_open_v2(test_file.c_str(), &db, SQLITE_OPEN_READONLY, nullptr) == SQLITE_OK);
                 sql = "SELECT * FROM " + name + ";";
-                REQUIRE(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
 
                 std::vector<std::string> row1 (3);
-                REQUIRE(sqlite3_step(qry) == SQLITE_ROW);
+                CHECK(sqlite3_step(qry) == SQLITE_ROW);
                 for (int i = 0; i < cols; i++) {
                     auto c = sqlite3_column_text(qry, i);
                     row1[i] = std::string(reinterpret_cast<const char*>(c));
                 }
 
                 std::vector<std::string> row2 (3);
-                REQUIRE(sqlite3_step(qry) == SQLITE_ROW);
+                CHECK(sqlite3_step(qry) == SQLITE_ROW);
                 for (int i = 0; i < cols; i++) {
                     auto c = sqlite3_column_text(qry, i);
                     row2[i] = std::string(reinterpret_cast<const char*>(c));
                 }
 
-                REQUIRE(sqlite3_step(qry) == SQLITE_DONE);
-                REQUIRE(sqlite3_finalize(qry) == SQLITE_OK);
-                REQUIRE(sqlite3_close(db) == SQLITE_OK);
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+                CHECK(sqlite3_close(db) == SQLITE_OK);
 
-                REQUIRE(row1 == std::vector<std::string> {"one", "two", "three"});
-                REQUIRE(row2 == std::vector<std::string> {"four", "five", "six"});
+                CHECK(row1 == std::vector<std::string> {"one", "two", "three"});
+                CHECK(row2 == std::vector<std::string> {"four", "five", "six"});
             }
         }
     }
@@ -667,7 +667,7 @@ SCENARIO("Reading a SQL column") {
         sqlite3_stmt* qry = nullptr;
         const char* qry_tail = nullptr;
 
-        REQUIRE(sqlite3_open(test_file.c_str(), &db) == SQLITE_OK);
+        CHECK(sqlite3_open(test_file.c_str(), &db) == SQLITE_OK);
 
         sql = "\
             CREATE TABLE input_a (\
@@ -675,19 +675,19 @@ SCENARIO("Reading a SQL column") {
                 col_2 INTEGER NOT NULL,\
                 col_3 INTEGER NOT NULL\
             );";
-        REQUIRE(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
-        REQUIRE(sqlite3_step(qry) == SQLITE_DONE);
-        REQUIRE(sqlite3_finalize(qry) == SQLITE_OK);
+        CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+        CHECK(sqlite3_step(qry) == SQLITE_DONE);
+        CHECK(sqlite3_finalize(qry) == SQLITE_OK);
 
         sql = "\
             INSERT INTO input_a (col_1, col_2, col_3) VALUES\
                 (11, 12, 13),\
                 (21, 22, 23);";
-        REQUIRE(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
-        REQUIRE(sqlite3_step(qry) == SQLITE_DONE);
-        REQUIRE(sqlite3_finalize(qry) == SQLITE_OK);
+        CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+        CHECK(sqlite3_step(qry) == SQLITE_DONE);
+        CHECK(sqlite3_finalize(qry) == SQLITE_OK);
 
-        REQUIRE(sqlite3_close(db) == SQLITE_OK);
+        CHECK(sqlite3_close(db) == SQLITE_OK);
 
         WHEN("Instantiating from file") {
             auto name = "input_a";
@@ -707,8 +707,8 @@ SCENARIO("Reading a SQL column") {
             {
                 t.load();
                 int* valp = nullptr;
-                valp = (int*) t.cell_ptr(0, 0); REQUIRE(*valp == 12);
-                valp = (int*) t.cell_ptr(1, 0); REQUIRE(*valp == 22);
+                valp = (int*) t.get_cell(0, 0); CHECK(*valp == 12);
+                valp = (int*) t.get_cell(1, 0); CHECK(*valp == 22);
             }
         }
     }
@@ -721,7 +721,7 @@ SCENARIO("Reading a SQL column") {
         sqlite3_stmt* qry = nullptr;
         const char* qry_tail = nullptr;
 
-        REQUIRE(sqlite3_open(test_file.c_str(), &db) == SQLITE_OK);
+        CHECK(sqlite3_open(test_file.c_str(), &db) == SQLITE_OK);
 
         sql = "\
             CREATE TABLE input_a (\
@@ -729,19 +729,19 @@ SCENARIO("Reading a SQL column") {
                 col_2 DOUBLE NOT NULL,\
                 col_3 DOUBLE NOT NULL\
             );";
-        REQUIRE(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
-        REQUIRE(sqlite3_step(qry) == SQLITE_DONE);
-        REQUIRE(sqlite3_finalize(qry) == SQLITE_OK);
+        CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+        CHECK(sqlite3_step(qry) == SQLITE_DONE);
+        CHECK(sqlite3_finalize(qry) == SQLITE_OK);
 
         sql = "\
             INSERT INTO input_a (col_1, col_2, col_3) VALUES\
                 (1.1, 1.2, 1.3),\
                 (2.1, 2.2, 2.3);";
-        REQUIRE(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
-        REQUIRE(sqlite3_step(qry) == SQLITE_DONE);
-        REQUIRE(sqlite3_finalize(qry) == SQLITE_OK);
+        CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+        CHECK(sqlite3_step(qry) == SQLITE_DONE);
+        CHECK(sqlite3_finalize(qry) == SQLITE_OK);
 
-        REQUIRE(sqlite3_close(db) == SQLITE_OK);
+        CHECK(sqlite3_close(db) == SQLITE_OK);
 
         WHEN("Instantiating from file") {
             auto name = "input_a";
@@ -761,8 +761,8 @@ SCENARIO("Reading a SQL column") {
             {
                 t.load();
                 double* valp = nullptr;
-                valp = (double*) t.cell_ptr(0, 0); REQUIRE(*valp == 1.2);
-                valp = (double*) t.cell_ptr(1, 0); REQUIRE(*valp == 2.2);
+                valp = (double*) t.get_cell(0, 0); CHECK(*valp == 1.2);
+                valp = (double*) t.get_cell(1, 0); CHECK(*valp == 2.2);
             }
         }
     }
@@ -775,7 +775,7 @@ SCENARIO("Reading a SQL column") {
         sqlite3_stmt* qry = nullptr;
         const char* qry_tail = nullptr;
 
-        REQUIRE(sqlite3_open(test_file.c_str(), &db) == SQLITE_OK);
+        CHECK(sqlite3_open(test_file.c_str(), &db) == SQLITE_OK);
 
         sql = "\
             CREATE TABLE input_a (\
@@ -783,19 +783,19 @@ SCENARIO("Reading a SQL column") {
                 col_2 TEXT NOT NULL,\
                 col_3 TEXT NOT NULL\
             );";
-        REQUIRE(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
-        REQUIRE(sqlite3_step(qry) == SQLITE_DONE);
-        REQUIRE(sqlite3_finalize(qry) == SQLITE_OK);
+        CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+        CHECK(sqlite3_step(qry) == SQLITE_DONE);
+        CHECK(sqlite3_finalize(qry) == SQLITE_OK);
 
         sql = "\
             INSERT INTO input_a (col_1, col_2, col_3) VALUES\
                 ('one', 'two', 'three'),\
                 ('four', 'five', 'six');";
-        REQUIRE(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
-        REQUIRE(sqlite3_step(qry) == SQLITE_DONE);
-        REQUIRE(sqlite3_finalize(qry) == SQLITE_OK);
+        CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+        CHECK(sqlite3_step(qry) == SQLITE_DONE);
+        CHECK(sqlite3_finalize(qry) == SQLITE_OK);
 
-        REQUIRE(sqlite3_close(db) == SQLITE_OK);
+        CHECK(sqlite3_close(db) == SQLITE_OK);
 
         WHEN("Instantiating from file") {
             auto name = "input_a";
@@ -814,9 +814,9 @@ SCENARIO("Reading a SQL column") {
             AND_THEN("Data can be accessed")
             {
                 t.load();
-                std::string* valp = nullptr;
-                valp = (std::string*) t.cell_ptr(0, 0); REQUIRE(*valp == "two");
-                valp = (std::string*) t.cell_ptr(1, 0); REQUIRE(*valp == "five");
+                char* ptr = nullptr;
+                ptr = (char*) t.get_cell(0, 0); CHECK(std::string(ptr) == "two");
+                ptr = (char*) t.get_cell(1, 0); CHECK(std::string(ptr) == "five");
             }
         }
     }
@@ -845,10 +845,10 @@ SCENARIO("Writing a SQL column") {
 
         WHEN("Setting table values") {
 
-            int* p;
-            p = (int*) t.cell_ptr(0, 0); *p = values[0];
-            p = (int*) t.cell_ptr(1, 0); *p = values[1];
-            p = (int*) t.cell_ptr(2, 0); *p = values[2];
+            int* ptr;
+            ptr = &(values[0]); t.set_cell(0, 0, (const void*) ptr);
+            ptr = &(values[1]); t.set_cell(1, 0, (const void*) ptr);
+            ptr = &(values[2]); t.set_cell(2, 0, (const void*) ptr);
 
             THEN("Column data can be written to existing table")
             {
@@ -858,35 +858,35 @@ SCENARIO("Writing a SQL column") {
                 const char* qry_tail = nullptr;
 
                 // First create table without column
-                REQUIRE(sqlite3_open(test_file.c_str(), &db) == SQLITE_OK);
+                CHECK(sqlite3_open(test_file.c_str(), &db) == SQLITE_OK);
                 sql = "\
                     CREATE TABLE table_name (\
                         col_1 INTEGER,\
                         col_3 INTEGER\
                     );";
-                REQUIRE(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
-                REQUIRE(sqlite3_step(qry) == SQLITE_DONE);
-                REQUIRE(sqlite3_finalize(qry) == SQLITE_OK);
-                REQUIRE(sqlite3_close(db) == SQLITE_OK);
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+                CHECK(sqlite3_close(db) == SQLITE_OK);
 
                 // Now call write
                 t.write();
 
                 // And check table was indeed altered
-                REQUIRE(sqlite3_open_v2(test_file.c_str(), &db, SQLITE_OPEN_READONLY, nullptr) == SQLITE_OK);
+                CHECK(sqlite3_open_v2(test_file.c_str(), &db, SQLITE_OPEN_READONLY, nullptr) == SQLITE_OK);
                 sql = "SELECT " + column + " FROM " + name + ";";
-                REQUIRE(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
 
                 auto vals = std::vector<int> (rows);
                 for (int i = 0; i < rows; i++) {
-                    REQUIRE(sqlite3_step(qry) == SQLITE_ROW);
+                    CHECK(sqlite3_step(qry) == SQLITE_ROW);
                     vals[i] = sqlite3_column_int(qry, 0);
                 }
-                REQUIRE(sqlite3_step(qry) == SQLITE_DONE);
-                REQUIRE(sqlite3_finalize(qry) == SQLITE_OK);
-                REQUIRE(sqlite3_close(db) == SQLITE_OK);
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+                CHECK(sqlite3_close(db) == SQLITE_OK);
 
-                REQUIRE(vals == std::vector<int> {1, 2, 3});
+                CHECK(vals == std::vector<int> {1, 2, 3});
             }
         }
     }
@@ -911,10 +911,10 @@ SCENARIO("Writing a SQL column") {
 
         WHEN("Setting table values") {
 
-            double* p;
-            p = (double*) t.cell_ptr(0, 0); *p = values[0];
-            p = (double*) t.cell_ptr(1, 0); *p = values[1];
-            p = (double*) t.cell_ptr(2, 0); *p = values[2];
+            double* ptr;
+            ptr = &(values[0]); t.set_cell(0, 0, (void*) ptr);
+            ptr = &(values[1]); t.set_cell(1, 0, (void*) ptr);
+            ptr = &(values[2]); t.set_cell(2, 0, (void*) ptr);
 
             THEN("Column data can be written to existing table")
             {
@@ -924,35 +924,35 @@ SCENARIO("Writing a SQL column") {
                 const char* qry_tail = nullptr;
 
                 // First create table without column
-                REQUIRE(sqlite3_open(test_file.c_str(), &db) == SQLITE_OK);
+                CHECK(sqlite3_open(test_file.c_str(), &db) == SQLITE_OK);
                 sql = "\
                     CREATE TABLE table_name (\
                         col_1 DOUBLE,\
                         col_3 DOUBLE\
                     );";
-                REQUIRE(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
-                REQUIRE(sqlite3_step(qry) == SQLITE_DONE);
-                REQUIRE(sqlite3_finalize(qry) == SQLITE_OK);
-                REQUIRE(sqlite3_close(db) == SQLITE_OK);
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+                CHECK(sqlite3_close(db) == SQLITE_OK);
 
                 // Now call write
                 t.write();
 
                 // And check table was indeed altered
-                REQUIRE(sqlite3_open_v2(test_file.c_str(), &db, SQLITE_OPEN_READONLY, nullptr) == SQLITE_OK);
+                CHECK(sqlite3_open_v2(test_file.c_str(), &db, SQLITE_OPEN_READONLY, nullptr) == SQLITE_OK);
                 sql = "SELECT " + column + " FROM " + name + ";";
-                REQUIRE(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
 
                 auto vals = std::vector<double> (rows);
                 for (int i = 0; i < rows; i++) {
-                    REQUIRE(sqlite3_step(qry) == SQLITE_ROW);
+                    CHECK(sqlite3_step(qry) == SQLITE_ROW);
                     vals[i] = sqlite3_column_double(qry, 0);
                 }
-                REQUIRE(sqlite3_step(qry) == SQLITE_DONE);
-                REQUIRE(sqlite3_finalize(qry) == SQLITE_OK);
-                REQUIRE(sqlite3_close(db) == SQLITE_OK);
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+                CHECK(sqlite3_close(db) == SQLITE_OK);
 
-                REQUIRE(vals == std::vector<double> {1.1, 2.2, 3.3});
+                CHECK(vals == std::vector<double> {1.1, 2.2, 3.3});
             }
         }
     }
@@ -977,10 +977,10 @@ SCENARIO("Writing a SQL column") {
 
         WHEN("Setting table values") {
 
-            std::string* p;
-            p = (std::string*) t.cell_ptr(0, 0); *p = values[0];
-            p = (std::string*) t.cell_ptr(1, 0); *p = values[1];
-            p = (std::string*) t.cell_ptr(2, 0); *p = values[2];
+            const char* ptr;
+            ptr = values[0].c_str(); t.set_cell(0, 0, (const void*) ptr);
+            ptr = values[1].c_str(); t.set_cell(1, 0, (const void*) ptr);
+            ptr = values[2].c_str(); t.set_cell(2, 0, (const void*) ptr);
 
             THEN("Column data can be written to existing table")
             {
@@ -990,36 +990,36 @@ SCENARIO("Writing a SQL column") {
                 const char* qry_tail = nullptr;
 
                 // First create table without column
-                REQUIRE(sqlite3_open(test_file.c_str(), &db) == SQLITE_OK);
+                CHECK(sqlite3_open(test_file.c_str(), &db) == SQLITE_OK);
                 sql = "\
                     CREATE TABLE table_name (\
                         col_1 TEXT,\
                         col_3 TEXT\
                     );";
-                REQUIRE(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
-                REQUIRE(sqlite3_step(qry) == SQLITE_DONE);
-                REQUIRE(sqlite3_finalize(qry) == SQLITE_OK);
-                REQUIRE(sqlite3_close(db) == SQLITE_OK);
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+                CHECK(sqlite3_close(db) == SQLITE_OK);
 
                 // Now call write
                 t.write();
 
                 // And check table was indeed altered
-                REQUIRE(sqlite3_open_v2(test_file.c_str(), &db, SQLITE_OPEN_READONLY, nullptr) == SQLITE_OK);
+                CHECK(sqlite3_open_v2(test_file.c_str(), &db, SQLITE_OPEN_READONLY, nullptr) == SQLITE_OK);
                 sql = "SELECT " + column + " FROM " + name + ";";
-                REQUIRE(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
 
                 auto vals = std::vector<std::string> (rows);
                 for (int i = 0; i < rows; i++) {
-                    REQUIRE(sqlite3_step(qry) == SQLITE_ROW);
+                    CHECK(sqlite3_step(qry) == SQLITE_ROW);
                     auto c = sqlite3_column_text(qry, 0);
                     vals[i] = std::string(reinterpret_cast<const char*>(c));
                 }
-                REQUIRE(sqlite3_step(qry) == SQLITE_DONE);
-                REQUIRE(sqlite3_finalize(qry) == SQLITE_OK);
-                REQUIRE(sqlite3_close(db) == SQLITE_OK);
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+                CHECK(sqlite3_close(db) == SQLITE_OK);
 
-                REQUIRE(vals == std::vector<std::string> {"one","two","three"});
+                CHECK(vals == std::vector<std::string> {"one","two","three"});
             }
         }
     }

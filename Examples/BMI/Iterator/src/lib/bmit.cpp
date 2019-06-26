@@ -22,36 +22,30 @@ public:
 
     void run() override;
 
-    int count_inputs() override;
-
-    int count_outputs() override;
-
-    std::vector<std::string> get_input_names() override;
-
-    std::vector<std::string> get_output_names() override;
-
-    std::string get_var_type(const std::string& name) override;
-
-    std::string get_var_units(const std::string& name) override;
-
-    int get_var_itemsize(const std::string& name) override;
+    std::vector<int> get_var_shape(const std::string& name) override;
 
     int get_var_rank(const std::string& name) override;
 
-    std::vector<int> get_var_size(const std::string& name) override;
+    std::string get_var_type(const std::string& name) override;
 
-    int get_var_nbytes(const std::string& name) override;
+    int get_var_count() override;
 
-    void get_value(const std::string& name, void* buffer) override;
+    std::string get_var_name(int index) override;
 
-    void set_value(const std::string& name, void* buffer) override;
+    void get_var(const std::string& name, void** ptr) override;
+
+    void set_var(const std::string& name, void* ptr) override;
 private:
     YAML::Node m_config;
 
     // The target BMI component
     bmit::Target* m_target;
 
-    // Needed to provide BMI rank/size info
+    // Target input and output variable names
+    std::vector<std::string> m_input_var_names;
+    std::vector<std::string> m_output_var_names;
+
+    // Needed to provide BMI rank/shape info
     int m_nb_rows = 0;
     int m_nb_cols = 0;
 
@@ -87,6 +81,16 @@ _Iterator::_Iterator(const std::string &filename) {
         throw "Could not initialize target component";
     }
 
+    /* Load variable names from config */
+    auto inputs = m_config["inputs"];
+    for (YAML::const_iterator it=inputs.begin(); it!=inputs.end();++it) {
+        m_input_var_names.push_back(it->first.as<std::string>());
+    }
+    auto outputs = m_config["outputs"];
+    for (YAML::const_iterator it=outputs.begin(); it!=outputs.end();++it) {
+        m_output_var_names.push_back(it->first.as<std::string>());
+    }
+
     /* Check configuration and inputs */
     try {
         validate_configuration();
@@ -104,29 +108,29 @@ _Iterator::~_Iterator() {
 }
 
 
-int _Iterator::count_inputs() {
-    // Number of input from target component + own sqlite pointer
-    return m_target->get_input_var_name_count() + 1;
+std::vector<int> _Iterator::get_var_shape(const std::string& name) {
+    // SQLite pointer is a scalar
+    if (name == BMIT_SQLITE_PTR_NAME) {
+        return {1};
+    }
+    // One of the target variables.
+    // All input and output tables/columns are required to have
+    // identical dimensions. The first dimension is the number of
+    // rows or records in table or column. For tables, the second
+    // dimension is the number of columns.
+    if (m_nb_cols == 1) return {m_nb_rows};
+    return {m_nb_rows, m_nb_cols};
 }
 
 
-int _Iterator::count_outputs() {
-    // Number of outputs is same as for target component
-    return m_target->get_output_var_name_count();
-}
-
-
-std::vector<std::string> _Iterator::get_input_names() {
-    // Input names from target component + own sqlite pointer
-    auto names = m_target->get_input_var_names();
-    names.push_back(BMIT_SQLITE_PTR_NAME);
-    return names;
-}
-
-
-std::vector<std::string> _Iterator::get_output_names() {
-    // Output names are same as for target component
-    return m_target->get_output_var_names();
+int _Iterator::get_var_rank(const std::string& name) {
+    // SQLite pointer is a scalar
+    if (name == BMIT_SQLITE_PTR_NAME) return 1;
+    // All input and output tables/columns are requireed to have
+    // identical dimensions. So the rank is the same for all variables
+    // and either 1 (for columns) or 2 (for tables)
+    if (m_nb_cols == 1) return 1;
+    return 2;
 }
 
 
@@ -138,64 +142,34 @@ std::string _Iterator::get_var_type(const std::string& name) {
         // Data types are same as for target component
         return m_target->get_var_type(name);
     }
-
 }
 
 
-std::string _Iterator::get_var_units(const std::string& name) {
-    if (name == BMIT_SQLITE_PTR_NAME)
-        return "-";
-    else
-        return m_target->get_var_units(name);
+int _Iterator::get_var_count() {
+    // Variable names from target component + iterator's own sqlite pointer
+    return m_target->get_var_count() + 1;
 }
 
 
-int _Iterator::get_var_itemsize(const std::string& name) {
-    // Using int* instead of sqlite*
-    if (name == BMIT_SQLITE_PTR_NAME) return sizeof(sqlite3*);
-    // Item sizes are same as for target component
-    // (because types are same too)
-    return m_target->get_var_itemsize(name);
-}
-
-
-int _Iterator::get_var_rank(const std::string& name) {
-    // SQLite pointer is a scalar
-    if (name == BMIT_SQLITE_PTR_NAME) return 0;
-    // All input and output tables/columns are requireed to have
-    // identical dimensions. So the rank is the same for all variables
-    // and either 1 (for columns) or 2 (for tables)
-    if (m_nb_cols == 1) return 1;
-    return 2;
-}
-
-
-std::vector<int> _Iterator::get_var_size(const std::string& name) {
-    // SQLite pointer is a scalar
-    if (name == BMIT_SQLITE_PTR_NAME) return {1};
-    // All input and output tables/columns are required to have
-    // identical dimensions. The first dimension is the number of
-    // rows or records in table or column. For tables, the second
-    // dimension is the number of columns.
-    if (m_nb_cols == 1) return {m_nb_rows};
-    return {m_nb_rows, m_nb_cols};
-}
-
-
-int _Iterator::get_var_nbytes(const std::string& name) {
-    // SQLite pointer is a scalar
-    if (name == BMIT_SQLITE_PTR_NAME) {
-        return _Iterator::get_var_itemsize(name);
+std::string _Iterator::get_var_name(int index) {
+    int target_var_count = m_target->get_var_count();
+    if (index < target_var_count) {
+        // One of the target's variables
+        return m_target->get_var_name(index);
     }
-    // All input and output tables/columns are requireed to have
-    // identical dimensions.
-    return m_nb_rows * m_nb_cols * m_target->get_var_itemsize(name);
+
+    if (index == target_var_count) {
+        // Iterator's own sql pointer comes right after target variables
+        return BMIT_SQLITE_PTR_NAME;
+    }
+
+    throw std::runtime_error("get_var_name index out of bounds");
 }
 
 
-void _Iterator::get_value(const std::string& name, void* buffer) {
+void _Iterator::get_var(const std::string& name, void** ptr) {
     if (name == BMIT_SQLITE_PTR_NAME) {
-        buffer = (void*) m_sqlite_pointer;
+        *ptr = (void*) &m_sqlite_pointer;
     }
     else if (m_config["inputs"][name] || m_config["outputs"][name]) {
         // So far, no use case where this would be needed.
@@ -204,9 +178,9 @@ void _Iterator::get_value(const std::string& name, void* buffer) {
 }
 
 
-void _Iterator::set_value(const std::string& name, void* buffer) {
+void _Iterator::set_var(const std::string& name, void* ptr) {
     if (name == BMIT_SQLITE_PTR_NAME) {
-        m_sqlite_pointer = (sqlite3*) buffer;
+        m_sqlite_pointer = (sqlite3*) ptr;
     }
     else if (m_config["inputs"][name] || m_config["outputs"][name]) {
         // So far, no use case where this would be needed.
@@ -218,7 +192,7 @@ void _Iterator::set_value(const std::string& name, void* buffer) {
 void _Iterator::run() {
     /* Load input tables */
     auto input_tables = std::vector<bmit::ITable*> {};
-    for (auto &name : m_target->get_input_var_names()) {
+    for (auto &name : m_input_var_names) {
         auto table = open_table(name);
         table->load();
         input_tables.push_back(table);
@@ -226,38 +200,39 @@ void _Iterator::run() {
 
     /* Create output tables */
     auto output_tables = std::vector<bmit::ITable*> {};
-    for (auto &name : m_target->get_output_var_names()) {
+    for (auto &name : m_output_var_names) {
         output_tables.push_back(create_table(name, m_nb_rows, m_nb_cols));
     }
 
     /* Loop over input combinations */
-    for (auto &name : m_target->get_output_var_names()) {
-
-        auto input_names = m_target->get_input_var_names();
+    for (auto &name : m_output_var_names) {
         for (int irow = 0; irow < m_nb_rows; irow++) {
             for (int icol = 0; icol < m_nb_cols; icol++) {
-                /* Set target inputs */
+                // Set target inputs
                 for (const auto tbl : input_tables) {
-                    auto valp = tbl->cell_ptr(irow, icol);
-                    m_target->set_value(tbl->name(), valp);
+                    const auto valp = tbl->get_cell(irow, icol);
+                    m_target->set_var(tbl->name(), valp);
                 }
 
-                /* Run target */
-                m_target->update();
+                // Run target
+                // Timestep should not matter (steady-state)
+                m_target->update(0);
 
-                /* Copy target output to output tables */
+                // Copy target output to output tables
                 for (const auto tbl : output_tables) {
-                    m_target->get_value(
-                        tbl->name(),
-                        tbl->cell_ptr(irow, icol));
+                    void* ptr = nullptr;
+                    m_target->get_var(tbl->name(), &ptr);
+                    // ptr now points to target's internal mem,
+                    // copy it's contents to iterator's output table
+                    tbl->set_cell(irow, icol, ptr);
                 }
             }
         }
+    }
 
-        /* Write output tables */
-        for (const auto tbl : output_tables) {
-            tbl->write();
-        }
+    /* Write output tables */
+    for (const auto tbl : output_tables) {
+        tbl->write();
     }
 
     /* Free tables */
@@ -273,38 +248,26 @@ void _Iterator::run() {
 
 
 void _Iterator::validate_configuration() {
+    /* Collect all target variable names */
+    int target_var_count = m_target->get_var_count();
+    auto target_var_names = std::vector<std::string> {};
+    for (int i = 0; i < target_var_count; i++) {
+        auto name = m_target->get_var_name(i);
+        target_var_names.push_back(name);
+    }
+
+    /* Check variable count */
+    if (m_input_var_names.size() + m_output_var_names.size() != target_var_count) {
+        throw "Variable count mismatch between iterator and target dll";
+    }
+
+    /* Check variable names */
     auto inputs = m_config["inputs"];
     auto outputs = m_config["outputs"];
-
-    /* Check input count */
-    auto nb_inputs = inputs.size();
-    auto nb_target_inputs = m_target->get_input_var_name_count();
-    if (nb_inputs != nb_target_inputs) {
-        throw "input count mismatch";
-    }
-
-    /* Check output count */
-    auto nb_outputs = outputs.size();
-    auto nb_target_outputs = m_target->get_output_var_name_count();
-    if (nb_outputs != nb_target_outputs) {
-        throw "output count mismatch";
-    }
-
-    /* Check input names */
+    for (const auto& name : target_var_names)
     {
-        auto names = m_target->get_input_var_names();
-        for (const auto& name : names)
-        {
-            if (!inputs[name]) throw "input name mismatch";
-        }
-    }
-
-    /* Check output names */
-    {
-        auto names = m_target->get_output_var_names();
-        for (const auto& name : names)
-        {
-            if (!outputs[name]) throw "output name mismatch";
+        if (!inputs[name] && !outputs[name]) {
+            throw "Variable name mismatch between iterator and target dll";
         }
     }
 }
@@ -313,7 +276,7 @@ void _Iterator::validate_configuration() {
 void _Iterator::validate_inputs() {
     // Load all tables
     auto input_tables = std::vector<bmit::ITable*> {};
-    for (auto &name : m_target->get_input_var_names()) {
+    for (auto &name : m_input_var_names) {
         input_tables.push_back(open_table(name));
     }
 
