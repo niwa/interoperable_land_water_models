@@ -2,14 +2,13 @@
 #include <cstring>
 #include <algorithm>
 
-#include "bmi_lookup.h"
+#include "bmi.h"
 #include "lookup.h"
 
 lup::Lookup* _lookup = nullptr;
 std::vector<lup::Input> _inputs;
 double* _outputs;
 
-extern "C" {
 
 /* control functions. These return an error code. */
 BMI_API int initialize(const char *config_file) {
@@ -35,7 +34,7 @@ BMI_API int initialize(const char *config_file) {
 }
 
 
-BMI_API int update() {
+BMI_API int update(double dt) {
     try {
         // Retrieve all outputs and copy to local mem
         int index = 0;
@@ -58,40 +57,29 @@ BMI_API int finalize() {
     return 0;
 }
 
+
+/* time control functions */
+BMI_API void get_start_time(double *t) {}
+
+BMI_API void get_end_time(double *t) {}
+
+BMI_API void get_current_time(double *t) {}
+
+BMI_API void get_time_step(double *dt) {}
+
+
 /* variable info */
-BMI_API void get_input_var_name_count(int* count) {
-    *count = _lookup->count_inputs();
-}
-
-
-BMI_API void get_output_var_name_count(int* count) {
-    *count = _lookup->count_outputs();
-}
-
-
-BMI_API void get_input_var_names(char** names) {
-    auto labels = _lookup->get_input_names();
-    for (auto it = labels.begin(); it != labels.end(); ++it) {
-        auto index = it - labels.begin();
-        auto label = labels[index];
-        strncpy_s(names[index], MAXSTRINGLEN, label.c_str(), label.size() + 1);
+BMI_API void get_var_shape(const char* name,  int shape[MAXDIMS]) {
+    // This is a point model, all variables are scalars
+    for (int i = 0; i < MAXDIMS; i++) {
+        shape[i] = 0;
     }
+    shape[0] = 1;
 }
 
 
-BMI_API void get_output_var_names(char** names) {
-    auto labels = _lookup->get_output_names();
-    for (auto it = labels.begin(); it != labels.end(); ++it) {
-        auto index = std::distance(labels.begin(), it);
-        auto label = labels[index];
-        strncpy_s(names[index], MAXSTRINGLEN, label.c_str(), label.size() + 1);
-    }
-}
-
-
-BMI_API void get_var_units(const char* name, char* units) {
-    auto _units = _lookup->get_var_units(name);
-    strncpy_s(units, MAXSTRINGLEN, _units.c_str(), _units.size() + 1);
+BMI_API void get_var_rank(const char* name, int* rank) {
+    *rank = 1;
 }
 
 
@@ -101,32 +89,31 @@ BMI_API void get_var_type(const char* name, char* type) {
 }
 
 
-BMI_API void get_var_itemsize(const char* name, int* itemsize) {
-    auto type = _lookup->get_var_type(name);
-    if (type == "str") *itemsize = (int) sizeof(char);
-    if (type == "double") *itemsize = (int) sizeof(double);
+BMI_API void get_var_count(int* count) {
+    *count = _lookup->count_inputs() + _lookup->count_outputs();
 }
 
 
-BMI_API void get_var_rank(const char* name, int* rank) {
-    auto type = _lookup->get_var_type(name);
-    if (type == "str") *rank = 1;
-    if (type == "double") *rank = 0;
-}
+BMI_API void get_var_name(int index, char* name) {
+    int n_inputs = _lookup->count_inputs();
+    int n_total = n_inputs + _lookup->count_outputs();
 
+    std::string _name;
 
-BMI_API void get_var_size(const char* name, int* size) {
-    auto type = _lookup->get_var_type(name);
-    if (type == "str") *size = MAXSTRINGLEN;
-    if (type == "double") *size = 1;
-}
+    if (index < n_inputs) {
+        auto names = _lookup->get_input_names();
+        _name = names[index];
 
+    }
+    else if(index < n_total) {
+        auto names = _lookup->get_output_names();
+        _name = names[index - n_inputs];
+    }
+    else {
+        return;
+    }
 
-BMI_API void get_var_nbytes(const char* name, int* nbytes) {
-    int itemsize, size = 0;
-    get_var_itemsize(name, &itemsize);
-    get_var_size(name, &size);
-    *nbytes = itemsize * size;
+    strncpy_s(name, MAXSTRINGLEN, _name.c_str(), _name.size() + 1);
 }
 
 
@@ -165,5 +152,3 @@ BMI_API void set_var(const char *name, const void *ptr) {
             break;
     }
 }
-
-} // extern "c"

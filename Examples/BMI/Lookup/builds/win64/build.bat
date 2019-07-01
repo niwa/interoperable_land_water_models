@@ -20,7 +20,6 @@ mkdir %build_dir%
 cd %build_dir%
 
 %cmake% -G "MinGW Makefiles" ^
-        -D CMAKE_RUNTIME_OUTPUT_DIRECTORY=%bin_dir% ^
         -D CMAKE_MAKE_PROGRAM=%mingw%/mingw32-make.exe ^
         -D CMAKE_C_COMPILER=%mingw%/gcc.exe ^
         -D CMAKE_CXX_COMPILER=%mingw%/g++.exe ^

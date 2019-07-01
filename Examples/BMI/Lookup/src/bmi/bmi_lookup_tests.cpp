@@ -2,7 +2,7 @@
 #include <fstream>
 
 #include "catch.hpp"
-#include "bmi_lookup.h"
+#include "bmi.h"
 
 
 SCENARIO("Initializing and finalizing") {
@@ -53,53 +53,21 @@ SCENARIO("Variable info") {
         yamlfile.close();
         CHECK(initialize(filename.c_str()) == 0);
 
-        THEN("The number of input variables can be retrieved") {
+        THEN("The number variables can be retrieved") {
             int n = 0;
-            get_input_var_name_count(&n);
-            CHECK(n == 3);
+            get_var_count(&n);
+            CHECK(n == 3 + 2);
         }
 
-        THEN("The number of output variables can be retrieved") {
-            int n = 0;
-            get_output_var_name_count(&n);
-            CHECK(n == 2);
-        }
-
-        THEN("Input names can be retrieved") {
-            int nb_inputs;
-            get_input_var_name_count(&nb_inputs);
-
-            char* names[nb_inputs];
-            for (int i = 0; i < nb_inputs; i++) {
-                names[i] = (char*) malloc(MAXSTRINGLEN * sizeof(char));
-            }
-
-            get_input_var_names(names);
-            CHECK(!strcmp(names[0], "input_a"));
-            CHECK(!strcmp(names[1], "input_b"));
-            CHECK(!strcmp(names[2], "input_c"));
-
-            for (int i = 0; i < nb_inputs; i++) {
-                free (names[i]);
-            }
-        }
-
-        THEN("Output names can be retrieved") {
-            int nb_outputs;
-            get_output_var_name_count(&nb_outputs);
-
-            char* names[nb_outputs];
-            for (int i = 0; i < nb_outputs; i++) {
-                names[i] = (char*) malloc(MAXSTRINGLEN * sizeof(char));
-            }
-
-            get_output_var_names(names);
-            CHECK(!strcmp(names[0], "TN"));
-            CHECK(!strcmp(names[1], "TP"));
-
-            for (int i = 0; i < nb_outputs; i++) {
-                free (names[i]);
-            }
+        THEN("Variable names can be retrieved") {
+            char buffer[MAXSTRINGLEN];
+            // Inputs
+            get_var_name(0, buffer); CHECK(!strcmp(buffer, "input_a"));
+            get_var_name(1, buffer); CHECK(!strcmp(buffer, "input_b"));
+            get_var_name(2, buffer); CHECK(!strcmp(buffer, "input_c"));
+            // Outputs
+            get_var_name(3, buffer); CHECK(!strcmp(buffer, "TN"));
+            get_var_name(4, buffer); CHECK(!strcmp(buffer, "TP"));
         }
 
         THEN("Variable types can be retrieved") {
@@ -120,53 +88,52 @@ SCENARIO("Variable info") {
             CHECK(!strcmp(type, "double"));
         }
 
-        THEN("Variable units can be retrieved") {
-            char units[MAXSTRINGLEN];
-
-            /* Inputs */
-            get_var_units("input_a", units); CHECK(!strcmp(units, ""));
-            get_var_units("input_b", units); CHECK(!strcmp(units, "mm"));
-            get_var_units("input_c", units); CHECK(!strcmp(units, ""));
-
-            /* Outputs */
-            get_var_units("TN", units); CHECK(!strcmp(units, "kg/ha"));
-            get_var_units("TP", units); CHECK(!strcmp(units, "g/m2"));
-        }
-
-        THEN("Variable item size can be retrieved") {
-            int itemsize = -1;
-            get_var_itemsize("input_a", &itemsize); CHECK(itemsize == sizeof(char));
-            get_var_itemsize("input_b", &itemsize); CHECK(itemsize == sizeof(double));
-            get_var_itemsize("input_c", &itemsize); CHECK(itemsize == sizeof(char));
-            get_var_itemsize("TN", &itemsize); CHECK(itemsize == sizeof(double));
-            get_var_itemsize("TP", &itemsize); CHECK(itemsize == sizeof(double));
-        }
-
         THEN("Variable rank can be retrieved") {
             int rank = -1;
             get_var_rank("input_a", &rank); CHECK(rank == 1);
-            get_var_rank("input_b", &rank); CHECK(rank == 0);
+            get_var_rank("input_b", &rank); CHECK(rank == 1);
             get_var_rank("input_c", &rank); CHECK(rank == 1);
-            get_var_rank("TN", &rank); CHECK(rank == 0);
-            get_var_rank("TP", &rank); CHECK(rank == 0);
+            get_var_rank("TN", &rank); CHECK(rank == 1);
+            get_var_rank("TP", &rank); CHECK(rank == 1);
         }
 
-        THEN("Variable size can be retrieved") {
-            int size = -1;
-            get_var_size("input_a", &size); CHECK(size == MAXSTRINGLEN);
-            get_var_size("input_b", &size); CHECK(size == 1);
-            get_var_size("input_c", &size); CHECK(size == MAXSTRINGLEN);
-            get_var_size("TN", &size); CHECK(size == 1);
-            get_var_size("TP", &size); CHECK(size == 1);
-        }
+        THEN("Variable shape can be retrieved") {
+            int shape[MAXDIMS];
+            // Inputs
+            {
+                int shape[MAXDIMS] = {0};
+                get_var_shape("input_a", shape);
+                CHECK(shape[0] == 1);
+                CHECK(shape[1] == 0);
+            }
 
-        THEN("Variable number of bytes can be retrieved") {
-            int nbytes = -1;
-            get_var_nbytes("input_a", &nbytes); CHECK(nbytes == sizeof(char) * MAXSTRINGLEN);
-            get_var_nbytes("input_b", &nbytes); CHECK(nbytes == sizeof(double));
-            get_var_nbytes("input_c", &nbytes); CHECK(nbytes == sizeof(char) * MAXSTRINGLEN);
-            get_var_nbytes("TN", &nbytes); CHECK(nbytes == sizeof(double));
-            get_var_nbytes("TP", &nbytes); CHECK(nbytes == sizeof(double));
+            {
+                int shape[MAXDIMS] = {0};
+                get_var_shape("input_b", shape);
+                CHECK(shape[0] == 1);
+                CHECK(shape[1] == 0);
+            }
+
+            {
+                int shape[MAXDIMS] = {0};
+                get_var_shape("input_c", shape);
+                CHECK(shape[0] == 1);
+                CHECK(shape[1] == 0);
+            }
+
+            {
+                int shape[MAXDIMS] = {0};
+                get_var_shape("TN", shape);
+                CHECK(shape[0] == 1);
+                CHECK(shape[1] == 0);
+            }
+
+            {
+                int shape[MAXDIMS] = {0};
+                get_var_shape("TP", shape);
+                CHECK(shape[0] == 1);
+                CHECK(shape[1] == 0);
+            }
         }
 
         THEN("Finalizing return no errors") {
@@ -232,14 +199,15 @@ SCENARIO("Data access") {
             set_var("input_c", (void*) s_value.c_str());
 
             THEN("Outputs can be retrieved after calling update") {
-                CHECK(update() == 0);
+                CHECK(update(0) == 0);
 
-                double** value;
-                get_var("TN", (void **) value);
-                CHECK(**value == 121.1);
 
-                get_var("TP", (void **) value);
-                CHECK(**value == 121.2);
+                double* ptr;
+                get_var("TN", (void **) &ptr);
+                CHECK(*ptr == 121.1);
+
+                get_var("TP", (void **) &ptr);
+                CHECK(*ptr == 121.2);
             }
         }
 
