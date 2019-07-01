@@ -96,7 +96,7 @@ _Iterator::_Iterator(const std::string &filename) {
         validate_configuration();
         validate_inputs();
     }
-    catch (std::exception& e) {
+    catch (std::exception&) {
         delete m_target;
         throw;
     }

@@ -19,7 +19,7 @@ BMI_API int initialize(const char* config_file) {
 	try {
 		IT = bmit::Iterator::Create(config_file);
 	}
-	catch (std::exception& e) {
+	catch (std::exception&) {
 		// ToDo: log exception
 		IT = nullptr;
     	return -1;
@@ -34,7 +34,7 @@ BMI_API int update(double dt) {
 	try {
         IT->run();
     }
-    catch (std::exception& e) {
+    catch (std::exception&) {
         // ToDo: log exception
         return -1;
     }

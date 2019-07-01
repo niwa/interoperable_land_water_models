@@ -32,7 +32,7 @@ BMI_API int update(double dt) {
     std::stringstream ss;
     ss << _inp_str << _inp_val;
     _out_str = ss.str();
-    _out_len = _out_str.size();
+    _out_len = (int) _out_str.size();
     return 0;
 }
 

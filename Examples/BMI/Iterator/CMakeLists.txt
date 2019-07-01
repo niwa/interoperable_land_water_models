@@ -3,26 +3,47 @@ project(bmit)
 
 set(CMAKE_CXX_STANDARD 17)
 
-SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set(CMAKE_BUILD_TYPE Release)
+
+if(MSVC)
+    # MSVC defines build types at runtime
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<CONFIG>)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<CONFIG>)
+else()
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE})
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE})
+endif()
 
 # Local settings
 #
 # Should define at least the following variables
 #
-# SQLITE_INCLUDE   : path to sqlite include dir
-# SQLITE_LIB       : path to sqlite static library
-# YAML_CPP_INCLUDE : path to yaml-cpp include dir
-# YAML_CPP_LIB     : path to yaml-cpp static library
+# SQLITE_INCLUDE     : path to sqlite include dir
+# SQLITE_SHARED_LIB  : path to sqlite shared library (dll/so)
+# SQLITE_IMPORT_LIB  : path to sqlite lib file (for msvc)
+#                      or dll/so for other compilers
+# YAML_CPP_INCLUDE   : path to yaml-cpp include dir
+# YAML_CPP_STATIC_LIB: path to yaml-cpp static library
 #
 # E.g. local.cmake contents:
 #
-# set(SQLITE_ROOT c:/dev/sqlite)
-# set(SQLITE_INCLUDE ${SQLITE_ROOT})
-# set(SQLITE_LIB ${SQLITE_ROOT}/sqlite3.dll)
-# set(YAML_CPP_ROOT c:/dev/yaml-cpp)
-# set(YAML_CPP_INCLUDE ${YAML_CPP_ROOT}/include)
-# set(YAML_CPP_LIB ${YAML_CPP_ROOT}/build/libyaml-cpp.a)
+# if (WIN32 AND NOT MSVC)
+#     set(YAML_CPP_ROOT c:/dev/yaml-cpp)
+#     set(YAML_CPP_INCLUDE ${YAML_CPP_ROOT}/include)
+#     set(YAML_CPP_STATIC_LIB ${YAML_CPP_ROOT}/build/libyaml-cpp.a)
+#     set(SQLITE_ROOT c:/dev/sqlite)
+#     set(SQLITE_INCLUDE ${SQLITE_ROOT})
+#     set(SQLITE_IMPORT_LIB ${SQLITE_ROOT}/sqlite3.dll)
+#     set(SQLITE_SHARED_LIB ${SQLITE_ROOT}/sqlite3.dll)
+# elseif(WIN32 AND MSVC)
+#     set(YAML_CPP_ROOT c:/dev/yaml-cpp-msvc)
+#     set(YAML_CPP_INCLUDE ${YAML_CPP_ROOT}/include)
+#     set(YAML_CPP_STATIC_LIB ${YAML_CPP_ROOT}/build/Release/libyaml-cppmd.lib)
+#     set(SQLITE_ROOT c:/dev/sqlite/msvc)
+#     set(SQLITE_INCLUDE ${SQLITE_ROOT}/src)
+#     set(SQLITE_IMPORT_LIB ${SQLITE_ROOT}/sqlite3.lib)
+#     set(SQLITE_SHARED_LIB ${SQLITE_ROOT}/sqlite3.dll)
+# endif()
 include(local.cmake)
 
 # Defining some directory paths
