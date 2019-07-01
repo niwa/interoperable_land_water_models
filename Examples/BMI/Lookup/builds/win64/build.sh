@@ -19,8 +19,6 @@ echo "------------------------------------------------------------"
 mkdir -p $build_dir
 cd $build_dir
 
-cmake -D CMAKE_RUNTIME_OUTPUT_DIRECTORY=$bin_dir\
-      -D CMAKE_TOOLCHAIN_FILE=$toolchain_file \
-      $source_dir
+cmake -D CMAKE_TOOLCHAIN_FILE=$toolchain_file $source_dir
 
 make

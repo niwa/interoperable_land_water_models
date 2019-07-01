@@ -153,7 +153,7 @@ void _Lookup::enforce_mappings_for_numeric_inputs() {
         /* Assuming all input types other than string are numeric*/
         if (_types[var] == "str") continue;
 
-        if (!maps or !maps[var]) {
+        if (!maps || !maps[var]) {
             throw std::invalid_argument("Numeric inputs must have a mapping");
         }
     }

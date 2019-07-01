@@ -26,7 +26,7 @@ Note that the `%` character has a special meaning in YAML and has to be escaped.
 
 In a similar way, outputs are declared under the `output` node. Currently, only `double` outputs are supported:
 
-```yaml	
+```yaml
 outputs:
   - TN: {type: double, units: kg_ha-1}
   - TP: {type: double, units: kg_ha-1}
@@ -75,7 +75,7 @@ The nesting order if the input classess is determined by the order in which inpu
 
 The output sequences contain the output values in the same order as the `outputs` node. So, in the example above, 1.1 is for TN and 1.2 is for TP.
 
-An underscore character can be used to match any class of a mapped input or any value of an unmapped input. In the example above, the `_` will match both `moderate` and `steep`. 
+An underscore character can be used to match any class of a mapped input or any value of an unmapped input. In the example above, the `_` will match both `moderate` and `steep`.
 
 
 ### Whole file example
@@ -84,7 +84,7 @@ An underscore character can be used to match any class of a mapped input or any 
 inputs:
   - climate: {type: str}
   - slope: {type: double, units: \"%\"}
-  
+
 outputs:
   - TN: {type: double, units: kg_ha-1}
   - TP: {type: double, units: kg_ha-1}
@@ -140,12 +140,12 @@ CMake can be downloaded from https://cmake.org/download/.
 
 The only dependency is [YAML-CPP](https://github.com/jbeder/yaml-cpp).
 
-Download and compile it (it also uses CMake), then create a `local.cmake` next to the main `CMakeLists.txt` and set the paths to the yaml-cpp headers and compiled library in `local.cmake`. For instance like so: 
+Download and compile it (it also uses CMake), then create a `local.cmake` next to the main `CMakeLists.txt` and set the paths to the yaml-cpp headers and compiled library in `local.cmake`. For instance like so:
 
 ```cmake
 set(YAML_CPP_ROOT c:/dev/yaml-cpp)
 set(YAML_CPP_INCLUDE ${YAML_CPP_ROOT}/include)
-set(YAML_CPP_LIB ${YAML_CPP_ROOT}/build/libyaml-cpp.a)
+set(YAML_CPP_STATIC_LIB ${YAML_CPP_ROOT}/build/libyaml-cpp.a)
 ```
 
 

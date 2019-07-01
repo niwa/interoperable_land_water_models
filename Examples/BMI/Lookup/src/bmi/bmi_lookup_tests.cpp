@@ -98,7 +98,7 @@ SCENARIO("Variable info") {
         }
 
         THEN("Variable shape can be retrieved") {
-            int shape[MAXDIMS];
+            
             // Inputs
             {
                 int shape[MAXDIMS] = {0};

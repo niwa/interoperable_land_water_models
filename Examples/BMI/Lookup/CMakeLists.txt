@@ -5,22 +5,27 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_BUILD_TYPE Release)
 
-SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE})
-SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE})
-
+if(MSVC)
+    # MSVC defines build types at runtime
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<CONFIG>)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<CONFIG>)
+else()
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE})
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE})
+endif()
 
 # Local settings
 #
 # Should define at least the following variables
 #
 # YAML_CPP_INCLUDE : path to yaml-cpp include dir
-# YAML_CPP_LIB     : path to yaml-cpp static library
+# YAML_CPP_STATIC_LIB : path to yaml-cpp static library
 #
 # E.g. local.cmake contents:
 #
 # set(YAML_CPP_ROOT c:/dev/yaml-cpp)
 # set(YAML_CPP_INCLUDE ${YAML_CPP_ROOT}/include)
-# set(YAML_CPP_LIB ${YAML_CPP_ROOT}/build/libyaml-cpp.a)
+# set(YAML_CPP_STATIC_LIB ${YAML_CPP_ROOT}/build/libyaml-cpp.a)
 include(local.cmake)
 
 # Defining some directory paths
