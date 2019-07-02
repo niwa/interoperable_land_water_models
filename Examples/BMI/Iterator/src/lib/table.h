@@ -137,14 +137,19 @@ namespace bmit {
         /* Readonly from db file */
         explicit SqlTable(
             const std::string& name,
+            const std::string& table,
             const std::string& path);
 
         /* Readonly from db pointer */
-        explicit SqlTable(const std::string& name, sqlite3* db);
+        explicit SqlTable(
+            const std::string& name,
+            sqlite3* db,
+            const std::string& table);
 
         /* Read/Write from db file */
         explicit SqlTable(
             const std::string& name,
+            const std::string& table,
             const std::string& path,
             const size_t rows,
             const size_t cols);
@@ -153,6 +158,7 @@ namespace bmit {
         explicit SqlTable(
             const std::string& name,
             sqlite3* db,
+            const std::string& table,
             const size_t rows,
             const size_t cols);
 
@@ -170,6 +176,7 @@ namespace bmit {
         virtual void write();
     private:
         std::string m_name;
+        std::string m_table;
         std::string m_path;
         sqlite3* m_db = nullptr;
     };
@@ -186,18 +193,21 @@ namespace bmit {
         explicit SqlColumn(
             const std::string& name,
             const std::string& path,
+            const std::string& table,
             const std::string& column);
 
         /* Readonly from db pointer */
         explicit SqlColumn(
             const std::string& name,
             sqlite3* db,
+            const std::string& table,
             const std::string& column);
 
         /* Read/Write from db file */
         explicit SqlColumn(
             const std::string& name,
             const std::string& path,
+            const std::string& table,
             const std::string& column,
             const size_t rows);
 
@@ -205,6 +215,7 @@ namespace bmit {
         explicit SqlColumn(
             const std::string& name,
             sqlite3* db,
+            const std::string& table,
             const std::string& column,
             const size_t rows);
 
@@ -224,8 +235,14 @@ namespace bmit {
     private:
         std::string m_name;
         std::string m_path;
+        std::string m_table;
         std::string m_column;
         sqlite3* m_db = nullptr;
+
+        std::string get_sql_type();
+        void create_table_if_not_exists();
+        void alter_table_add_column();
+        void insert_values();
     };
 }
 

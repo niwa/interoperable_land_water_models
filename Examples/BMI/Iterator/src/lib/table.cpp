@@ -15,6 +15,7 @@ static int sql_table_col_count(sqlite3* db, const std::string& table);
 static int sql_column_row_count(sqlite3* db, const std::string& table,
                                              const std::string& column);
 
+
 //-----------------------------------------------------------------------------
 // Table - General implementation
 //-----------------------------------------------------------------------------
@@ -159,34 +160,44 @@ bmit::CsvTable<T>::split_csv_line(std::string& line) {
 // SqlTable
 //-----------------------------------------------------------------------------
 template <class T>
-bmit::SqlTable<T>::SqlTable(const std::string& name, const std::string& path) {
+bmit::SqlTable<T>::SqlTable(const std::string& name,
+                            const std::string& path,
+                            const std::string& table) {
     m_name = name;
+    m_table = table;
     m_path = path;
 
     auto ret = sqlite3_open_v2(m_path.c_str(), &m_db, SQLITE_OPEN_READONLY, nullptr);
     if (ret != SQLITE_OK) throw "Failed opening database";
 
     /* Get row and col count */
-    m_nb_rows = sql_table_row_count(m_db, m_name);
-    m_nb_cols = sql_table_col_count(m_db, m_name);
+    m_nb_rows = sql_table_row_count(m_db, m_table);
+    m_nb_cols = sql_table_col_count(m_db, m_table);
 }
 
 template <class T>
-bmit::SqlTable<T>::SqlTable(const std::string& name, sqlite3* db) {
+bmit::SqlTable<T>::SqlTable(const std::string& name,
+                            sqlite3* db,
+                            const std::string& table) {
     m_name = name;
     m_db = db;
+    m_table = table;
 
     /* Get row and col count */
-    m_nb_rows = sql_table_row_count(m_db, m_name);
-    m_nb_cols = sql_table_col_count(m_db, m_name);
+    m_nb_rows = sql_table_row_count(m_db, m_table);
+    m_nb_cols = sql_table_col_count(m_db, m_table);
 }
 
 template <class T>
-bmit::SqlTable<T>::SqlTable(const std::string& name, const std::string& path,
-    const size_t rows, const size_t cols) {
+bmit::SqlTable<T>::SqlTable(const std::string& name,
+                            const std::string& path,
+                            const std::string& table,
+                            const size_t rows,
+                            const size_t cols) {
     m_readonly = false;
     m_name = name;
     m_path = path;
+    m_table = table;
     m_nb_rows = rows;
     m_nb_cols = cols;
 
@@ -198,11 +209,15 @@ bmit::SqlTable<T>::SqlTable(const std::string& name, const std::string& path,
 }
 
 template <class T>
-bmit::SqlTable<T>::SqlTable(const std::string& name, sqlite3* db,
-    const size_t rows, const size_t cols) {
+bmit::SqlTable<T>::SqlTable(const std::string& name,
+                            sqlite3* db,
+                            const std::string& table,
+                            const size_t rows,
+                            const size_t cols) {
     m_readonly = false;
     m_name = name;
     m_db = db;
+    m_table = table;
     m_nb_rows = rows;
     m_nb_cols = cols;
 
@@ -222,7 +237,7 @@ void bmit::SqlTable<T>::load() {
     int ret;
     sqlite3_stmt* qry = nullptr;
     const char* qry_tail = nullptr;
-    auto sql = "SELECT * FROM " + m_name + ";";
+    auto sql = "SELECT * FROM " + m_table + ";";
 
     ret = sqlite3_prepare_v2(m_db, sql.c_str(), -1, &qry, &qry_tail);
     if (ret != SQLITE_OK) throw "Failed preparing load query";
@@ -266,7 +281,7 @@ void bmit::SqlTable<T>::write() {
 
     // Build CREATE TABLE statement
     auto sql_ss = std::stringstream();
-    sql_ss << "CREATE TABLE " << m_name << "(";
+    sql_ss << "CREATE TABLE " << m_table << "(";
     for (int icol = 0; icol < m_nb_cols; icol++) {
         sql_ss << "col_" << icol+1 << " " << sql_type << " NOT NULL";
         if (icol < m_nb_cols - 1) sql_ss << ",";
@@ -286,7 +301,7 @@ void bmit::SqlTable<T>::write() {
     // Build INSERT statement
     sql_ss.str("");
     sql_ss.clear();
-    sql_ss << "INSERT INTO " << m_name << " VALUES";
+    sql_ss << "INSERT INTO " << m_table << " VALUES";
     auto row_sep = "";
     int index = 0;
     for (int irow = 0; irow < m_nb_rows; irow++) {
@@ -318,16 +333,18 @@ void bmit::SqlTable<T>::write() {
 template <class T>
 bmit::SqlColumn<T>::SqlColumn(const std::string& name,
                               const std::string& path,
+                              const std::string& table,
                               const std::string& column) {
     m_name = name;
     m_path = path;
+    m_table = table;
     m_column = column;
 
     auto ret = sqlite3_open_v2(m_path.c_str(), &m_db, SQLITE_OPEN_READONLY, nullptr);
     if (ret != SQLITE_OK) throw "Failed opening database";
 
     /* Get row and col count */
-    m_nb_rows = sql_column_row_count(m_db, m_name, m_column);
+    m_nb_rows = sql_column_row_count(m_db, m_table, m_column);
     m_nb_cols = 1;
 }
 
@@ -335,13 +352,15 @@ bmit::SqlColumn<T>::SqlColumn(const std::string& name,
 template <class T>
 bmit::SqlColumn<T>::SqlColumn(const std::string& name,
                               sqlite3* db,
+                              const std::string& table,
                               const std::string& column) {
     m_name = name;
     m_db = db;
+    m_table = table;
     m_column = column;
 
     /* Get row and col count */
-    m_nb_rows = sql_column_row_count(m_db, m_name, m_column);
+    m_nb_rows = sql_column_row_count(m_db, m_table, m_column);
     m_nb_cols = 1;
 }
 
@@ -349,11 +368,13 @@ bmit::SqlColumn<T>::SqlColumn(const std::string& name,
 template <class T>
 bmit::SqlColumn<T>::SqlColumn(const std::string& name,
                               const std::string& path,
+                              const std::string& table,
                               const std::string& column,
                               const size_t rows) {
     m_readonly = false;
     m_name = name;
     m_path = path;
+    m_table = table;
     m_column = column;
     m_nb_rows = rows;
     m_nb_cols = 1;
@@ -369,11 +390,13 @@ bmit::SqlColumn<T>::SqlColumn(const std::string& name,
 template <class T>
 bmit::SqlColumn<T>::SqlColumn(const std::string& name,
                               sqlite3* db,
+                              const std::string& table,
                               const std::string& column,
                               const size_t rows) {
     m_readonly = false;
     m_name = name;
     m_db = db;
+    m_table = table;
     m_column = column;
     m_nb_rows = rows;
     m_nb_cols = 1;
@@ -395,7 +418,7 @@ void bmit::SqlColumn<T>::load() {
     int ret;
     sqlite3_stmt* qry = nullptr;
     const char* qry_tail = nullptr;
-    auto sql = "SELECT " + m_column + " FROM " + m_name + ";";
+    auto sql = "SELECT " + m_column + " FROM " + m_table + ";";
 
     ret = sqlite3_prepare_v2(m_db, sql.c_str(), -1, &qry, &qry_tail);
     if (ret != SQLITE_OK) throw "Failed preparing column load query";
@@ -422,57 +445,98 @@ template <class T>
 void bmit::SqlColumn<T>::write() {
     if (m_readonly) throw "Trying to write to readonly SqlTable";
 
-    std::string sql;
+    create_table_if_not_exists();
+
+    // TODO: Check if column already exists, assuming it doesn't now
+    // alter_table_add_column();
+
+    insert_values();
+
+}
+
+
+template <class T>
+std::string bmit::SqlColumn<T>::get_sql_type() {
+    std::string sql_type;
+    if constexpr (std::is_same<T, int>::value) sql_type = "integer";
+    if constexpr (std::is_same<T, double>::value) sql_type = "double";
+    if constexpr (std::is_same<T, std::string>::value) sql_type = "text";
+    return sql_type;
+}
+
+
+template <class T>
+void bmit::SqlColumn<T>::create_table_if_not_exists() {
+    auto ss = std::stringstream {};
+    ss << "CREATE TABLE IF NOT EXISTS " << m_table
+       << "(" << m_column << " " << get_sql_type() << ");";
+
+    std::string sql = ss.str();
     sqlite3_stmt* qry = nullptr;
     const char* qry_tail = nullptr;
 
-    std::string sql_type;
-    std::string sql_quote = "";
-    if constexpr (std::is_same<T, int>::value) sql_type = "integer";
-    if constexpr (std::is_same<T, double>::value) sql_type = "double";
-    if constexpr (std::is_same<T, std::string>::value) {
-        sql_type = "text";
-        sql_quote = "'";
-    }
+    if(sqlite3_prepare_v2(m_db, sql.c_str(), -1, &qry, &qry_tail) != SQLITE_OK)
+        throw std::runtime_error("Failed preparing create table query");
 
-    // ToDo: create table if necessary
+    if (sqlite3_step(qry) != SQLITE_DONE)
+        throw "Failed executing create table query";
 
-    // Build ALTER TABLE statement
-    auto sql_ss = std::stringstream();
-    sql_ss << "ALTER TABLE " << m_name
-           << " ADD COLUMN " << m_column << " " << sql_type<< ";";
-    sql = sql_ss.str();
+    if (sqlite3_finalize(qry) != SQLITE_OK)
+        throw "Failed finalizing create table query";
+}
+
+
+template <class T>
+void bmit::SqlColumn<T>::alter_table_add_column() {
+    auto ss = std::stringstream {};
+    ss << "ALTER TABLE " << m_table
+           << " ADD COLUMN " << m_column << " " << get_sql_type() << ";";
+
+    std::string sql = ss.str();
+    sqlite3_stmt* qry = nullptr;
+    const char* qry_tail = nullptr;
 
     if(sqlite3_prepare_v2(m_db, sql.c_str(), -1, &qry, &qry_tail) != SQLITE_OK)
-        throw "Failed preparing alter table query";
+        throw std::runtime_error("Failed preparing alter table query");
 
     if (sqlite3_step(qry) != SQLITE_DONE)
         throw "Failed executing alter table query";
 
     if (sqlite3_finalize(qry) != SQLITE_OK)
         throw "Failed finalizing alter table query";
+}
 
-    // Build INSERT statement
-    sql_ss.str("");
-    sql_ss.clear();
-    sql_ss << "INSERT INTO " << m_name << " (" << m_column << ") " << " VALUES";
+
+template <class T>
+void bmit::SqlColumn<T>::insert_values() {
+    // TODO: This only works if the table is empty
+    std::string sql_quote = "";
+    if (get_sql_type() == "text") {
+        sql_quote = "'";
+    }
+
+    auto ss = std::stringstream {};
+    ss << "INSERT INTO " << m_table << " (" << m_column << ") " << " VALUES";
     auto row_sep = "";
     int index = 0;
     for (int irow = 0; irow < m_nb_rows; irow++) {
-        sql_ss << row_sep << "(" << sql_quote << m_data[index++] << sql_quote << ")";
+        ss << row_sep << "(" << sql_quote << m_data[index++] << sql_quote << ")";
         row_sep = ", ";
     }
-    sql_ss << ";";
-    sql = sql_ss.str();
+    ss << ";";
 
-    if (sqlite3_prepare_v2(m_db, sql.c_str(), -1, &qry, &qry_tail) != SQLITE_OK)
-        throw "Failed preparing column insert query";
+    std::string sql = ss.str();
+    sqlite3_stmt* qry = nullptr;
+    const char* qry_tail = nullptr;
+
+    if(sqlite3_prepare_v2(m_db, sql.c_str(), -1, &qry, &qry_tail) != SQLITE_OK)
+        throw std::runtime_error("Failed preparing insert query");
 
     if (sqlite3_step(qry) != SQLITE_DONE)
-        throw "Failed executing column insert query";
+        throw "Failed executing insert query";
 
     if (sqlite3_finalize(qry) != SQLITE_OK)
-        throw "Failed finalizing column insert query";
+        throw "Failed finalizing insert query";
 }
 
 //-----------------------------------------------------------------------------

@@ -304,32 +304,61 @@ void _Iterator::validate_inputs() {
 
 
 bmit::ITable* _Iterator::open_table(const std::string& name) {
-    bmit::ITable* table = nullptr;
+    bmit::ITable* tbl = nullptr;
     auto cfg = m_config["inputs"][name];
     auto format = cfg["format"].as<std::string>();
     auto type = cfg["type"].as<std::string>();
 
-    if (format == "sqlite" && cfg["path"]) {
+    if (format == "sqlite" && cfg["path"] && cfg["column"]) {
         auto path = cfg["path"].as<std::string>();
+        auto table = cfg["table"].as<std::string>();
+        auto column = cfg["column"].as<std::string>();
 
         if (type == "int") {
-            table = new bmit::SqlTable<int>(name, path);
+            tbl = new bmit::SqlColumn<int>(name, path, table, column);
         } else if (type == "double") {
-            table = new bmit::SqlTable<double>(name, path);
+            tbl = new bmit::SqlColumn<double>(name, path, table, column);
         } else if (type == "str") {
-            table = new bmit::SqlTable<std::string>(name, path);
+            tbl = new bmit::SqlColumn<std::string>(name, path, table, column);
+        } else throw "Input type not implemented";
+    }
+    else if (format == "sqlite" && cfg["path"]) {
+        auto path = cfg["path"].as<std::string>();
+        auto table = cfg["table"].as<std::string>();
+
+        if (type == "int") {
+            tbl = new bmit::SqlTable<int>(name, path, table);
+        } else if (type == "double") {
+            tbl = new bmit::SqlTable<double>(name, path, table);
+        } else if (type == "str") {
+            tbl = new bmit::SqlTable<std::string>(name, path, table);
+        } else throw "Input type not implemented";
+    }
+    else if (format == "sqlite" && cfg["column"]) {
+        if (m_sqlite_pointer == nullptr)
+            throw std::runtime_error("SQLite pointer not set in iterator");
+        auto column = cfg["column"].as<std::string>();
+        auto table = cfg["table"].as<std::string>();
+
+        if (type == "int") {
+            tbl = new bmit::SqlColumn<int>(name, m_sqlite_pointer, table, column);
+        } else if (type == "double") {
+            tbl = new bmit::SqlColumn<double>(name, m_sqlite_pointer, table, column);
+        } else if (type == "str") {
+            tbl = new bmit::SqlColumn<std::string>(name, m_sqlite_pointer, table, column);
         } else throw "Input type not implemented";
     }
     else if (format == "sqlite") {
         if (m_sqlite_pointer == nullptr)
             throw std::runtime_error("SQLite pointer not set in iterator");
+        auto table = cfg["table"].as<std::string>();
 
         if (type == "int") {
-            table = new bmit::SqlTable<int>(name, m_sqlite_pointer);
+            tbl = new bmit::SqlTable<int>(name, m_sqlite_pointer, table);
         } else if (type == "double") {
-            table = new bmit::SqlTable<double>(name, m_sqlite_pointer);
+            tbl = new bmit::SqlTable<double>(name, m_sqlite_pointer, table);
         } else if (type == "str") {
-            table = new bmit::SqlTable<std::string>(name, m_sqlite_pointer);
+            tbl = new bmit::SqlTable<std::string>(name, m_sqlite_pointer, table);
         } else throw "Input type not implemented";
     }
     else if (format == "csv") {
@@ -340,48 +369,77 @@ bmit::ITable* _Iterator::open_table(const std::string& name) {
         if (cfg["sep"]) sep = cfg["sep"].as<char>();
 
         if (type == "int") {
-            table = new bmit::CsvTable<int>(name, path, sep);
+            tbl = new bmit::CsvTable<int>(name, path, sep);
         } else if (type == "double") {
-            table = new bmit::CsvTable<double>(name, path, sep);
+            tbl = new bmit::CsvTable<double>(name, path, sep);
         } else if (type == "str") {
-            table = new bmit::CsvTable<std::string>(name, path, sep);
+            tbl = new bmit::CsvTable<std::string>(name, path, sep);
         }
         else throw "Input type not implemented";
     }
     else throw "Input format not implemented";
 
-    return table;
+    return tbl;
 }
 
 
 bmit::ITable*
 _Iterator::create_table(const std::string& name, const size_t rows, const size_t cols) {
-    bmit::ITable* table = nullptr;
+    bmit::ITable* tbl = nullptr;
     auto cfg = m_config["outputs"][name];
     auto format = cfg["format"].as<std::string>();
     auto type = cfg["type"].as<std::string>();
 
-    if (format == "sqlite" && cfg["path"]) {
+    if (format == "sqlite" && cfg["path"] && cfg["column"]) {
         auto path = cfg["path"].as<std::string>();
+        auto table = cfg["table"].as<std::string>();
+        auto column = cfg["column"].as<std::string>();
 
         if (type == "int") {
-            table = new bmit::SqlTable<int>(name, path, rows, cols);
+            tbl = new bmit::SqlColumn<int>(name, path, table, column, rows);
         } else if (type == "double") {
-            table = new bmit::SqlTable<double>(name, path, rows, cols);
+            tbl = new bmit::SqlColumn<double>(name, path, table, column, rows);
         } else if (type == "str") {
-            table = new bmit::SqlTable<std::string>(name, path, rows, cols);
+            tbl = new bmit::SqlColumn<std::string>(name, path, table, column, rows);
+        } else throw "Input type not implemented";
+    }
+    else if (format == "sqlite" && cfg["path"]) {
+        auto path = cfg["path"].as<std::string>();
+        auto table = cfg["table"].as<std::string>();
+
+        if (type == "int") {
+            tbl = new bmit::SqlTable<int>(name, path, table, rows, cols);
+        } else if (type == "double") {
+            tbl = new bmit::SqlTable<double>(name, path, table, rows, cols);
+        } else if (type == "str") {
+            tbl = new bmit::SqlTable<std::string>(name, path, table, rows, cols);
+        } else throw "Input type not implemented";
+    }
+    else if (format == "sqlite" && cfg["column"]) {
+        if (m_sqlite_pointer == nullptr)
+            throw std::runtime_error("SQLite pointer not set in iterator");
+        auto table = cfg["table"].as<std::string>();
+        auto column = cfg["column"].as<std::string>();
+
+        if (type == "int") {
+            tbl = new bmit::SqlColumn<int>(name, m_sqlite_pointer, table, column, rows);
+        } else if (type == "double") {
+            tbl = new bmit::SqlColumn<double>(name, m_sqlite_pointer, table, column, rows);
+        } else if (type == "str") {
+            tbl = new bmit::SqlColumn<std::string>(name, m_sqlite_pointer, table, column, rows);
         } else throw "Input type not implemented";
     }
     else if (format == "sqlite") {
         if (m_sqlite_pointer == nullptr)
             throw std::runtime_error("SQLite pointer not set in iterator");
+        auto table = cfg["table"].as<std::string>();
 
         if (type == "int") {
-            table = new bmit::SqlTable<int>(name, m_sqlite_pointer, rows, cols);
+            tbl = new bmit::SqlTable<int>(name, m_sqlite_pointer, table, rows, cols);
         } else if (type == "double") {
-            table = new bmit::SqlTable<double>(name, m_sqlite_pointer, rows, cols);
+            tbl = new bmit::SqlTable<double>(name, m_sqlite_pointer, table, rows, cols);
         } else if (type == "str") {
-            table = new bmit::SqlTable<std::string>(name, m_sqlite_pointer, rows, cols);
+            tbl = new bmit::SqlTable<std::string>(name, m_sqlite_pointer, table, rows, cols);
         } else throw "Input type not implemented";
     }
     else if (format == "csv") {
@@ -392,19 +450,19 @@ _Iterator::create_table(const std::string& name, const size_t rows, const size_t
         if (cfg["sep"]) sep = cfg["sep"].as<char>();
 
         if (type == "int") {
-            table = new bmit::CsvTable<int>(name, path, rows, cols, sep);
+            tbl = new bmit::CsvTable<int>(name, path, rows, cols, sep);
         }
         else if (type == "double") {
-            table = new bmit::CsvTable<double>(name, path, rows, cols, sep);
+            tbl = new bmit::CsvTable<double>(name, path, rows, cols, sep);
         }
         else if (type == "str") {
-            table = new bmit::CsvTable<std::string>(name, path, rows, cols, sep);
+            tbl = new bmit::CsvTable<std::string>(name, path, rows, cols, sep);
         }
         else throw "Output type not implemented";
     }
     else throw "Output format not implemented";
 
-    return table;
+    return tbl;
 }
 
 

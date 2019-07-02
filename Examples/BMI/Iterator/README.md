@@ -12,26 +12,32 @@ A minimal config must specify `inputs`, `outputs` and a `target`
 
 ```yaml
 inputs:
-  input_a: # requires db pointer to be set by runner
+  input_a:
     type: int
     format: sqlite
-    table: table_a
-    column: column_a # optional, single column instead of whole table
-  input_b: # direct connection to db
+    path: data/tables.db
+    table: input_table
+    column: column_a
+  input_b:
     type: double
     format: sqlite
-    table: table_b
     path: data/tables.db
-  input_c: # read from csv file
-    type: str
-    format: csv
-    path: data/table_c.csv
-    sep: ';'
+    table: input_table
+    column: input_table
 ouputs:
-  output_d: {type: int, format: sqlite, table: table_d}
+  output_1:
+  	type: str
+    format: sqlite
+    path: data/tables.db
+    table: output_table_1
+    column: output_1
+  output_2:
+  	type: int
+    format: csv
+    path: data/output2.csv
 target:
-  library: component/libbmi_lookup.dll
-  config: component/typology.yaml
+  library: component/bmi_point_model.dll
+  config: component/point_model.yaml
 ```
 
 ### Inputs/Outputs
@@ -70,7 +76,7 @@ Optional:
 
 ### Target
 
-Describes the target component to be run by the iterator. `library` is the BMI compliant shared library to be loaded. `config` is the path to the config file expected by the target component.
+Describes the target component (i.e. point model) to be run by the iterator. `library` is the BMI compliant shared library to be loaded. `config` is the path to the config file expected by the target component.
 
 ## BMI Interface
 
@@ -80,7 +86,7 @@ The iterator will expose the input and outputs of the loaded target component. H
 
 ## Sequence
 
-![sequence-chart](../../Users/ThiangeC/Downloads/sequence.png)
+![sequence-chart](./sequence.png)
 
 ## Dependencies
 
