@@ -14,6 +14,14 @@ static int sql_table_row_count(sqlite3* db, const std::string& table);
 static int sql_table_col_count(sqlite3* db, const std::string& table);
 static int sql_column_row_count(sqlite3* db, const std::string& table,
                                              const std::string& column);
+static bool sql_table_exists(sqlite3* db, const std::string& table);
+static bool sql_table_has_column(sqlite3* db, const std::string& table,
+                                              const std::string& column);
+static bool sql_assert_column_type(sqlite3* db, const std::string& table,
+                                                const std::string& column,
+                                                const std::string& type);
+static bool sql_table_is_empty(sqlite3* db, const std::string& table);
+static std::vector<int> sql_get_table_ids(sqlite3* db, const std::string& table);
 
 
 //-----------------------------------------------------------------------------
@@ -445,13 +453,24 @@ template <class T>
 void bmit::SqlColumn<T>::write() {
     if (m_readonly) throw "Trying to write to readonly SqlTable";
 
-    create_table_if_not_exists();
+    // Create table and/or column if necessary
+    if (!sql_table_exists(m_db, m_table)) {
+        this->create_table();
+    }
+    else if (!sql_table_has_column(m_db, m_table, m_column)) {
+        this->alter_table_add_column();
+    }
+    else {
+        sql_assert_column_type(m_db, m_table, m_column, get_sql_type());
+    }
 
-    // TODO: Check if column already exists, assuming it doesn't now
-    // alter_table_add_column();
-
-    insert_values();
-
+    // Write data to column
+    if (sql_table_is_empty(m_db, m_table)) {
+        this->insert_values();
+    }
+    else {
+        this->update_values();
+    }
 }
 
 
@@ -466,10 +485,11 @@ std::string bmit::SqlColumn<T>::get_sql_type() {
 
 
 template <class T>
-void bmit::SqlColumn<T>::create_table_if_not_exists() {
+void bmit::SqlColumn<T>::create_table() {
     auto ss = std::stringstream {};
-    ss << "CREATE TABLE IF NOT EXISTS " << m_table
-       << "(" << m_column << " " << get_sql_type() << ");";
+    ss << "CREATE TABLE " << m_table
+       << "(id INTEGER PRIMARY KEY, "
+       << m_column << " " << get_sql_type() << ");";
 
     std::string sql = ss.str();
     sqlite3_stmt* qry = nullptr;
@@ -509,7 +529,6 @@ void bmit::SqlColumn<T>::alter_table_add_column() {
 
 template <class T>
 void bmit::SqlColumn<T>::insert_values() {
-    // TODO: This only works if the table is empty
     std::string sql_quote = "";
     if (get_sql_type() == "text") {
         sql_quote = "'";
@@ -530,14 +549,52 @@ void bmit::SqlColumn<T>::insert_values() {
     const char* qry_tail = nullptr;
 
     if(sqlite3_prepare_v2(m_db, sql.c_str(), -1, &qry, &qry_tail) != SQLITE_OK)
-        throw std::runtime_error("Failed preparing insert query");
+        throw std::runtime_error("Failed preparing insert values query");
 
     if (sqlite3_step(qry) != SQLITE_DONE)
-        throw "Failed executing insert query";
+        throw "Failed executing insert values query";
 
     if (sqlite3_finalize(qry) != SQLITE_OK)
-        throw "Failed finalizing insert query";
+        throw "Failed finalizing insert values query";
 }
+
+
+template <class T>
+void bmit::SqlColumn<T>::update_values() {
+    std::string sql_quote = "";
+    if (get_sql_type() == "text") {
+        sql_quote = "'";
+    }
+
+    auto ids = sql_get_table_ids(m_db, m_table);
+    if (ids.size() != m_data.size()) {
+        throw std::runtime_error(
+            "Length of output column does not match destination table");
+    }
+
+    auto ss = std::stringstream {};
+    int index = 0;
+    for (const auto id : ids) {
+        auto ss = std::stringstream {};
+        ss << "UPDATE " << m_table << " SET " << m_column
+           << " = " << sql_quote << m_data[index++] << sql_quote
+           << " WHERE id = " << id << ";";
+
+        std::string sql = ss.str();
+        sqlite3_stmt* qry = nullptr;
+        const char* qry_tail = nullptr;
+
+        if(sqlite3_prepare_v2(m_db, sql.c_str(), -1, &qry, &qry_tail) != SQLITE_OK)
+        throw std::runtime_error("Failed preparing update values query");
+
+        if (sqlite3_step(qry) != SQLITE_DONE)
+            throw "Failed executing update values query";
+
+        if (sqlite3_finalize(qry) != SQLITE_OK)
+            throw "Failed finalizing update values query";
+    }
+}
+
 
 //-----------------------------------------------------------------------------
 // Helpers
@@ -635,6 +692,144 @@ int sql_column_row_count(sqlite3* db, const std::string& table,
     if (ret != SQLITE_OK) throw "Failed finalizing column record count query";
 
     return count;
+}
+
+
+bool sql_table_exists(sqlite3* db, const std::string& table) {
+    int ret;
+    sqlite3_stmt* qry = nullptr;
+    const char* qry_tail = nullptr;
+    auto sql = (std::string) "SELECT COUNT(*) FROM sqlite_master " +\
+               "WHERE type='table' AND name='" + table + "';";
+
+    ret = sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail);
+    if (ret != SQLITE_OK) throw std::runtime_error(
+        "Failed preparing table exists query");
+
+    ret = sqlite3_step(qry);
+    if (ret != SQLITE_ROW) throw std::runtime_error(
+        "Failed executing column table exists query");
+
+    auto result = sqlite3_column_int(qry, 0);
+
+    ret = sqlite3_finalize(qry);
+    if (ret != SQLITE_OK) throw std::runtime_error(
+        "Failed finalizing table exists query");
+
+    return result == 1;
+}
+
+
+bool sql_table_has_column(sqlite3* db,
+                          const std::string& table,
+                          const std::string& column) {
+    int ret;
+    sqlite3_stmt* qry = nullptr;
+    const char* qry_tail = nullptr;
+    auto sql = "SELECT COUNT(*) FROM pragma_table_info('" + table + "') " +\
+               "WHERE name='" + column + "';";
+
+    ret = sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail);
+    if (ret != SQLITE_OK) throw std::runtime_error(
+        "Failed preparing column exists query");
+
+    ret = sqlite3_step(qry);
+    if (ret != SQLITE_ROW) throw std::runtime_error(
+        "Failed executing column exists query");
+
+
+    auto result = sqlite3_column_int(qry, 0);
+
+    ret = sqlite3_finalize(qry);
+    if (ret != SQLITE_OK) throw std::runtime_error(
+        "Failed finalizing column exists query");
+
+    return result == 1;
+}
+
+
+bool sql_assert_column_type(sqlite3* db,
+                          const std::string& table,
+                          const std::string& column,
+                          const std::string& type) {
+    int ret;
+    sqlite3_stmt* qry = nullptr;
+    const char* qry_tail = nullptr;
+    auto sql = "SELECT type FROM pragma_table_info('" + table + "') " +\
+               "WHERE name='" + column + "';";
+
+    ret = sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail);
+    if (ret != SQLITE_OK) throw std::runtime_error(
+        "Failed preparing column type query");
+
+    ret = sqlite3_step(qry);
+    if (ret != SQLITE_ROW) throw std::runtime_error(
+        "Failed executing column type query");
+
+    auto c_str = sqlite3_column_text(qry, 0);
+    auto actual_type = std::string(reinterpret_cast<const char*>(c_str));
+
+    ret = sqlite3_finalize(qry);
+    if (ret != SQLITE_OK) throw std::runtime_error(
+        "Failed finalizing column type query");
+
+    // Convert both type strings to lowercase and compare
+    auto expected_type = std::string(type);
+    for (auto& c : expected_type) {
+        c = std::tolower(c);
+    }
+    for (auto& c : actual_type) {
+        c = std::tolower(c);
+    }
+    return actual_type == expected_type;
+}
+
+
+bool sql_table_is_empty(sqlite3* db, const std::string& table) {
+    int ret;
+    sqlite3_stmt* qry = nullptr;
+    const char* qry_tail = nullptr;
+    auto sql = "SELECT COUNT(*) FROM " + table + ";";
+
+    ret = sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail);
+    if (ret != SQLITE_OK) throw std::runtime_error(
+        "Failed preparing table is empty query");
+
+    ret = sqlite3_step(qry);
+    if (ret != SQLITE_ROW) throw std::runtime_error(
+        "Failed executing table is empty query");
+
+    auto result = sqlite3_column_int(qry, 0);
+
+    ret = sqlite3_finalize(qry);
+    if (ret != SQLITE_OK) throw std::runtime_error(
+        "Failed finalizing table is empty query");
+
+    return result == 0;
+}
+
+
+std::vector<int> sql_get_table_ids(sqlite3* db, const std::string& table) {
+    int ret;
+    sqlite3_stmt* qry = nullptr;
+    const char* qry_tail = nullptr;
+    auto sql = "SELECT id FROM " + table + ";";
+
+    ret = sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail);
+    if (ret != SQLITE_OK) throw std::runtime_error(
+        "Failed preparing select ids query");
+
+    auto ids = std::vector<int> {};
+    while ( (ret = sqlite3_step(qry)) == SQLITE_ROW ) {
+        ids.push_back(sqlite3_column_int(qry, 0));
+    }
+    if (ret != SQLITE_DONE) throw "Failed executing select ids query";
+
+    ret = sqlite3_finalize(qry);
+    if (ret != SQLITE_OK) throw std::runtime_error(
+        "Failed finalizing select ids query");
+
+    return ids;
 }
 
 

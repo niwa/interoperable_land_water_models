@@ -240,9 +240,10 @@ namespace bmit {
         sqlite3* m_db = nullptr;
 
         std::string get_sql_type();
-        void create_table_if_not_exists();
+        void create_table();
         void alter_table_add_column();
         void insert_values();
+        void update_values();
     };
 }
 

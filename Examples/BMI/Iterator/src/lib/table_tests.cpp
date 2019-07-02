@@ -832,7 +832,7 @@ SCENARIO("Reading a SQL column") {
 }
 
 
-SCENARIO("Writing a SQL column as a new table") {
+SCENARIO("Writing a SQL column") {
 
     GIVEN("A SqlColumn and int data") {
 
@@ -860,12 +860,109 @@ SCENARIO("Writing a SQL column as a new table") {
             ptr = &(values[1]); t.set_cell(1, 0, (const void*) ptr);
             ptr = &(values[2]); t.set_cell(2, 0, (const void*) ptr);
 
-            THEN("Column data can be written to existing table")
+            THEN("Column data can be written as a new table")
             {
                 std::string sql;
                 sqlite3* db = nullptr;
                 sqlite3_stmt* qry = nullptr;
                 const char* qry_tail = nullptr;
+
+                // Call write
+                t.write();
+
+                // And check table was indeed created
+                CHECK(sqlite3_open_v2(test_file.c_str(), &db, SQLITE_OPEN_READONLY, nullptr) == SQLITE_OK);
+                sql = "SELECT " + column + " FROM " + table + ";";
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+
+                auto vals = std::vector<int> (rows);
+                for (int i = 0; i < rows; i++) {
+                    CHECK(sqlite3_step(qry) == SQLITE_ROW);
+                    vals[i] = sqlite3_column_int(qry, 0);
+                }
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+                CHECK(sqlite3_close(db) == SQLITE_OK);
+
+                CHECK(vals == std::vector<int> {1, 2, 3});
+            }
+
+            THEN("Column data can be written to an existing table") {
+                std::string sql;
+                sqlite3* db = nullptr;
+                sqlite3_stmt* qry = nullptr;
+                const char* qry_tail = nullptr;
+
+                // First create the destination table
+                CHECK(sqlite3_open(test_file.c_str(), &db) == SQLITE_OK);
+                sql = "DROP TABLE IF EXISTS table_name";
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+                sql = "\
+                    CREATE TABLE table_name (\
+                        id INTEGER PRIMARY KEY,\
+                        other INTEGER NOT NULL\
+                    );";
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+                qry = nullptr;
+                qry_tail = nullptr;
+                sql = "INSERT INTO table_name (other) VALUES (10), (30), (20);";
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+                CHECK(sqlite3_close(db) == SQLITE_OK);
+
+                // Call write
+                t.write();
+
+                // And check table was indeed created
+                CHECK(sqlite3_open_v2(test_file.c_str(), &db, SQLITE_OPEN_READONLY, nullptr) == SQLITE_OK);
+                sql = "SELECT " + column + " FROM " + table + ";";
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+
+                auto vals = std::vector<int> (rows);
+                for (int i = 0; i < rows; i++) {
+                    CHECK(sqlite3_step(qry) == SQLITE_ROW);
+                    vals[i] = sqlite3_column_int(qry, 0);
+                }
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+                CHECK(sqlite3_close(db) == SQLITE_OK);
+
+                CHECK(vals == std::vector<int> {1, 2, 3});
+            }
+
+            THEN("Column data can be written to an existing column") {
+                std::string sql;
+                sqlite3* db = nullptr;
+                sqlite3_stmt* qry = nullptr;
+                const char* qry_tail = nullptr;
+
+                // First create the destination table
+                CHECK(sqlite3_open(test_file.c_str(), &db) == SQLITE_OK);
+                sql = "DROP TABLE IF EXISTS table_name";
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+                sql = "\
+                    CREATE TABLE table_name (\
+                        id INTEGER PRIMARY KEY,\
+                        other INTEGER NOT NULL,\
+                        col_name INTEGER\
+                    );";
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+                qry = nullptr;
+                qry_tail = nullptr;
+                sql = "INSERT INTO table_name (other, col_name) VALUES (10, -1), (30, -2), (20, -3);";
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+                CHECK(sqlite3_close(db) == SQLITE_OK);
 
                 // Call write
                 t.write();
@@ -915,12 +1012,107 @@ SCENARIO("Writing a SQL column as a new table") {
             ptr = &(values[1]); t.set_cell(1, 0, (void*) ptr);
             ptr = &(values[2]); t.set_cell(2, 0, (void*) ptr);
 
-            THEN("Column data can be written to existing table")
+            THEN("Column data can be written as a new table")
             {
                 std::string sql;
                 sqlite3* db = nullptr;
                 sqlite3_stmt* qry = nullptr;
                 const char* qry_tail = nullptr;
+
+                // Call write
+                t.write();
+
+                // And check table was indeed created
+                CHECK(sqlite3_open_v2(test_file.c_str(), &db, SQLITE_OPEN_READONLY, nullptr) == SQLITE_OK);
+                sql = "SELECT " + column + " FROM " + table + ";";
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+
+                auto vals = std::vector<double> (rows);
+                for (int i = 0; i < rows; i++) {
+                    CHECK(sqlite3_step(qry) == SQLITE_ROW);
+                    vals[i] = sqlite3_column_double(qry, 0);
+                }
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+                CHECK(sqlite3_close(db) == SQLITE_OK);
+
+                CHECK(vals == std::vector<double> {1.1, 2.2, 3.3});
+            }
+
+            THEN("Column data can be written to an existing table")
+            {
+                std::string sql;
+                sqlite3* db = nullptr;
+                sqlite3_stmt* qry = nullptr;
+                const char* qry_tail = nullptr;
+
+                // First create the destination table
+                CHECK(sqlite3_open(test_file.c_str(), &db) == SQLITE_OK);
+                sql = "DROP TABLE IF EXISTS table_name";
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+                sql = "\
+                    CREATE TABLE table_name (\
+                        id INTEGER PRIMARY KEY,\
+                        other INTEGER NOT NULL\
+                    );";
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+                sql = "INSERT INTO table_name (other) VALUES (10), (30), (20);";
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+                CHECK(sqlite3_close(db) == SQLITE_OK);
+
+                // Call write
+                t.write();
+
+                // And check table was indeed created
+                CHECK(sqlite3_open_v2(test_file.c_str(), &db, SQLITE_OPEN_READONLY, nullptr) == SQLITE_OK);
+                sql = "SELECT " + column + " FROM " + table + ";";
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+
+                auto vals = std::vector<double> (rows);
+                for (int i = 0; i < rows; i++) {
+                    CHECK(sqlite3_step(qry) == SQLITE_ROW);
+                    vals[i] = sqlite3_column_double(qry, 0);
+                }
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+                CHECK(sqlite3_close(db) == SQLITE_OK);
+
+                CHECK(vals == std::vector<double> {1.1, 2.2, 3.3});
+            }
+
+            THEN("Column data can be written to an existing column")
+            {
+                std::string sql;
+                sqlite3* db = nullptr;
+                sqlite3_stmt* qry = nullptr;
+                const char* qry_tail = nullptr;
+
+                // First create the destination table
+                CHECK(sqlite3_open(test_file.c_str(), &db) == SQLITE_OK);
+                sql = "DROP TABLE IF EXISTS table_name";
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+                sql = "\
+                    CREATE TABLE table_name (\
+                        id INTEGER PRIMARY KEY,\
+                        other INTEGER NOT NULL,\
+                        col_name FLOAT\
+                    );";
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+                sql = "INSERT INTO table_name (other, col_name) VALUES (10, -1.0), (30, -2.0), (20, -3.0);";
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+                CHECK(sqlite3_close(db) == SQLITE_OK);
 
                 // Call write
                 t.write();
@@ -970,12 +1162,109 @@ SCENARIO("Writing a SQL column as a new table") {
             ptr = values[1].c_str(); t.set_cell(1, 0, (const void*) ptr);
             ptr = values[2].c_str(); t.set_cell(2, 0, (const void*) ptr);
 
-            THEN("Column data can be written to existing table")
+            THEN("Column data can be written as a new table")
             {
                 std::string sql;
                 sqlite3* db = nullptr;
                 sqlite3_stmt* qry = nullptr;
                 const char* qry_tail = nullptr;
+
+                // Call write
+                t.write();
+
+                // And check table was indeed created
+                CHECK(sqlite3_open_v2(test_file.c_str(), &db, SQLITE_OPEN_READONLY, nullptr) == SQLITE_OK);
+                sql = "SELECT " + column + " FROM " + table + ";";
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+
+                auto vals = std::vector<std::string> (rows);
+                for (int i = 0; i < rows; i++) {
+                    CHECK(sqlite3_step(qry) == SQLITE_ROW);
+                    auto c = sqlite3_column_text(qry, 0);
+                    vals[i] = std::string(reinterpret_cast<const char*>(c));
+                }
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+                CHECK(sqlite3_close(db) == SQLITE_OK);
+
+                CHECK(vals == std::vector<std::string> {"one","two","three"});
+            }
+
+            THEN("Column data can be written to an existing table")
+            {
+                std::string sql;
+                sqlite3* db = nullptr;
+                sqlite3_stmt* qry = nullptr;
+                const char* qry_tail = nullptr;
+
+                // First create the destination table
+                CHECK(sqlite3_open(test_file.c_str(), &db) == SQLITE_OK);
+                sql = "DROP TABLE IF EXISTS table_name";
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+                sql = "\
+                    CREATE TABLE table_name (\
+                        id INTEGER PRIMARY KEY,\
+                        other INTEGER NOT NULL\
+                    );";
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+                sql = "INSERT INTO table_name (other) VALUES (10), (30), (20);";
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+                CHECK(sqlite3_close(db) == SQLITE_OK);
+
+                // Call write
+                t.write();
+
+                // And check table was indeed created
+                CHECK(sqlite3_open_v2(test_file.c_str(), &db, SQLITE_OPEN_READONLY, nullptr) == SQLITE_OK);
+                sql = "SELECT " + column + " FROM " + table + ";";
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+
+                auto vals = std::vector<std::string> (rows);
+                for (int i = 0; i < rows; i++) {
+                    CHECK(sqlite3_step(qry) == SQLITE_ROW);
+                    auto c = sqlite3_column_text(qry, 0);
+                    vals[i] = std::string(reinterpret_cast<const char*>(c));
+                }
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+                CHECK(sqlite3_close(db) == SQLITE_OK);
+
+                CHECK(vals == std::vector<std::string> {"one","two","three"});
+            }
+
+            THEN("Column data can be written to an existing column")
+            {
+                std::string sql;
+                sqlite3* db = nullptr;
+                sqlite3_stmt* qry = nullptr;
+                const char* qry_tail = nullptr;
+
+                // First create the destination table
+                CHECK(sqlite3_open(test_file.c_str(), &db) == SQLITE_OK);
+                sql = "DROP TABLE IF EXISTS table_name";
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+                sql = "\
+                    CREATE TABLE table_name (\
+                        id INTEGER PRIMARY KEY,\
+                        other INTEGER NOT NULL,\
+                        col_name TEXT\
+                    );";
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+                sql = "INSERT INTO table_name (other, col_name) VALUES (10, 'X'), (30, 'Y'), (20, 'Z');";
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+                CHECK(sqlite3_close(db) == SQLITE_OK);
 
                 // Call write
                 t.write();
