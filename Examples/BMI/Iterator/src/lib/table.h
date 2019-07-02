@@ -36,8 +36,8 @@ namespace bmit {
         ITable&& operator=(const ITable&& other) = delete;
         virtual ~ITable() = default;
 
-        virtual int nb_cols() = 0;
-        virtual int nb_rows() = 0;
+        virtual size_t nb_cols() = 0;
+        virtual size_t nb_rows() = 0;
         virtual const std::string& name() = 0;
 
         // Loads all data into memory
@@ -47,10 +47,10 @@ namespace bmit {
 
         // Provide read-only access to table cell memory.
         // The returned pointer can be passed to OE-BMI set_var.
-        virtual const void* get_cell(const int irow, const int icol) = 0;
+        virtual const void* get_cell(const size_t irow, const size_t icol) = 0;
 
         // Set table cell value from external memory.
-        virtual void set_cell(const int irow, const int icol, const void* ptr) = 0;
+        virtual void set_cell(const size_t irow, const size_t icol, const void* ptr) = 0;
 
         // Write data file.
         // Used on output tables only.
@@ -68,11 +68,11 @@ namespace bmit {
         Table&& operator=(const Table&& other) = delete;
         ~Table() = default;
 
-        virtual int nb_cols() {return m_nb_cols;}
-        virtual int nb_rows() {return m_nb_rows;}
+        virtual size_t nb_cols() {return m_nb_cols;}
+        virtual size_t nb_rows() {return m_nb_rows;}
 
-        virtual const void* get_cell(const int irow, const int icol);
-        virtual void set_cell(const int irow, const int icol, const void* ptr);
+        virtual const void* get_cell(const size_t irow, const size_t icol);
+        virtual void set_cell(const size_t irow, const size_t icol, const void* ptr);
     protected:
         // Default access is readonly
         bool m_readonly = true;
@@ -80,8 +80,8 @@ namespace bmit {
         // Data is stored in a single vector.
         // Column dimension changes fastest: row1-col1, row1-col2, ..., rowM-colN
         std::vector<T> m_data;
-        int m_nb_rows = 0;
-        int m_nb_cols = 0;
+        size_t m_nb_rows = 0;
+        size_t m_nb_cols = 0;
     };
 
 
@@ -102,8 +102,8 @@ namespace bmit {
         explicit CsvTable(
             const std::string& name,
             const std::string& path,
-            const int rows,
-            const int cols,
+            const size_t rows,
+            const size_t cols,
             const char sep = DEFAULT_CSV_SEP);
 
         CsvTable(const CsvTable &) = delete;
@@ -146,15 +146,15 @@ namespace bmit {
         explicit SqlTable(
             const std::string& name,
             const std::string& path,
-            const int rows,
-            const int cols);
+            const size_t rows,
+            const size_t cols);
 
         /* Read/Write from db pointer */
         explicit SqlTable(
             const std::string& name,
             sqlite3* db,
-            const int rows,
-            const int cols);
+            const size_t rows,
+            const size_t cols);
 
         SqlTable(const SqlTable &) = delete;
         SqlTable(SqlTable &&) noexcept = delete;
@@ -199,14 +199,14 @@ namespace bmit {
             const std::string& name,
             const std::string& path,
             const std::string& column,
-            const int rows);
+            const size_t rows);
 
         /* Read/Write from db pointer */
         explicit SqlColumn(
             const std::string& name,
             sqlite3* db,
             const std::string& column,
-            const int rows);
+            const size_t rows);
 
         SqlColumn(const SqlColumn &) = delete;
         SqlColumn(SqlColumn &&) noexcept = delete;

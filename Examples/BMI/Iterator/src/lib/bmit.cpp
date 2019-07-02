@@ -46,8 +46,8 @@ private:
     std::vector<std::string> m_output_var_names;
 
     // Needed to provide BMI rank/shape info
-    int m_nb_rows = 0;
-    int m_nb_cols = 0;
+    size_t m_nb_rows = 0;
+    size_t m_nb_cols = 0;
 
     // Some tables need a sqlite pointer
     sqlite3* m_sqlite_pointer = nullptr;
@@ -64,7 +64,7 @@ private:
     bmit::ITable* open_table(const std::string& name);
 
     // Create table to write to
-    bmit::ITable* create_table(const std::string& name, const int rows, const int cols);
+    bmit::ITable* create_table(const std::string& name, const size_t rows, const size_t cols);
 };
 
 
@@ -118,8 +118,8 @@ std::vector<int> _Iterator::get_var_shape(const std::string& name) {
     // identical dimensions. The first dimension is the number of
     // rows or records in table or column. For tables, the second
     // dimension is the number of columns.
-    if (m_nb_cols == 1) return {m_nb_rows};
-    return {m_nb_rows, m_nb_cols};
+    if (m_nb_cols == 1) return {(int) m_nb_rows};
+    return {(int) m_nb_rows, (int) m_nb_cols};
 }
 
 
@@ -355,7 +355,7 @@ bmit::ITable* _Iterator::open_table(const std::string& name) {
 
 
 bmit::ITable*
-_Iterator::create_table(const std::string& name, const int rows, const int cols) {
+_Iterator::create_table(const std::string& name, const size_t rows, const size_t cols) {
     bmit::ITable* table = nullptr;
     auto cfg = m_config["outputs"][name];
     auto format = cfg["format"].as<std::string>();

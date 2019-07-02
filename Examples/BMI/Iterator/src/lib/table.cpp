@@ -19,12 +19,12 @@ static int sql_column_row_count(sqlite3* db, const std::string& table,
 // Table - General implementation
 //-----------------------------------------------------------------------------
 template<class T>
-const void* bmit::Table<T>::get_cell(const int irow, const int icol) {
+const void* bmit::Table<T>::get_cell(const size_t irow, const size_t icol) {
     return &(m_data[irow * m_nb_cols + icol]);
 }
 
 template<class T>
-void bmit::Table<T>::set_cell(const int irow, const int icol, const void* ptr) {
+void bmit::Table<T>::set_cell(const size_t irow, const size_t icol, const void* ptr) {
     auto& cell = m_data[irow * m_nb_cols + icol];
     memcpy(&cell, ptr, sizeof(T));
 }
@@ -33,13 +33,13 @@ void bmit::Table<T>::set_cell(const int irow, const int icol, const void* ptr) {
 // Table - Custom implementation for string data
 //-----------------------------------------------------------------------------
 template<>
-const void* bmit::Table<std::string>::get_cell(const int irow, const int icol) {
+const void* bmit::Table<std::string>::get_cell(const size_t irow, const size_t icol) {
     auto& s = m_data[irow * m_nb_cols + icol];
     return s.c_str();
 }
 
 template<>
-void bmit::Table<std::string>::set_cell(const int irow, const int icol, const void* ptr) {
+void bmit::Table<std::string>::set_cell(const size_t irow, const size_t icol, const void* ptr) {
     auto& cell = m_data[irow * m_nb_cols + icol];
     cell = std::string {(char*) ptr};
 }
@@ -65,8 +65,8 @@ bmit::CsvTable<T>::CsvTable(const std::string& name,
 template <class T>
 bmit::CsvTable<T>::CsvTable(const std::string& name,
                             const std::string& path,
-                            const int rows,
-                            const int cols,
+                            const size_t rows,
+                            const size_t cols,
                             const char sep) {
     m_name = name;
     m_path = path;
@@ -182,7 +182,8 @@ bmit::SqlTable<T>::SqlTable(const std::string& name, sqlite3* db) {
 }
 
 template <class T>
-bmit::SqlTable<T>::SqlTable(const std::string& name, const std::string& path, const int rows, const int cols) {
+bmit::SqlTable<T>::SqlTable(const std::string& name, const std::string& path,
+    const size_t rows, const size_t cols) {
     m_readonly = false;
     m_name = name;
     m_path = path;
@@ -197,7 +198,8 @@ bmit::SqlTable<T>::SqlTable(const std::string& name, const std::string& path, co
 }
 
 template <class T>
-bmit::SqlTable<T>::SqlTable(const std::string& name, sqlite3* db, const int rows, const int cols) {
+bmit::SqlTable<T>::SqlTable(const std::string& name, sqlite3* db,
+    const size_t rows, const size_t cols) {
     m_readonly = false;
     m_name = name;
     m_db = db;
@@ -348,7 +350,7 @@ template <class T>
 bmit::SqlColumn<T>::SqlColumn(const std::string& name,
                               const std::string& path,
                               const std::string& column,
-                              const int rows) {
+                              const size_t rows) {
     m_readonly = false;
     m_name = name;
     m_path = path;
@@ -368,7 +370,7 @@ template <class T>
 bmit::SqlColumn<T>::SqlColumn(const std::string& name,
                               sqlite3* db,
                               const std::string& column,
-                              const int rows) {
+                              const size_t rows) {
     m_readonly = false;
     m_name = name;
     m_db = db;

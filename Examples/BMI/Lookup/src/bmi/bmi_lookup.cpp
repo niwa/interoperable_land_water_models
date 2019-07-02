@@ -107,7 +107,7 @@ BMI_API void get_var_name(int index, char* name) {
     }
     else if(index < n_total) {
         auto names = _lookup->get_output_names();
-        _name = names[index - n_inputs];
+        _name = names[ (size_t) index - n_inputs];
     }
     else {
         return;
