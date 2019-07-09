@@ -6,6 +6,8 @@
 
 bmit::Iterator* IT = nullptr;
 
+/* Store callback */
+Logger logger = NULL;
 
 /* control functions. These return an error code. */
 BMI_API int initialize(const char* config_file) {
@@ -106,4 +108,13 @@ BMI_API void get_var(const char* name, void** ptr) {
 
 BMI_API void set_var(const char* name, void* ptr) {
     IT->set_var(name, ptr);
+}
+
+/* set logger by setting a pointer to the log function */
+void set_logger(Logger callback)
+{
+	Level level = LEVEL_INFO;
+	std::string msg = "Muskingum BMI library attached to logger.";
+	logger = callback;
+	logger(level, msg.c_str());
 }

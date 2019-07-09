@@ -5,6 +5,8 @@
 #include "bmi.h"
 #include "lookup.h"
 
+Logger logger = NULL;
+
 lup::Lookup* _lookup = nullptr;
 std::vector<lup::Input> _inputs;
 double* _outputs;
@@ -152,3 +154,12 @@ BMI_API void set_var(const char *name, const void *ptr) {
             break;
     }
 }
+
+BMI_API void set_logger(Logger callback)
+{
+	Level level = LEVEL_INFO;
+	std::string msg = "Logging attached to cxx model";
+	logger = callback;
+	logger(level, msg.c_str());
+}
+
