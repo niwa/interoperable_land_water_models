@@ -15,7 +15,7 @@ bin_msvc/
 *.py
 
 # Local build script
-build.bat
+_*.bat
 
 # Local cmake settings
 local.cmake
