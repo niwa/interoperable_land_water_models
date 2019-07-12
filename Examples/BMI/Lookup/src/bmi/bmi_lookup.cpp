@@ -25,6 +25,10 @@ BMI_API int initialize(const char *config_file) {
             input = lup::Input {name, ""};
         } else if (type == "double") {
             input = lup::Input {name, 0.0};
+        } else {
+            // TODO: log this (unsupported variable type)
+            lup::Lookup::Dispose(_lookup);
+            return -1;
         }
         _inputs.push_back(input);
     }

@@ -98,7 +98,7 @@ SCENARIO("Variable info") {
         }
 
         THEN("Variable shape can be retrieved") {
-            
+
             // Inputs
             {
                 int shape[MAXDIMS] = {0};
@@ -211,7 +211,6 @@ SCENARIO("Data access") {
             }
         }
 
-
         THEN("Finalizing returns no errors") {
             CHECK(finalize() == 0);
         }
@@ -220,3 +219,216 @@ SCENARIO("Data access") {
         remove(filename.c_str());
     }
 }
+
+
+TEST_CASE("Running the typology lookup") {
+
+    std::string const cfg_file = "typologies.yml";
+    CHECK(initialize(cfg_file.c_str()) == 0);
+
+    SECTION("Retrieving variable names") {
+        char buffer[MAXSTRINGLEN];
+        // Inputs
+        get_var_name(0, buffer); CHECK(!strcmp(buffer, "model_land-use-type__identification_number"));
+        get_var_name(1, buffer); CHECK(!strcmp(buffer, "model_climate-type__identification_number"));
+        get_var_name(2, buffer); CHECK(!strcmp(buffer, "model_basin__slope"));
+        get_var_name(3, buffer); CHECK(!strcmp(buffer, "model_soil-type__identification_number"));
+        get_var_name(4, buffer); CHECK(!strcmp(buffer, "model_basin_irrigation_area__fraction"));
+        get_var_name(5, buffer); CHECK(!strcmp(buffer, "atmosphere_water~10-year-average__precipitation_volume_flux"));
+        get_var_name(6, buffer); CHECK(!strcmp(buffer, "anion_storage__capacity"));
+        // Outputs
+        get_var_name(7, buffer); CHECK(!strcmp(buffer, "model_basin_N__loss"));
+        get_var_name(8, buffer); CHECK(!strcmp(buffer, "model_basin_P__loss"));
+    }
+
+    SECTION("Retrieving variable types") {
+        char type[MAXSTRINGLEN];
+        // Inputs
+        get_var_type("model_land-use-type__identification_number", type);
+        CHECK(!strcmp(type, "double"));
+        get_var_type("model_climate-type__identification_number", type);
+        CHECK(!strcmp(type, "double"));
+        get_var_type("model_basin__slope", type);
+        CHECK(!strcmp(type, "double"));
+        get_var_type("model_soil-type__identification_number", type);
+        CHECK(!strcmp(type, "double"));
+        get_var_type("model_basin_irrigation_area__fraction", type);
+        CHECK(!strcmp(type, "double"));
+        get_var_type("atmosphere_water~10-year-average__precipitation_volume_flux", type);
+        CHECK(!strcmp(type, "double"));
+        get_var_type("anion_storage__capacity", type);
+        CHECK(!strcmp(type, "double"));
+        // Outputs
+        get_var_type("model_basin_N__loss", type);
+        CHECK(!strcmp(type, "double"));
+        get_var_type("model_basin_P__loss", type);
+        CHECK(!strcmp(type, "double"));
+    }
+
+    SECTION("Retrieving variable ranks") {
+        int rank = -1;
+        // Inputs
+        get_var_rank("model_land-use-type__identification_number", &rank);
+        CHECK(rank == 1);
+        get_var_rank("model_climate-type__identification_number", &rank);
+        CHECK(rank == 1);
+        get_var_rank("model_basin__slope", &rank);
+        CHECK(rank == 1);
+        get_var_rank("model_soil-type__identification_number", &rank);
+        CHECK(rank == 1);
+        get_var_rank("model_basin_irrigation_area__fraction", &rank);
+        CHECK(rank == 1);
+        get_var_rank("atmosphere_water~10-year-average__precipitation_volume_flux", &rank);
+        CHECK(rank == 1);
+        get_var_rank("anion_storage__capacity", &rank);
+        CHECK(rank == 1);
+        // Outputs
+        get_var_rank("model_basin_N__loss", &rank);
+        CHECK(rank == 1);
+        get_var_rank("model_basin_P__loss", &rank);
+        CHECK(rank == 1);
+    }
+
+    SECTION("Retrieving variable shapes") {
+        // Inputs
+        {
+            int shape[MAXDIMS] = {0};
+            get_var_shape("model_land-use-type__identification_number", shape);
+            CHECK(shape[0] == 1);
+            CHECK(shape[1] == 0);
+        }
+
+        {
+            int shape[MAXDIMS] = {0};
+            get_var_shape("model_climate-type__identification_number", shape);
+            CHECK(shape[0] == 1);
+            CHECK(shape[1] == 0);
+        }
+
+        {
+            int shape[MAXDIMS] = {0};
+            get_var_shape("model_basin__slope", shape);
+            CHECK(shape[0] == 1);
+            CHECK(shape[1] == 0);
+        }
+
+        {
+            int shape[MAXDIMS] = {0};
+            get_var_shape("model_soil-type__identification_number", shape);
+            CHECK(shape[0] == 1);
+            CHECK(shape[1] == 0);
+        }
+
+        {
+            int shape[MAXDIMS] = {0};
+            get_var_shape("model_basin_irrigation_area__fraction", shape);
+            CHECK(shape[0] == 1);
+            CHECK(shape[1] == 0);
+        }
+
+        {
+            int shape[MAXDIMS] = {0};
+            get_var_shape("atmosphere_water~10-year-average__precipitation_volume_flux", shape);
+            CHECK(shape[0] == 1);
+            CHECK(shape[1] == 0);
+        }
+
+        {
+            int shape[MAXDIMS] = {0};
+            get_var_shape("anion_storage__capacity", shape);
+            CHECK(shape[0] == 1);
+            CHECK(shape[1] == 0);
+        }
+
+        // Outputs
+        {
+            int shape[MAXDIMS] = {0};
+            get_var_shape("model_basin_N__loss", shape);
+            CHECK(shape[0] == 1);
+            CHECK(shape[1] == 0);
+        }
+
+        {
+            int shape[MAXDIMS] = {0};
+            get_var_shape("model_basin_P__loss", shape);
+            CHECK(shape[0] == 1);
+            CHECK(shape[1] == 0);
+        }
+    }
+
+    SECTION("Looking up a knwon input combination") {
+        auto dbl_buff = double {};
+
+        dbl_buff = 1;
+        set_var("model_land-use-type__identification_number", (void*) &dbl_buff);
+
+        dbl_buff = 2;
+        set_var("model_climate-type__identification_number", (void*) &dbl_buff);
+
+        dbl_buff = 1;
+        set_var("model_basin__slope", (void*) &dbl_buff);
+
+        dbl_buff = 3;
+        set_var("model_soil-type__identification_number", (void*) &dbl_buff);
+
+        dbl_buff = 0.0;
+        set_var("model_basin_irrigation_area__fraction", (void*) &dbl_buff);
+
+        dbl_buff = 1700.0;
+        set_var("atmosphere_water~10-year-average__precipitation_volume_flux", (void*) &dbl_buff);
+
+        dbl_buff = 10.0;
+        set_var("anion_storage__capacity", (void*) &dbl_buff);
+
+        THEN("Outputs can be retrieved after calling update") {
+            CHECK(update(0) == 0);
+
+            double* ptr;
+            get_var("model_basin_N__loss", (void **) &ptr);
+            CHECK(*ptr == 127.0);
+
+            get_var("model_basin_P__loss", (void **) &ptr);
+            CHECK(*ptr == 2.80);
+        }
+    }
+
+    SECTION("Looking up an unknwon input combination with fallback") {
+        auto dbl_buff = double {};
+
+        dbl_buff = 1;
+        set_var("model_land-use-type__identification_number", (void*) &dbl_buff);
+
+        dbl_buff = 2;
+        set_var("model_climate-type__identification_number", (void*) &dbl_buff);
+
+        dbl_buff = 1;
+        set_var("model_basin__slope", (void*) &dbl_buff);
+
+        dbl_buff = 3;
+        set_var("model_soil-type__identification_number", (void*) &dbl_buff);
+
+        dbl_buff = 0.0;
+        set_var("model_basin_irrigation_area__fraction", (void*) &dbl_buff);
+
+        dbl_buff = 1200.0;
+        set_var("atmosphere_water~10-year-average__precipitation_volume_flux", (void*) &dbl_buff);
+
+        dbl_buff = 10.0;
+        set_var("anion_storage__capacity", (void*) &dbl_buff);
+
+        THEN("Outputs can be retrieved after calling update") {
+            CHECK(update(0) == 0);
+
+            double* ptr;
+            get_var("model_basin_N__loss", (void **) &ptr);
+            CHECK(*ptr == -999.9);
+
+            get_var("model_basin_P__loss", (void **) &ptr);
+            CHECK(*ptr == -999.9);
+        }
+    }
+
+    CHECK(finalize() == 0);
+}
+
+

@@ -53,5 +53,3 @@ ENDIF (WIN32 AND NOT MSVC)
 add_subdirectory(${LU_CATCH_DIR})
 add_subdirectory(${LU_LIB_DIR})
 add_subdirectory(${LU_BMI_DIR})
-
-

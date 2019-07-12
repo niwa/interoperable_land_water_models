@@ -9,17 +9,19 @@
 #====================================================================
 
 inputs:
-  model_land-use-type__identification_number: {type: int}
-  model_climate-type__identification_number: {type: int}
-  model_soil-type__identification_number: {type: int}
+  model_land-use-type__identification_number: {type: double}
+  model_climate-type__identification_number: {type: double}
   model_basin__slope: {type: double, units: "degrees"}
-  atmosphere_water~10-year-average__precipitation_volume_flux: {type: double, units: mm_year-1}
+  model_soil-type__identification_number: {type: double}
   model_basin_irrigation_area__fraction: {type: double}
+  atmosphere_water~10-year-average__precipitation_volume_flux: {type: double, units: mm_year-1}
   anion_storage__capacity: {type: double, units: \"%\"}
 
 outputs:
   model_basin_N__loss: {type: double, units: kg_ha-1_yr-1}
   model_basin_P__loss: {type: double, units: kg_ha-1_yr-1}
+
+fallback_output: [-999.9, -999.9]
 
 mappings:
   # Land use
@@ -46,25 +48,25 @@ mappings:
     5: cool # Cool-Wet
     6: cool # Cool-Dry
 
+  model_basin__slope:
+    0: low      # >=  0
+    7: moderate # >=  7
+    15: steep   # >= 15
+
   # Soil to drainage class
   model_soil-type__identification_number:
     1: light
     2: poor
     3: well
 
-  model_basin__slope:
-    0: low      # >=  0
-    7: moderate # >=  7
-    15: steep   # >= 15
+  model_basin_irrigation_area__fraction:
+    0.0: not_irrigated
+    0.5: irrigated
 
   atmosphere_water~10-year-average__precipitation_volume_flux:
     0: dry      # >= 0
     1200: moist # >= 1200
     1700: wet   # >= 1700
-
-  model_basin_irrigation_area__fraction:
-    0.0: not_irrigated
-    0.5: irrigated
 
   # Anion Sorption Capacity
   anion_storage__capacity:

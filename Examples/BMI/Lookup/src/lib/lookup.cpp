@@ -131,6 +131,12 @@ std::vector<double> _Lookup::get_values(std::vector<lup::Input> inputs) {
         }
     }
 
+    if (node.IsNull() || !node.IsDefined()) {
+        //  TODO: log this (unknown lookup combination, falling back to default)
+        //  TODO: implement default fallback
+        return _config["fallback_output"].as<std::vector<double> >();
+    }
+
     return node.as<std::vector<double> >();
 }
 

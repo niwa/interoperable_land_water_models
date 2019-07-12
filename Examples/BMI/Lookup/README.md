@@ -77,6 +77,8 @@ The output sequences contain the output values in the same order as the `outputs
 
 An underscore character can be used to match any class of a mapped input or any value of an unmapped input. In the example above, the `_` will match both `moderate` and `steep`.
 
+An optional `fallback_output` key can be provided, in case the lookup does not cover all possible input combinations. If not fallback output is provided the lookup library will throw an exception for input combinations not described in the lookup node.
+
 
 ### Whole file example
 
@@ -103,6 +105,8 @@ mappings:
   	0: low      # >=  0
     7: moderate # >=  7
     15: steep   # >= 15
+
+fallback_output: [-999, -999]
 
 lookup:
   warm:
