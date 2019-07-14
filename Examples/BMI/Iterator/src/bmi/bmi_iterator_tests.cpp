@@ -24,7 +24,17 @@
 #include "target_settings.h"
 
 
+static const Level log_level = LEVEL_INFO;
+
+CALLCONV void log(Level level, const char* msg) {
+    if (level >= log_level) {
+        std::cout << msg << std::endl;
+    }
+}
+
+
 SCENARIO("Initializing and finalizing") {
+    set_logger((Logger) log);
 
     GIVEN("A valid config file and input data") {
 
@@ -101,6 +111,7 @@ SCENARIO("Initializing and finalizing") {
 
 
 SCENARIO("Getting variable info") {
+    set_logger((Logger) log);
 
     GIVEN("An initialized bmi iterator instance and input data") {
 

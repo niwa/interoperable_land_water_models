@@ -1,5 +1,6 @@
-#include <string>
 #include <cstring>
+#include <sstream>
+#include <string>
 
 #include "bmi.h"
 #include "bmit.h"
@@ -11,9 +12,10 @@ Logger logger = NULL;
 
 /* control functions. These return an error code. */
 BMI_API int initialize(const char* config_file) {
+    logger(LEVEL_DEBUG, "Initializing iterator");
 	/* Avoid initializing over existing instance */
 	if (IT != nullptr) {
-		// ToDo: log this (trying to initialize initalized iterator instance)
+        logger(LEVEL_ERROR, "Calling initialize on initalized iterator instance");
 		return -1;
 	}
 
@@ -21,13 +23,15 @@ BMI_API int initialize(const char* config_file) {
 	try {
 		IT = bmit::Iterator::Create(config_file);
 	}
-	catch (std::exception&) {
-		// ToDo: log exception
+	catch (std::exception& e) {
+		auto msg = std::stringstream {};
+        msg << "Failed initializing iterator: " <<  e.what();
+        logger(LEVEL_FATAL, msg.str().c_str());
 		IT = nullptr;
     	return -1;
     }
 
-	// OK
+	logger(LEVEL_INFO, "Initialized iterator");
 	return 0;
 }
 
@@ -36,8 +40,10 @@ BMI_API int update(double dt) {
 	try {
         IT->run();
     }
-    catch (std::exception&) {
-        // ToDo: log exception
+    catch (std::exception& e) {
+        auto msg = std::stringstream {};
+        msg << "In iterator update call: " <<  e.what();
+        logger(LEVEL_ERROR, msg.str().c_str());
         return -1;
     }
     return 0;
@@ -45,8 +51,10 @@ BMI_API int update(double dt) {
 
 
 BMI_API int finalize() {
-	bmit::Iterator::Dispose(IT);
+	logger(LEVEL_DEBUG, "Finalizing iterator");
+    bmit::Iterator::Dispose(IT);
 	IT = nullptr;
+    logger(LEVEL_INFO, "Finalized iterator");
 	return 0;
 }
 
@@ -114,7 +122,7 @@ BMI_API void set_var(const char* name, void* ptr) {
 void set_logger(Logger callback)
 {
 	Level level = LEVEL_INFO;
-	std::string msg = "Muskingum BMI library attached to logger.";
+    std::string msg = "Logging attached to BMI Iterator";
 	logger = callback;
 	logger(level, msg.c_str());
 }
