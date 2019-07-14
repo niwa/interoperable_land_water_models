@@ -1,11 +1,21 @@
 #include <cstring>
 #include <fstream>
+#include <iostream>
 
 #include "catch.hpp"
 #include "bmi.h"
 
+static const Level log_level = LEVEL_NONE;
+
+CALLCONV void log(Level level, const char* msg) {
+    if (level >= log_level) {
+        std::cout << msg << std::endl;
+    }
+}
+
 
 SCENARIO("Initializing and finalizing") {
+    set_logger((Logger) log);
 
     GIVEN("A valid config file") {
 
@@ -30,6 +40,7 @@ SCENARIO("Initializing and finalizing") {
 
 
 SCENARIO("Variable info") {
+    set_logger((Logger) log);
 
     GIVEN("An initialized bmi lookup instance") {
 
@@ -147,6 +158,7 @@ SCENARIO("Variable info") {
 
 
 SCENARIO("Data access") {
+    set_logger((Logger) log);
 
     GIVEN("An initialized bmi lookup instance") {
 
@@ -222,6 +234,7 @@ SCENARIO("Data access") {
 
 
 TEST_CASE("Running the typology lookup") {
+    set_logger((Logger) log);
 
     std::string const cfg_file = "typologies.yml";
     CHECK(initialize(cfg_file.c_str()) == 0);
@@ -430,5 +443,3 @@ TEST_CASE("Running the typology lookup") {
 
     CHECK(finalize() == 0);
 }
-
-

@@ -1,6 +1,7 @@
-#include <string>
-#include <cstring>
 #include <algorithm>
+#include <cstring>
+#include <sstream>
+#include <string>
 
 #include "bmi.h"
 #include "lookup.h"
@@ -14,9 +15,19 @@ double* _outputs;
 
 /* control functions. These return an error code. */
 BMI_API int initialize(const char *config_file) {
+    logger(LEVEL_DEBUG, "Initializing lookup");
     auto filename = std::string (config_file);
-    _lookup = lup::Lookup::Create(filename);
 
+    try {
+        _lookup = lup::Lookup::Create(filename);
+    }
+    catch (std::exception& e) {
+        auto msg = std::stringstream {};
+        msg << "Failed initializing lookup: " << e.what();
+        logger(LEVEL_FATAL, msg.str().c_str());
+    }
+
+    // Instantiate inputs
     for (const auto &name : _lookup->get_input_names()) {
         auto type = _lookup->get_var_type(name);
 
@@ -26,16 +37,20 @@ BMI_API int initialize(const char *config_file) {
         } else if (type == "double") {
             input = lup::Input {name, 0.0};
         } else {
-            // TODO: log this (unsupported variable type)
+            logger(
+                LEVEL_FATAL,
+                "Unsupported input variable type in lookup configuration"
+            );
             lup::Lookup::Dispose(_lookup);
             return -1;
         }
         _inputs.push_back(input);
     }
 
-    // Initialize memory to store outputs
+    // Allocate outputs
     _outputs = (double*) malloc(_lookup->count_outputs() * sizeof(double));
 
+    logger(LEVEL_INFO, "Initialized lookup");
     return 0;
 }
 
@@ -48,7 +63,10 @@ BMI_API int update(double dt) {
             _outputs[index++] = value;
         }
     }
-    catch (std::exception e) {
+    catch (std::exception& e) {
+        auto msg = std::stringstream {};
+        msg << "In lookup update call: " <<  e.what();
+        logger(LEVEL_ERROR, msg.str().c_str());
         return -1;
     }
 
@@ -57,9 +75,11 @@ BMI_API int update(double dt) {
 
 
 BMI_API int finalize() {
+    logger(LEVEL_DEBUG, "Finalizing lookup");
     _inputs.clear();
     lup::Lookup::Dispose(_lookup);
     delete _outputs;
+    logger(LEVEL_INFO, "Finalized lookup");
     return 0;
 }
 
@@ -162,8 +182,7 @@ BMI_API void set_var(const char *name, const void *ptr) {
 BMI_API void set_logger(Logger callback)
 {
 	Level level = LEVEL_INFO;
-	std::string msg = "Logging attached to cxx model";
+	std::string msg = "Logging attached to BMI Lookup";
 	logger = callback;
 	logger(level, msg.c_str());
 }
-
