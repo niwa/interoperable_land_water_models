@@ -23,7 +23,7 @@ typedef void bmi_set_var(const char*, const void*);
 
 bmit::Target::Target(const std::string &lib_path) {
 	auto lib = load_library(lib_path);
-	if (lib == NULL) throw "Failed to load target library";
+	if (lib == NULL) throw std::runtime_error("Failed to load target library");
 	m_lib = (void*) lib;
 
 	/* Load symbols, store as void* */
@@ -54,21 +54,21 @@ bmit::Target::~Target() {
 
 
 int bmit::Target::initialize(const std::string &cfg_path) {
-	if (m_initialize == nullptr) throw "initialize symbol not loaded";
+	if (m_initialize == nullptr) throw std::runtime_error("initialize symbol not loaded");
 	auto f = (bmi_initialize*) m_initialize;
 	return f(cfg_path.c_str());
 }
 
 
 int bmit::Target::update(double dt) {
-	if (m_update == nullptr) throw "update symbol not loaded";
+	if (m_update == nullptr) throw std::runtime_error("update symbol not loaded");
 	auto f = (bmi_update*) m_update;
 	return f(dt);
 }
 
 
 int bmit::Target::finalize() {
-	if (m_finalize == nullptr) throw "finalize symbol not loaded";
+	if (m_finalize == nullptr) throw std::runtime_error("finalize symbol not loaded");
 	auto f = (bmi_finalize*) m_finalize;
 	return f();
 }
@@ -77,42 +77,42 @@ int bmit::Target::finalize() {
 void bmit::Target::get_start_time(double* t) {
 	// get_start_time(double* t);
 	if (m_get_start_time == nullptr) {
-		throw "get_start_time symbol not loaded";
+		throw std::runtime_error("get_start_time symbol not loaded");
 	}
-	throw "target get_start_time not implemented";
+	throw std::runtime_error("target get_start_time not implemented");
 }
 
 
 void bmit::Target::get_end_time(double* t) {
 	// get_end_time(double* t);
 	if (m_get_end_time == nullptr) {
-		throw "get_end_time symbol not loaded";
+		throw std::runtime_error("get_end_time symbol not loaded");
 	}
-	throw "target get_end_time not implemented";
+	throw std::runtime_error("target get_end_time not implemented");
 }
 
 
 void bmit::Target::get_current_time(double* t) {
 	// get_current_time(double* t);
 	if (m_get_current_time == nullptr) {
-		throw "get_current_time symbol not loaded";
+		throw std::runtime_error("get_current_time symbol not loaded");
 	}
-	throw "target get_current_time not implemented";
+	throw std::runtime_error("target get_current_time not implemented");
 }
 
 
 void bmit::Target::get_time_step(double* dt) {
 	// get_time_step(double* dt);
 	if (m_get_time_step == nullptr) {
-		throw "get_time_step symbol not loaded";
+		throw std::runtime_error("get_time_step symbol not loaded");
 	}
-	throw "target get_time_step not implemented";
+	throw std::runtime_error("target get_time_step not implemented");
 }
 
 
 std::vector<int> bmit::Target::get_var_shape(const std::string& name) {
 	if (m_get_var_shape == nullptr) {
-		throw "get_var_shape symbol not loaded";
+		throw std::runtime_error("get_var_shape symbol not loaded");
 	}
 	auto f = (bmi_get_var_shape*) m_get_var_shape;
 
@@ -134,7 +134,7 @@ std::vector<int> bmit::Target::get_var_shape(const std::string& name) {
 
 int bmit::Target::get_var_rank(const std::string& name) {
 	if (m_get_var_rank == nullptr) {
-		throw "get_var_rank symbol not loaded";
+		throw std::runtime_error("get_var_rank symbol not loaded");
 	}
 	auto f = (bmi_get_var_rank*) m_get_var_rank;
 
@@ -147,7 +147,7 @@ int bmit::Target::get_var_rank(const std::string& name) {
 
 std::string bmit::Target::get_var_type(const std::string& name) {
 	if (m_get_var_type == nullptr) {
-		throw "get_var_type symbol not loaded";
+		throw std::runtime_error("get_var_type symbol not loaded");
 	}
 	auto f = (bmi_get_var_type*) m_get_var_type;
 
@@ -160,7 +160,7 @@ std::string bmit::Target::get_var_type(const std::string& name) {
 
 int bmit::Target::get_var_count() {
 	if (m_get_var_count == nullptr) {
-		throw "get_var_count symbol not loaded";
+		throw std::runtime_error("get_var_count symbol not loaded");
 	}
 	auto f = (bmi_get_var_count*) m_get_var_count;
 
@@ -172,7 +172,7 @@ int bmit::Target::get_var_count() {
 
 std::string bmit::Target::get_var_name(int index) {
 	if (m_get_var_name == nullptr) {
-		throw "get_var_name symbol not loaded";
+		throw std::runtime_error("get_var_name symbol not loaded");
 	}
 	auto f = (bmi_get_var_name*) m_get_var_name;
 
@@ -189,7 +189,7 @@ std::string bmit::Target::get_var_name(int index) {
 
 void bmit::Target::get_var(const std::string& name, void** ptr) {
 	if (m_get_var == nullptr) {
-		throw "get_var symbol not loaded";
+		throw std::runtime_error("get_var symbol not loaded");
 	}
 	auto f = (bmi_get_var*) m_get_var;
 
@@ -199,7 +199,7 @@ void bmit::Target::get_var(const std::string& name, void** ptr) {
 
 void bmit::Target::set_var(const std::string& name, const void* ptr) {
 	if (m_set_var == nullptr) {
-		throw "set_var symbol not loaded";
+		throw std::runtime_error("set_var symbol not loaded");
 	}
 	auto f = (bmi_set_var*) m_set_var;
 

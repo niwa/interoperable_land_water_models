@@ -78,7 +78,7 @@ _Iterator::_Iterator(const std::string &filename) {
     /* Initialize target component */
     auto lib_cfg = m_config["target"]["config"].as<std::string>();
     if (m_target->initialize(lib_cfg) != 0) {
-        throw "Could not initialize target component";
+        throw std::runtime_error("Could not initialize target component");
     }
 
     /* Load variable names from config */
@@ -258,7 +258,7 @@ void _Iterator::validate_configuration() {
 
     /* Check variable count */
     if (m_input_var_names.size() + m_output_var_names.size() != target_var_count) {
-        throw "Variable count mismatch between iterator and target dll";
+        throw std::runtime_error("Variable count mismatch between iterator and target dll");
     }
 
     /* Check variable names */
@@ -267,7 +267,7 @@ void _Iterator::validate_configuration() {
     for (const auto& name : target_var_names)
     {
         if (!inputs[name] && !outputs[name]) {
-            throw "Variable name mismatch between iterator and target dll";
+            throw std::runtime_error("Variable name mismatch between iterator and target dll");
         }
     }
 }
@@ -320,7 +320,7 @@ bmit::ITable* _Iterator::open_table(const std::string& name) {
             tbl = new bmit::SqlColumn<double>(name, path, table, column);
         } else if (type == "str") {
             tbl = new bmit::SqlColumn<std::string>(name, path, table, column);
-        } else throw "Input type not implemented";
+        } else throw std::runtime_error("Input type not implemented");
     }
     else if (format == "sqlite" && cfg["path"]) {
         auto path = cfg["path"].as<std::string>();
@@ -332,7 +332,7 @@ bmit::ITable* _Iterator::open_table(const std::string& name) {
             tbl = new bmit::SqlTable<double>(name, path, table);
         } else if (type == "str") {
             tbl = new bmit::SqlTable<std::string>(name, path, table);
-        } else throw "Input type not implemented";
+        } else throw std::runtime_error("Input type not implemented");
     }
     else if (format == "sqlite" && cfg["column"]) {
         if (m_sqlite_pointer == nullptr)
@@ -346,7 +346,7 @@ bmit::ITable* _Iterator::open_table(const std::string& name) {
             tbl = new bmit::SqlColumn<double>(name, m_sqlite_pointer, table, column);
         } else if (type == "str") {
             tbl = new bmit::SqlColumn<std::string>(name, m_sqlite_pointer, table, column);
-        } else throw "Input type not implemented";
+        } else throw std::runtime_error("Input type not implemented");
     }
     else if (format == "sqlite") {
         if (m_sqlite_pointer == nullptr)
@@ -359,7 +359,7 @@ bmit::ITable* _Iterator::open_table(const std::string& name) {
             tbl = new bmit::SqlTable<double>(name, m_sqlite_pointer, table);
         } else if (type == "str") {
             tbl = new bmit::SqlTable<std::string>(name, m_sqlite_pointer, table);
-        } else throw "Input type not implemented";
+        } else throw std::runtime_error("Input type not implemented");
     }
     else if (format == "csv") {
         auto path = cfg["path"].as<std::string>();
@@ -375,9 +375,9 @@ bmit::ITable* _Iterator::open_table(const std::string& name) {
         } else if (type == "str") {
             tbl = new bmit::CsvTable<std::string>(name, path, sep);
         }
-        else throw "Input type not implemented";
+        else throw std::runtime_error("Input type not implemented");
     }
-    else throw "Input format not implemented";
+    else throw std::runtime_error("Input format not implemented");
 
     return tbl;
 }
@@ -401,7 +401,7 @@ _Iterator::create_table(const std::string& name, const size_t rows, const size_t
             tbl = new bmit::SqlColumn<double>(name, path, table, column, rows);
         } else if (type == "str") {
             tbl = new bmit::SqlColumn<std::string>(name, path, table, column, rows);
-        } else throw "Input type not implemented";
+        } else throw std::runtime_error("Input type not implemented");
     }
     else if (format == "sqlite" && cfg["path"]) {
         auto path = cfg["path"].as<std::string>();
@@ -413,7 +413,7 @@ _Iterator::create_table(const std::string& name, const size_t rows, const size_t
             tbl = new bmit::SqlTable<double>(name, path, table, rows, cols);
         } else if (type == "str") {
             tbl = new bmit::SqlTable<std::string>(name, path, table, rows, cols);
-        } else throw "Input type not implemented";
+        } else throw std::runtime_error("Input type not implemented");
     }
     else if (format == "sqlite" && cfg["column"]) {
         if (m_sqlite_pointer == nullptr)
@@ -427,7 +427,7 @@ _Iterator::create_table(const std::string& name, const size_t rows, const size_t
             tbl = new bmit::SqlColumn<double>(name, m_sqlite_pointer, table, column, rows);
         } else if (type == "str") {
             tbl = new bmit::SqlColumn<std::string>(name, m_sqlite_pointer, table, column, rows);
-        } else throw "Input type not implemented";
+        } else throw std::runtime_error("Input type not implemented");
     }
     else if (format == "sqlite") {
         if (m_sqlite_pointer == nullptr)
@@ -440,7 +440,7 @@ _Iterator::create_table(const std::string& name, const size_t rows, const size_t
             tbl = new bmit::SqlTable<double>(name, m_sqlite_pointer, table, rows, cols);
         } else if (type == "str") {
             tbl = new bmit::SqlTable<std::string>(name, m_sqlite_pointer, table, rows, cols);
-        } else throw "Input type not implemented";
+        } else throw std::runtime_error("Input type not implemented");
     }
     else if (format == "csv") {
         auto path = cfg["path"].as<std::string>();
@@ -458,9 +458,9 @@ _Iterator::create_table(const std::string& name, const size_t rows, const size_t
         else if (type == "str") {
             tbl = new bmit::CsvTable<std::string>(name, path, rows, cols, sep);
         }
-        else throw "Output type not implemented";
+        else throw std::runtime_error("Output type not implemented");
     }
-    else throw "Output format not implemented";
+    else throw std::runtime_error("Output format not implemented");
 
     return tbl;
 }

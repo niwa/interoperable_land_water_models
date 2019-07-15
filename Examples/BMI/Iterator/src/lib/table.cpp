@@ -81,7 +81,7 @@ bmit::CsvTable<T>::CsvTable(const std::string& name,
     m_name = name;
     m_path = path;
     m_sep = sep;
-    if (rows == 0 || cols == 0) throw "Writable CsvTable dimensions cannot be 0";
+    if (rows == 0 || cols == 0) throw std::runtime_error("Writable CsvTable dimensions cannot be 0");
     m_nb_rows = rows;
     m_nb_cols = cols;
     m_readonly = false;
@@ -120,7 +120,7 @@ void bmit::CsvTable<T>::load() {
 
 template <class T>
 void bmit::CsvTable<T>::write() {
-    if (m_readonly) throw "Trying to write to readonly CsvTable";
+    if (m_readonly) throw std::runtime_error("Trying to write to readonly CsvTable");
 
     // Generate header
     auto header = std::stringstream();
@@ -177,7 +177,7 @@ bmit::SqlTable<T>::SqlTable(const std::string& name,
     m_path = path;
 
     auto ret = sqlite3_open_v2(m_path.c_str(), &m_db, SQLITE_OPEN_READONLY, nullptr);
-    if (ret != SQLITE_OK) throw "Failed opening database";
+    if (ret != SQLITE_OK) throw std::runtime_error("Failed opening database");
 
     /* Get row and col count */
     m_nb_rows = sql_table_row_count(m_db, m_table);
@@ -211,7 +211,7 @@ bmit::SqlTable<T>::SqlTable(const std::string& name,
     m_nb_cols = cols;
 
     auto ret = sqlite3_open(m_path.c_str(), &m_db); // Read/Write/Create
-    if (ret != SQLITE_OK) throw "Failed opening database";
+    if (ret != SQLITE_OK) throw std::runtime_error("Failed opening database");
 
     /* Initialize table data with default values */
     m_data = std::vector<T> (rows * cols);
@@ -249,7 +249,7 @@ void bmit::SqlTable<T>::load() {
     auto sql = "SELECT * FROM " + m_table + ";";
 
     ret = sqlite3_prepare_v2(m_db, sql.c_str(), -1, &qry, &qry_tail);
-    if (ret != SQLITE_OK) throw "Failed preparing load query";
+    if (ret != SQLITE_OK) throw std::runtime_error("Failed preparing load query");
 
     while ( (ret = sqlite3_step(qry)) == SQLITE_ROW ) {
         for (int icol = 0; icol < m_nb_cols; icol++) {
@@ -264,16 +264,16 @@ void bmit::SqlTable<T>::load() {
             }
         }
     }
-    if (ret != SQLITE_DONE) throw "Failed executing load query";
+    if (ret != SQLITE_DONE) throw std::runtime_error("Failed executing load query");
 
     ret = sqlite3_finalize(qry);
-    if (ret != SQLITE_OK) throw "Failed finalizing load query";
+    if (ret != SQLITE_OK) throw std::runtime_error("Failed finalizing load query");
 }
 
 
 template <class T>
 void bmit::SqlTable<T>::write() {
-    if (m_readonly) throw "Trying to write to readonly SqlTable";
+    if (m_readonly) throw std::runtime_error("Trying to write to readonly SqlTable");
 
     std::string sql;
     sqlite3_stmt* qry = nullptr;
@@ -299,13 +299,13 @@ void bmit::SqlTable<T>::write() {
     sql = sql_ss.str();
 
     if(sqlite3_prepare_v2(m_db, sql.c_str(), -1, &qry, &qry_tail) != SQLITE_OK)
-        throw "Failed preparing create table query";
+        throw std::runtime_error("Failed preparing create table query");
 
     if (sqlite3_step(qry) != SQLITE_DONE)
-        throw "Failed executing create table query";
+        throw std::runtime_error("Failed executing create table query");
 
     if (sqlite3_finalize(qry) != SQLITE_OK)
-        throw "Failed finalizing create table query";
+        throw std::runtime_error("Failed finalizing create table query");
 
     // Build INSERT statement
     sql_ss.str("");
@@ -327,13 +327,13 @@ void bmit::SqlTable<T>::write() {
     sql = sql_ss.str();
 
     if (sqlite3_prepare_v2(m_db, sql.c_str(), -1, &qry, &qry_tail) != SQLITE_OK)
-        throw "Failed preparing insert query";
+        throw std::runtime_error("Failed preparing insert query");
 
     if (sqlite3_step(qry) != SQLITE_DONE)
-        throw "Failed executing insert query";
+        throw std::runtime_error("Failed executing insert query");
 
     if (sqlite3_finalize(qry) != SQLITE_OK)
-        throw "Failed finalizing insert query";
+        throw std::runtime_error("Failed finalizing insert query");
 }
 
 //-----------------------------------------------------------------------------
@@ -350,7 +350,7 @@ bmit::SqlColumn<T>::SqlColumn(const std::string& name,
     m_column = column;
 
     auto ret = sqlite3_open_v2(m_path.c_str(), &m_db, SQLITE_OPEN_READONLY, nullptr);
-    if (ret != SQLITE_OK) throw "Failed opening database";
+    if (ret != SQLITE_OK) throw std::runtime_error("Failed opening database");
 
     /* Get row and col count */
     m_nb_rows = sql_column_row_count(m_db, m_table, m_column);
@@ -389,7 +389,7 @@ bmit::SqlColumn<T>::SqlColumn(const std::string& name,
     m_nb_cols = 1;
 
     auto ret = sqlite3_open(m_path.c_str(), &m_db); // Read/Write/Create
-    if (ret != SQLITE_OK) throw "Failed opening database";
+    if (ret != SQLITE_OK) throw std::runtime_error("Failed opening database");
 
     /* Initialize table data with default values */
     m_data = std::vector<T> (rows);
@@ -430,7 +430,8 @@ void bmit::SqlColumn<T>::load() {
     auto sql = "SELECT " + m_column + " FROM " + m_table + ";";
 
     ret = sqlite3_prepare_v2(m_db, sql.c_str(), -1, &qry, &qry_tail);
-    if (ret != SQLITE_OK) throw "Failed preparing column load query";
+    if (ret != SQLITE_OK) throw std::runtime_error(
+        "Failed preparing column load query");
 
     while ( (ret = sqlite3_step(qry)) == SQLITE_ROW ) {
         if constexpr (std::is_same<T, int>::value)
@@ -443,16 +444,19 @@ void bmit::SqlColumn<T>::load() {
             m_data.push_back(s);
         }
     }
-    if (ret != SQLITE_DONE) throw "Failed executing column load query";
+    if (ret != SQLITE_DONE) throw std::runtime_error(
+        "Failed executing column load query");
 
     ret = sqlite3_finalize(qry);
-    if (ret != SQLITE_OK) throw "Failed finalizing column load query";
+    if (ret != SQLITE_OK) throw std::runtime_error(
+        "Failed finalizing column load query");
 }
 
 
 template <class T>
 void bmit::SqlColumn<T>::write() {
-    if (m_readonly) throw "Trying to write to readonly SqlTable";
+    if (m_readonly) throw std::runtime_error(
+        "Trying to write to readonly SqlTable");
 
     // Create table and/or column if necessary
     if (!sql_table_exists(m_db, m_table)) {
@@ -500,10 +504,10 @@ void bmit::SqlColumn<T>::create_table() {
         throw std::runtime_error("Failed preparing create table query");
 
     if (sqlite3_step(qry) != SQLITE_DONE)
-        throw "Failed executing create table query";
+        throw std::runtime_error("Failed executing create table query");
 
     if (sqlite3_finalize(qry) != SQLITE_OK)
-        throw "Failed finalizing create table query";
+        throw std::runtime_error("Failed finalizing create table query");
 }
 
 
@@ -521,10 +525,10 @@ void bmit::SqlColumn<T>::alter_table_add_column() {
         throw std::runtime_error("Failed preparing alter table query");
 
     if (sqlite3_step(qry) != SQLITE_DONE)
-        throw "Failed executing alter table query";
+        throw std::runtime_error("Failed executing alter table query");
 
     if (sqlite3_finalize(qry) != SQLITE_OK)
-        throw "Failed finalizing alter table query";
+        throw std::runtime_error("Failed finalizing alter table query");
 }
 
 
@@ -553,10 +557,10 @@ void bmit::SqlColumn<T>::insert_values() {
         throw std::runtime_error("Failed preparing insert values query");
 
     if (sqlite3_step(qry) != SQLITE_DONE)
-        throw "Failed executing insert values query";
+        throw std::runtime_error("Failed executing insert values query");
 
     if (sqlite3_finalize(qry) != SQLITE_OK)
-        throw "Failed finalizing insert values query";
+        throw std::runtime_error("Failed finalizing insert values query");
 }
 
 
@@ -589,10 +593,10 @@ void bmit::SqlColumn<T>::update_values() {
         throw std::runtime_error("Failed preparing update values query");
 
         if (sqlite3_step(qry) != SQLITE_DONE)
-            throw "Failed executing update values query";
+            throw std::runtime_error("Failed executing update values query");
 
         if (sqlite3_finalize(qry) != SQLITE_OK)
-            throw "Failed finalizing update values query";
+            throw std::runtime_error("Failed finalizing update values query");
     }
 }
 
@@ -639,15 +643,18 @@ int sql_table_row_count(sqlite3* db, const std::string& table) {
     auto sql = "SELECT COUNT(*) FROM " + table + ";";
 
     ret = sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail);
-    if (ret != SQLITE_OK) throw "Failed preparing row count query";
+    if (ret != SQLITE_OK) throw std::runtime_error(
+        "Failed preparing row count query");
 
     ret = sqlite3_step(qry);
-    if (ret != SQLITE_ROW) throw "Failed executing row count query";
+    if (ret != SQLITE_ROW) throw std::runtime_error(
+        "Failed executing row count query");
 
     auto count = sqlite3_column_int(qry, 0);
 
     ret = sqlite3_finalize(qry);
-    if (ret != SQLITE_OK) throw "Failed finalizing row count query";
+    if (ret != SQLITE_OK) throw std::runtime_error(
+        "Failed finalizing row count query");
 
     return count;
 }
@@ -660,15 +667,18 @@ int sql_table_col_count(sqlite3* db, const std::string& table) {
     auto sql = "SELECT * FROM " + table + " LIMIT 1;";
 
     ret = sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail);
-    if (ret != SQLITE_OK) throw "Failed preparing col count query";
+    if (ret != SQLITE_OK) throw std::runtime_error(
+        "Failed preparing col count query");
 
     ret = sqlite3_step(qry);
-    if (ret != SQLITE_ROW) throw "Failed executing col count query";
+    if (ret != SQLITE_ROW) throw std::runtime_error(
+        "Failed executing col count query");
 
     auto count = sqlite3_column_count(qry);
 
     ret = sqlite3_finalize(qry);
-    if (ret != SQLITE_OK) throw "Failed finalizing col count query";
+    if (ret != SQLITE_OK) throw std::runtime_error(
+        "Failed finalizing col count query");
 
     return count;
 }
@@ -682,15 +692,18 @@ int sql_column_row_count(sqlite3* db, const std::string& table,
     auto sql = "SELECT COUNT(" + column + ") FROM " + table + ";";
 
     ret = sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail);
-    if (ret != SQLITE_OK) throw "Failed preparing column record count query";
+    if (ret != SQLITE_OK) throw std::runtime_error(
+        "Failed preparing column record count query");
 
     ret = sqlite3_step(qry);
-    if (ret != SQLITE_ROW) throw "Failed executing column record count query";
+    if (ret != SQLITE_ROW) throw std::runtime_error(
+        "Failed executing column record count query");
 
     auto count = sqlite3_column_int(qry, 0);
 
     ret = sqlite3_finalize(qry);
-    if (ret != SQLITE_OK) throw "Failed finalizing column record count query";
+    if (ret != SQLITE_OK) throw std::runtime_error(
+        "Failed finalizing column record count query");
 
     return count;
 }
@@ -824,7 +837,8 @@ std::vector<int> sql_get_table_ids(sqlite3* db, const std::string& table) {
     while ( (ret = sqlite3_step(qry)) == SQLITE_ROW ) {
         ids.push_back(sqlite3_column_int(qry, 0));
     }
-    if (ret != SQLITE_DONE) throw "Failed executing select ids query";
+    if (ret != SQLITE_DONE) throw std::runtime_error(
+        "Failed executing select ids query");
 
     ret = sqlite3_finalize(qry);
     if (ret != SQLITE_OK) throw std::runtime_error(
