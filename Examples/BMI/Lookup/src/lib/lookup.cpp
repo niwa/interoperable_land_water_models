@@ -36,9 +36,10 @@ private:
 
     void load_var_attrs();
 
+    // Returns the map key corresponding to the input value
     std::string map_input(std::string const &name, std::string const &value);
-
     std::string map_input(std::string const &name, double const &value);
+    std::string map_input(std::string const &name, int const &value);
 
     YAML::Node _config;
 
@@ -91,6 +92,24 @@ std::string _Lookup::map_input(std::string const &name, double const &value) {
 }
 
 
+std::string _Lookup::map_input(std::string const &name, int const &value) {
+    auto map = _config["mappings"][name];
+
+    /* Ensure value not lower than lower bound */
+    if (value < map.begin()->first.as<int>()) {
+        throw std::invalid_argument("Integer input value < lower mapping bound");
+    }
+
+    auto cls = std::string();
+    for (YAML::const_iterator it = map.begin(); it != map.end(); ++it) {
+        auto bound = it->first.as<int>();
+        if (value < bound) break;
+        cls = it->second.as<std::string>();
+    }
+    return cls;
+}
+
+
 int _Lookup::get_output_index(std::string const &name) {
     auto it = std::find(_outputs.begin(), _outputs.end(), name);
     if (it == _outputs.end()) {
@@ -113,8 +132,11 @@ std::vector<double> _Lookup::get_values(std::vector<lup::Input> inputs) {
             case 1:
                 cls = map_input(inp.name, std::get<double>(inp.value));
                 break;
-            default:
+            case 2:
+                cls = map_input(inp.name, std::get<int>(inp.value));
                 break;
+            default:
+                throw std::runtime_error("Unknown variable type");
         }
         classes.push_back(cls);
     }
@@ -133,7 +155,6 @@ std::vector<double> _Lookup::get_values(std::vector<lup::Input> inputs) {
 
     if (node.IsNull() || !node.IsDefined()) {
         //  TODO: log this (unknown lookup combination, falling back to default)
-        //  TODO: implement default fallback
         return _config["fallback_output"].as<std::vector<double> >();
     }
 

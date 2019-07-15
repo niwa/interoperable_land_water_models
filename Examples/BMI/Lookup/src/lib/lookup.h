@@ -9,7 +9,7 @@ namespace lup {
 
     struct Input {
         std::string name;
-        std::variant<std::string, double> value;
+        std::variant<std::string, double, int> value;
     };
 
 

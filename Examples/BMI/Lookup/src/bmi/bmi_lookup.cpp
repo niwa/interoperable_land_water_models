@@ -36,6 +36,8 @@ BMI_API int initialize(const char *config_file) {
             input = lup::Input {name, ""};
         } else if (type == "double") {
             input = lup::Input {name, 0.0};
+        } else if (type == "int") {
+            input = lup::Input {name, 0};
         } else {
             logger(
                 LEVEL_FATAL,
@@ -174,8 +176,12 @@ BMI_API void set_var(const char *name, const void *ptr) {
             input->value = *((double *) ptr);
             break;
         }
-        default:
+        case 2: {
+            input->value = *((int *) ptr);
             break;
+        }
+        default:
+            throw std::runtime_error("BMI lookup set_var: Unhandled lookup variable type");
     }
 }
 

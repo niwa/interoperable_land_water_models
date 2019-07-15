@@ -9,10 +9,10 @@
 #====================================================================
 
 inputs:
-  model_land-use-type__identification_number: {type: double}
-  model_climate-type__identification_number: {type: double}
+  model_land-use-type__identification_number: {type: int}
+  model_climate-type__identification_number: {type: int}
   model_basin__slope: {type: double, units: "degrees"}
-  model_soil-type__identification_number: {type: double}
+  model_soil-type__identification_number: {type: int}
   model_basin_irrigation_area__fraction: {type: double}
   atmosphere_water~10-year-average__precipitation_volume_flux: {type: double, units: mm_year-1}
   anion_storage__capacity: {type: double, units: \"%\"}

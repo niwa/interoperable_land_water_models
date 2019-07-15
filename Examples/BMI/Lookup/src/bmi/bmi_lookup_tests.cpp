@@ -258,13 +258,13 @@ TEST_CASE("Running the typology lookup") {
         char type[MAXSTRINGLEN];
         // Inputs
         get_var_type("model_land-use-type__identification_number", type);
-        CHECK(!strcmp(type, "double"));
+        CHECK(!strcmp(type, "int"));
         get_var_type("model_climate-type__identification_number", type);
-        CHECK(!strcmp(type, "double"));
+        CHECK(!strcmp(type, "int"));
         get_var_type("model_basin__slope", type);
         CHECK(!strcmp(type, "double"));
         get_var_type("model_soil-type__identification_number", type);
-        CHECK(!strcmp(type, "double"));
+        CHECK(!strcmp(type, "int"));
         get_var_type("model_basin_irrigation_area__fraction", type);
         CHECK(!strcmp(type, "double"));
         get_var_type("atmosphere_water~10-year-average__precipitation_volume_flux", type);
@@ -370,19 +370,20 @@ TEST_CASE("Running the typology lookup") {
     }
 
     SECTION("Looking up a knwon input combination") {
+        auto int_buff = int {};
         auto dbl_buff = double {};
 
-        dbl_buff = 1;
-        set_var("model_land-use-type__identification_number", (void*) &dbl_buff);
+        int_buff = 1;
+        set_var("model_land-use-type__identification_number", (void*) &int_buff);
 
-        dbl_buff = 2;
-        set_var("model_climate-type__identification_number", (void*) &dbl_buff);
+        int_buff = 2;
+        set_var("model_climate-type__identification_number", (void*) &int_buff);
 
         dbl_buff = 1;
         set_var("model_basin__slope", (void*) &dbl_buff);
 
-        dbl_buff = 3;
-        set_var("model_soil-type__identification_number", (void*) &dbl_buff);
+        int_buff = 3;
+        set_var("model_soil-type__identification_number", (void*) &int_buff);
 
         dbl_buff = 0.0;
         set_var("model_basin_irrigation_area__fraction", (void*) &dbl_buff);
@@ -393,32 +394,32 @@ TEST_CASE("Running the typology lookup") {
         dbl_buff = 10.0;
         set_var("anion_storage__capacity", (void*) &dbl_buff);
 
-        THEN("Outputs can be retrieved after calling update") {
-            CHECK(update(0) == 0);
+        // Outputs can be retrieved after calling update
+        REQUIRE(update(0) == 0);
 
-            double* ptr;
-            get_var("model_basin_N__loss", (void **) &ptr);
-            CHECK(*ptr == 127.0);
+        double* ptr;
+        get_var("model_basin_N__loss", (void **) &ptr);
+        CHECK(*ptr == 127.0);
 
-            get_var("model_basin_P__loss", (void **) &ptr);
-            CHECK(*ptr == 2.80);
-        }
+        get_var("model_basin_P__loss", (void **) &ptr);
+        CHECK(*ptr == 2.80);
     }
 
     SECTION("Looking up an unknwon input combination with fallback") {
+        auto int_buff = int {};
         auto dbl_buff = double {};
 
-        dbl_buff = 1;
-        set_var("model_land-use-type__identification_number", (void*) &dbl_buff);
+        int_buff = 1;
+        set_var("model_land-use-type__identification_number", (void*) &int_buff);
 
-        dbl_buff = 2;
-        set_var("model_climate-type__identification_number", (void*) &dbl_buff);
+        int_buff = 2;
+        set_var("model_climate-type__identification_number", (void*) &int_buff);
 
         dbl_buff = 1;
         set_var("model_basin__slope", (void*) &dbl_buff);
 
-        dbl_buff = 3;
-        set_var("model_soil-type__identification_number", (void*) &dbl_buff);
+        int_buff = 3;
+        set_var("model_soil-type__identification_number", (void*) &int_buff);
 
         dbl_buff = 0.0;
         set_var("model_basin_irrigation_area__fraction", (void*) &dbl_buff);
@@ -429,17 +430,16 @@ TEST_CASE("Running the typology lookup") {
         dbl_buff = 10.0;
         set_var("anion_storage__capacity", (void*) &dbl_buff);
 
-        THEN("Outputs can be retrieved after calling update") {
-            CHECK(update(0) == 0);
+        // Outputs can be retrieved after calling update
+        REQUIRE(update(0) == 0);
 
-            double* ptr;
-            get_var("model_basin_N__loss", (void **) &ptr);
-            CHECK(*ptr == -999.9);
+        double* ptr;
+        get_var("model_basin_N__loss", (void **) &ptr);
+        CHECK(*ptr == -999.9);
 
-            get_var("model_basin_P__loss", (void **) &ptr);
-            CHECK(*ptr == -999.9);
-        }
+        get_var("model_basin_P__loss", (void **) &ptr);
+        CHECK(*ptr == -999.9);
     }
 
-    CHECK(finalize() == 0);
+    REQUIRE(finalize() == 0);
 }

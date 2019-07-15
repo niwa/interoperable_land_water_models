@@ -12,7 +12,7 @@ The configuration is described in a YAML file, according to the [1.2 spec](https
 
 ### Inputs
 
-Inputs are declared under the `input` node. Each input is a map describing relevant attributes. Only the `type` attribute is required.
+Inputs are declared under the `input` node. Each input is a map describing relevant attributes. Only the `type` attribute is required. The supported input types are: `int`, `double` & `str`.
 
 ```yaml
 inputs:

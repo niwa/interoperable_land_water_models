@@ -157,14 +157,14 @@ SCENARIO("String inputs can be mapped to classes")
 }
 
 
-SCENARIO("Double inputs are classified by lower bounds")
+SCENARIO("Numeric inputs are classified by lower bounds")
 {
     GIVEN("A valid config file") {
         std::string const filename = "_lookup_temproary_test_file.yaml";
         std::ofstream yamlfile;
         yamlfile.open(filename, std::ios::out);
         yamlfile << "inputs:\n";
-        yamlfile << "  input_a: {type: double}\n";
+        yamlfile << "  input_a: {type: int}\n";
         yamlfile << "  input_b: {type: double}\n";
         yamlfile << "outputs:\n";
         yamlfile << "  output_x: {type: double, unit: m}\n";
@@ -194,11 +194,11 @@ SCENARIO("Double inputs are classified by lower bounds")
                 std::vector<lup::Input> inputs;
                 std::vector<double> outputs;
 
-                inputs = {{"input_a", 1.0}, {"input_b", 11}};
+                inputs = {{"input_a", 1}, {"input_b", 11}};
                 outputs = {1.1, 10.1};
                 CHECK(lookup->get_values(inputs) == outputs);
 
-                inputs = {{"input_a", 1.3}, {"input_b", 20}};
+                inputs = {{"input_a", 2}, {"input_b", 20}};
                 outputs = {1.2, 10.2};
                 CHECK(lookup->get_values(inputs) == outputs);
 
@@ -206,7 +206,7 @@ SCENARIO("Double inputs are classified by lower bounds")
                 outputs = {2.1, 20.1};
                 CHECK(lookup->get_values(inputs) == outputs);
 
-                inputs = {{"input_a", 5.1}, {"input_b", 3000}};
+                inputs = {{"input_a", 6}, {"input_b", 3000}};
                 outputs = {2.2, 20.2};
                 CHECK(lookup->get_values(inputs) == outputs);
             }
@@ -227,8 +227,15 @@ SCENARIO("Double inputs are classified by lower bounds")
 
             THEN ("Requesting a value outside of mapping bounds throws an exception") {
                 std::vector<lup::Input> inputs;
-                // 0.0 < 1.0 !
-                inputs = {{"input_a", 0.0}, {"input_b", 10.0}};
+                // 0 < 1 !
+                inputs = {{"input_a", 0}, {"input_b", 10.0}};
+                REQUIRE_THROWS_AS(lookup->get_values(inputs),
+                        std::invalid_argument);
+                REQUIRE_THROWS_WITH(lookup->get_values(inputs),
+                        "Integer input value < lower mapping bound");
+
+                // 9.9 < 10.0 !
+                inputs = {{"input_a", 1}, {"input_b", 9.9}};
                 REQUIRE_THROWS_AS(lookup->get_values(inputs),
                         std::invalid_argument);
                 REQUIRE_THROWS_WITH(lookup->get_values(inputs),
@@ -243,14 +250,14 @@ SCENARIO("Double inputs are classified by lower bounds")
     }
 }
 
-SCENARIO("Double inputs must have a mapping")
+SCENARIO("Numeric inputs must have a mapping")
 {
     GIVEN("A double input without mapping") {
         std::string const filename = "_lookup_temproary_test_file.yaml";
         std::ofstream yamlfile;
         yamlfile.open(filename, std::ios::out);
         yamlfile << "inputs:\n";
-        yamlfile << "  input_a: {type: double}\n";
+        yamlfile << "  input_a: {type: int}\n";
         yamlfile << "  input_b: {type: double}\n";
         yamlfile << "outputs:\n";
         yamlfile << "  output_x: {type: double, unit: m}\n";
