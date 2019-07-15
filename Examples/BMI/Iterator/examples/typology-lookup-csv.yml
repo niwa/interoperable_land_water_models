@@ -1,0 +1,41 @@
+inputs:
+  model_land-use-type__identification_number:
+    type: int
+    format: csv
+    path: ./data/lookup_in_luse_type.csv
+  model_climate-type__identification_number:
+    type: int
+    format: csv
+    path: ./data/lookup_in_clim_type.csv
+  model_soil-type__identification_number:
+    type: int
+    format: csv
+    path: ./data/lookup_in_soil_type.csv
+  model_basin__slope:
+    type: double
+    format: csv
+    path: ./data/lookup_in_slope.csv
+  atmosphere_water~10-year-average__precipitation_volume_flux:
+    type: double
+    format: csv
+    path: ./data/lookup_in_precipitation.csv
+  model_basin_irrigation_area__fraction:
+    type: double
+    format: csv
+    path: ./data/lookup_in_irrigation.csv
+  anion_storage__capacity:
+    type: double
+    format: csv
+    path: ./data/lookup_in_asc.csv
+outputs:
+  model_basin_N__loss:
+    type: double
+    format: csv
+    path: ./data/lookup_out_n_loss.csv
+  model_basin_P__loss:
+    type: double
+    format: csv
+    path: ./data/lookup_out_p_loss.csv
+target:
+  library: ./bmi_lookup.dll
+  config: ./typologies.yml
