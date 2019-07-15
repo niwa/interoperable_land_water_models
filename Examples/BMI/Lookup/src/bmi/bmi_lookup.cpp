@@ -13,9 +13,17 @@ std::vector<lup::Input> _inputs;
 double* _outputs;
 
 
+// Wrap logger to check for nullptr
+static void log (Level level, std::string msg) {
+    if (logger != nullptr) {
+        logger(level, msg.c_str());
+    }
+}
+
+
 /* control functions. These return an error code. */
 BMI_API int initialize(const char *config_file) {
-    logger(LEVEL_DEBUG, "Initializing lookup");
+    log(LEVEL_DEBUG, "Initializing lookup");
     auto filename = std::string (config_file);
 
     try {
@@ -24,7 +32,7 @@ BMI_API int initialize(const char *config_file) {
     catch (std::exception& e) {
         auto msg = std::stringstream {};
         msg << "Failed initializing lookup: " << e.what();
-        logger(LEVEL_FATAL, msg.str().c_str());
+        log(LEVEL_FATAL, msg.str());
     }
 
     // Instantiate inputs
@@ -39,7 +47,7 @@ BMI_API int initialize(const char *config_file) {
         } else if (type == "int") {
             input = lup::Input {name, 0};
         } else {
-            logger(
+            log(
                 LEVEL_FATAL,
                 "Unsupported input variable type in lookup configuration"
             );
@@ -52,7 +60,7 @@ BMI_API int initialize(const char *config_file) {
     // Allocate outputs
     _outputs = (double*) malloc(_lookup->count_outputs() * sizeof(double));
 
-    logger(LEVEL_INFO, "Initialized lookup");
+    log(LEVEL_INFO, "Initialized lookup");
     return 0;
 }
 
@@ -68,7 +76,7 @@ BMI_API int update(double dt) {
     catch (std::exception& e) {
         auto msg = std::stringstream {};
         msg << "In lookup update call: " <<  e.what();
-        logger(LEVEL_ERROR, msg.str().c_str());
+        log(LEVEL_ERROR, msg.str());
         return -1;
     }
 
@@ -77,11 +85,11 @@ BMI_API int update(double dt) {
 
 
 BMI_API int finalize() {
-    logger(LEVEL_DEBUG, "Finalizing lookup");
+    log(LEVEL_DEBUG, "Finalizing lookup");
     _inputs.clear();
     lup::Lookup::Dispose(_lookup);
     delete _outputs;
-    logger(LEVEL_INFO, "Finalized lookup");
+    log(LEVEL_INFO, "Finalized lookup");
     return 0;
 }
 

@@ -24,7 +24,7 @@
 #include "target_settings.h"
 
 
-static const Level log_level = LEVEL_INFO;
+static const Level log_level = LEVEL_NONE;
 
 CALLCONV void log(Level level, const char* msg) {
     if (level >= log_level) {
