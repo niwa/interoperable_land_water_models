@@ -179,21 +179,6 @@ TEST_CASE("Getting and setting values") {
     yamlfile << "  input_c:\n";
     yamlfile << "    1: class_c1\n";
     yamlfile << "    2: class_c2\n";
-    // yamlfile << "lookup:\n";
-    // yamlfile << "  class_a1:\n";
-    // yamlfile << "    class_b1:\n";
-    // yamlfile << "      c1: [111.1, 111.2]\n";
-    // yamlfile << "      c2: [112.1, 112.2]\n";
-    // yamlfile << "    class_b2:\n";
-    // yamlfile << "      c1: [121.1, 121.2]\n";
-    // yamlfile << "      c2: [122.1, 122.2]\n";
-    // yamlfile << "  class_a2:\n";
-    // yamlfile << "    class_b1:\n";
-    // yamlfile << "      c1: [211.1, 211.2]\n";
-    // yamlfile << "      c2: [212.1, 212.2]\n";
-    // yamlfile << "    class_b2:\n";
-    // yamlfile << "      c1: [221.1, 221.2]\n";
-    // yamlfile << "      c2: [222.1, 222.2]\n";
     yamlfile.close();
 
     REQUIRE(initialize(filename.c_str()) == 0);
@@ -243,42 +228,9 @@ TEST_CASE("Getting and setting values") {
         CHECK(get_value == set_value);
     }
 
-        // WHEN("Setting input values") {
-        //     auto s_value = std::string {};
-        //     auto d_value = double {};
-
-        //     s_value = "a1"; // maps to class_a1
-        //     set_var("input_a", (void*) s_value.c_str());
-
-        //     d_value = 2.5; // maps to class_b2
-        //     set_var("input_b", (void*) &d_value);
-
-        //     s_value = "c1"; // no mapping
-        //     set_var("input_c", (void*) s_value.c_str());
-
-        //     THEN("Outputs can be retrieved after calling update") {
-        //         CHECK(update(0) == 0);
-
-
-        //         double* ptr;
-        //         get_var("TN", (void **) &ptr);
-        //         CHECK(*ptr == 121.1);
-
-        //         get_var("TP", (void **) &ptr);
-        //         CHECK(*ptr == 121.2);
-        //     }
-        // }
-
-        // THEN("Finalizing returns no errors") {
-        //     CHECK(finalize() == 0);
-        // }
-
     /* Delete temporary file */
     remove(filename.c_str());
 }
-
-
-
 
 
 TEST_CASE("Running the typology lookup") {
