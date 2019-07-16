@@ -24,7 +24,7 @@ inputs:
     path: data/tables.db
     table: input_table
     column: input_table
-ouputs:
+outputs:
   output_1:
   	type: str
     format: sqlite
