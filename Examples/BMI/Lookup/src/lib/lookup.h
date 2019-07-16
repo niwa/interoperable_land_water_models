@@ -25,6 +25,8 @@ namespace lup {
 
         virtual int count_outputs() = 0;
 
+        virtual int get_var_index(const std::string&) = 0;
+
         virtual int get_output_index(const std::string&) = 0;
 
         virtual std::vector<std::string> get_input_names() = 0;

@@ -10,6 +10,8 @@ Logger logger = NULL;
 
 lup::Lookup* _lookup = nullptr;
 std::vector<lup::Input> _inputs;
+int _nb_inputs;
+int _nb_outputs;
 double* _outputs;
 
 
@@ -20,6 +22,10 @@ static void log (Level level, std::string msg) {
     }
 }
 
+// Some get/set helpers
+static void get_var_input(const int index, void **ptr);
+static void set_var_input(const int index, const void *ptr);
+
 
 /* control functions. These return an error code. */
 BMI_API int initialize(const char *config_file) {
@@ -28,6 +34,8 @@ BMI_API int initialize(const char *config_file) {
 
     try {
         _lookup = lup::Lookup::Create(filename);
+        _nb_inputs = _lookup->count_inputs();
+        _nb_outputs = _lookup->count_outputs();
     }
     catch (std::exception& e) {
         auto msg = std::stringstream {};
@@ -155,44 +163,50 @@ BMI_API void get_var_name(int index, char* name) {
 
 /* data access */
 BMI_API void get_var(const char *name, void **ptr) {
-    int index = _lookup->get_output_index(name);
-    *ptr = (void*) &(_outputs[index]);
+    try {
+        int index = _lookup->get_var_index(name);
+        if (index < _nb_inputs) {
+            // Inputs
+            get_var_input(index, ptr);
+        } else {
+            // Outputs
+            index -= _nb_inputs;
+            *ptr = (void*) &(_outputs[index]);
+        }
+    }
+    catch (std::exception& e) {
+        std::stringstream msg;
+        msg << "BMI Lookup get_var error: " << e.what();
+        log(LEVEL_ERROR, msg.str());
+        // TODO: remove re-throw once logger is set by iterator
+        throw;
+    }
 }
 
 
 BMI_API void set_var(const char *name, const void *ptr) {
-    /* Find target input */
-    lup::Input* input = nullptr;
-    for (auto &_input : _inputs) {
-        if (_input.name == name) {
-            input = &_input;
-            break;
+    try {
+        int index = _lookup->get_var_index(name);
+        if (index < _nb_inputs) {
+            // Inputs
+            set_var_input(index, ptr);
+        } else {
+            // Outputs
+            index -= _nb_inputs;
+            _outputs[index] = *((double *) ptr);
         }
     }
-
-    /* Error: Target input not found */
-    if (input == nullptr) return;
-
-    /* OK, proceed setting input value */
-    switch (input->value.index()) {
-        case 0: {
-            auto value = std::string {(char*) ptr};
-            input->value = value;
-            break;
-        }
-        case 1: {
-            input->value = *((double *) ptr);
-            break;
-        }
-        case 2: {
-            input->value = *((int *) ptr);
-            break;
-        }
-        default:
-            throw std::runtime_error("BMI lookup set_var: Unhandled lookup variable type");
+    catch (std::exception& e) {
+        std::stringstream msg;
+        msg << "BMI Lookup get_var error: " << e.what();
+        log(LEVEL_ERROR, msg.str());
+        // TODO: remove throw once logger is set by iterator
+        throw;
     }
 }
 
+
+/* logging */
 BMI_API void set_logger(Logger callback)
 {
 	Level level = LEVEL_INFO;
@@ -200,3 +214,53 @@ BMI_API void set_logger(Logger callback)
 	logger = callback;
 	logger(level, msg.c_str());
 }
+
+
+/* helpers */
+static void get_var_input(const int index, void **ptr) {
+    auto& input = _inputs[index];
+    switch (input.value.index()) {
+        case 0: {
+            *ptr = (void*) std::get_if<std::string>(&input.value)->c_str();
+            break;
+        }
+        case 1: {
+            *ptr = (void*) std::get_if<double>(&input.value);
+            break;
+        }
+        case 2: {
+            *ptr = (void*) std::get_if<int>(&input.value);
+            break;
+        }
+        default:
+            log(LEVEL_ERROR, "BMI lookup get_var: Unhandled lookup variable type");
+            // TODO: remove throw once logger is set by iterator
+            throw std::runtime_error("BMI lookup get_var: Unhandled lookup variable type");
+    }
+}
+
+
+static void set_var_input(const int index, const void *ptr) {
+    auto& input = _inputs[index];
+
+    switch (input.value.index()) {
+        case 0: {
+            auto value = std::string {(char*) ptr};
+            input.value = value;
+            break;
+        }
+        case 1: {
+            input.value = *((double *) ptr);
+            break;
+        }
+        case 2: {
+            input.value = *((int *) ptr);
+            break;
+        }
+        default:
+            log(LEVEL_ERROR, "BMI lookup set_var: Unhandled lookup variable type");
+            // TODO: remove throw once logger is set by iterator
+            throw std::runtime_error("BMI lookup set_var: Unhandled lookup variable type");
+    }
+}
+

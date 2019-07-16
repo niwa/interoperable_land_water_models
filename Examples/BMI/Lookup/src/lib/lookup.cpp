@@ -17,6 +17,8 @@ public:
 
     int count_outputs() override {return (int) _outputs.size(); };
 
+    int get_var_index(const std::string&) override;
+
     int get_output_index(const std::string&) override;
 
     std::vector<std::string> get_input_names() override { return _inputs; };
@@ -108,6 +110,22 @@ std::string _Lookup::map_input(std::string const &name, int const &value) {
     }
     return cls;
 }
+
+
+int _Lookup::get_var_index(std::string const &name) {
+    auto it = std::find(_outputs.begin(), _outputs.end(), name);
+    if (it != _outputs.end()) {
+        return (int) _inputs.size() + (it - _outputs.begin());
+    }
+
+    it = std::find(_inputs.begin(), _inputs.end(), name);
+    if (it != _inputs.end()) {
+        return (int) (it - _inputs.begin());
+    }
+
+    throw std::invalid_argument("Requested output does not exists");
+}
+
 
 
 int _Lookup::get_output_index(std::string const &name) {
