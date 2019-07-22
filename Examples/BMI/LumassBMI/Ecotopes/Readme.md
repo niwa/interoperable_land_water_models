@@ -12,13 +12,13 @@ for generating ecotopes from various input data.
 
 0. Build the [LumassBMITest](https://github.com/niwa/interoperable_land_water_models/tree/master/Examples/BMI/LumassBMI/src) application. Alternatively, you can use the version that is shipped with LUMASS, i.e. `test\LumassBMIText.exe`.  
 
-1. [Download LUMASS](ftp://ftp.landcareresearch.co.nz/HerzigA/lumass-0.9.60-test.zip) 
+1. Download LUMASS`ftp://ftp.landcareresearch.co.nz/HerzigA/lumass-0.9.60-test.zip` 
    and extract the zip file into a directory of your choice, e.g. `C:\opt`. Note 
    the zip file contains the directory `lumass-0.9.60-test`.
 
 2. Copy the content of this folder to a directory of your choice, e.g. `D:\Temp\IOMTest`.
   
-3. Download the [input data](ftp://ftp.landcareresearch.co.nz/HerzigA/Data.zip) for the pre-configured model and extract the individual files 
+3. Download the input data `ftp://ftp.landcareresearch.co.nz/HerzigA/Data.zip` for the pre-configured model and extract the individual files 
    into `D:\Temp\IOMTest\Data`.
  
   
