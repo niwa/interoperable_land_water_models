@@ -309,17 +309,26 @@ bmit::ITable* _Iterator::open_table(const std::string& name) {
     auto format = cfg["format"].as<std::string>();
     auto type = cfg["type"].as<std::string>();
 
+    // Primary key name for SqlColumn
+    std::string pk_name = "id";
+    if (cfg["pk_name"]) {
+        pk_name = cfg["pk_name"].as<std::string>();
+    }
+
     if (format == "sqlite" && cfg["path"] && cfg["column"]) {
         auto path = cfg["path"].as<std::string>();
         auto table = cfg["table"].as<std::string>();
         auto column = cfg["column"].as<std::string>();
 
         if (type == "int") {
-            tbl = new bmit::SqlColumn<int>(name, path, table, column);
+            tbl = new bmit::SqlColumn<int>(
+                name, path, table, column, pk_name);
         } else if (type == "double") {
-            tbl = new bmit::SqlColumn<double>(name, path, table, column);
+            tbl = new bmit::SqlColumn<double>(
+                name, path, table, column, pk_name);
         } else if (type == "str") {
-            tbl = new bmit::SqlColumn<std::string>(name, path, table, column);
+            tbl = new bmit::SqlColumn<std::string>(
+                name, path, table, column, pk_name);
         } else throw std::runtime_error("Input type not implemented");
     }
     else if (format == "sqlite" && cfg["path"]) {
@@ -341,11 +350,14 @@ bmit::ITable* _Iterator::open_table(const std::string& name) {
         auto table = cfg["table"].as<std::string>();
 
         if (type == "int") {
-            tbl = new bmit::SqlColumn<int>(name, m_sqlite_pointer, table, column);
+            tbl = new bmit::SqlColumn<int>(
+                name, m_sqlite_pointer, table, column, pk_name);
         } else if (type == "double") {
-            tbl = new bmit::SqlColumn<double>(name, m_sqlite_pointer, table, column);
+            tbl = new bmit::SqlColumn<double>(
+                name, m_sqlite_pointer, table, column, pk_name);
         } else if (type == "str") {
-            tbl = new bmit::SqlColumn<std::string>(name, m_sqlite_pointer, table, column);
+            tbl = new bmit::SqlColumn<std::string>
+            (name, m_sqlite_pointer, table, column, pk_name);
         } else throw std::runtime_error("Input type not implemented");
     }
     else if (format == "sqlite") {
@@ -390,17 +402,26 @@ _Iterator::create_table(const std::string& name, const size_t rows, const size_t
     auto format = cfg["format"].as<std::string>();
     auto type = cfg["type"].as<std::string>();
 
+    // Primary key name for SqlColumn
+    std::string pk_name = "id";
+    if (cfg["pk_name"]) {
+        pk_name = cfg["pk_name"].as<std::string>();
+    }
+
     if (format == "sqlite" && cfg["path"] && cfg["column"]) {
         auto path = cfg["path"].as<std::string>();
         auto table = cfg["table"].as<std::string>();
         auto column = cfg["column"].as<std::string>();
 
         if (type == "int") {
-            tbl = new bmit::SqlColumn<int>(name, path, table, column, rows);
+            tbl = new bmit::SqlColumn<int>(
+                name, path, table, column, rows, pk_name);
         } else if (type == "double") {
-            tbl = new bmit::SqlColumn<double>(name, path, table, column, rows);
+            tbl = new bmit::SqlColumn<double>(
+                name, path, table, column, rows, pk_name);
         } else if (type == "str") {
-            tbl = new bmit::SqlColumn<std::string>(name, path, table, column, rows);
+            tbl = new bmit::SqlColumn<std::string>(
+                name, path, table, column, rows, pk_name);
         } else throw std::runtime_error("Input type not implemented");
     }
     else if (format == "sqlite" && cfg["path"]) {
@@ -422,11 +443,14 @@ _Iterator::create_table(const std::string& name, const size_t rows, const size_t
         auto column = cfg["column"].as<std::string>();
 
         if (type == "int") {
-            tbl = new bmit::SqlColumn<int>(name, m_sqlite_pointer, table, column, rows);
+            tbl = new bmit::SqlColumn<int>(
+                name, m_sqlite_pointer, table, column, rows, pk_name);
         } else if (type == "double") {
-            tbl = new bmit::SqlColumn<double>(name, m_sqlite_pointer, table, column, rows);
+            tbl = new bmit::SqlColumn<double>(
+                name, m_sqlite_pointer, table, column, rows, pk_name);
         } else if (type == "str") {
-            tbl = new bmit::SqlColumn<std::string>(name, m_sqlite_pointer, table, column, rows);
+            tbl = new bmit::SqlColumn<std::string>(
+                name, m_sqlite_pointer, table, column, rows, pk_name);
         } else throw std::runtime_error("Input type not implemented");
     }
     else if (format == "sqlite") {

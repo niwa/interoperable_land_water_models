@@ -22,7 +22,8 @@ static bool sql_assert_column_type(sqlite3* db, const std::string& table,
                                                 const std::string& column,
                                                 const std::string& type);
 static bool sql_table_is_empty(sqlite3* db, const std::string& table);
-static std::vector<int> sql_get_table_ids(sqlite3* db, const std::string& table);
+static std::vector<int> sql_get_table_ids(
+    sqlite3* db, const std::string& table, const std::string& pk_name);
 
 
 //-----------------------------------------------------------------------------
@@ -343,11 +344,13 @@ template <class T>
 bmit::SqlColumn<T>::SqlColumn(const std::string& name,
                               const std::string& path,
                               const std::string& table,
-                              const std::string& column) {
+                              const std::string& column,
+                              const std::string& pk_name) {
     m_name = name;
     m_path = path;
     m_table = table;
     m_column = column;
+    m_pk_name = pk_name;
 
     auto ret = sqlite3_open_v2(m_path.c_str(), &m_db, SQLITE_OPEN_READONLY, nullptr);
     if (ret != SQLITE_OK) throw std::runtime_error("Failed opening database");
@@ -362,11 +365,13 @@ template <class T>
 bmit::SqlColumn<T>::SqlColumn(const std::string& name,
                               sqlite3* db,
                               const std::string& table,
-                              const std::string& column) {
+                              const std::string& column,
+                              const std::string& pk_name) {
     m_name = name;
     m_db = db;
     m_table = table;
     m_column = column;
+    m_pk_name = pk_name;
 
     /* Get row and col count */
     m_nb_rows = sql_column_row_count(m_db, m_table, m_column);
@@ -379,12 +384,14 @@ bmit::SqlColumn<T>::SqlColumn(const std::string& name,
                               const std::string& path,
                               const std::string& table,
                               const std::string& column,
-                              const size_t rows) {
+                              const size_t rows,
+                              const std::string& pk_name) {
     m_readonly = false;
     m_name = name;
     m_path = path;
     m_table = table;
     m_column = column;
+    m_pk_name = pk_name;
     m_nb_rows = rows;
     m_nb_cols = 1;
 
@@ -401,12 +408,14 @@ bmit::SqlColumn<T>::SqlColumn(const std::string& name,
                               sqlite3* db,
                               const std::string& table,
                               const std::string& column,
-                              const size_t rows) {
+                              const size_t rows,
+                              const std::string& pk_name) {
     m_readonly = false;
     m_name = name;
     m_db = db;
     m_table = table;
     m_column = column;
+    m_pk_name = pk_name;
     m_nb_rows = rows;
     m_nb_cols = 1;
 
@@ -493,7 +502,7 @@ template <class T>
 void bmit::SqlColumn<T>::create_table() {
     auto ss = std::stringstream {};
     ss << "CREATE TABLE " << m_table
-       << "(id INTEGER PRIMARY KEY, "
+       << "(" << m_pk_name << " INTEGER PRIMARY KEY, "
        << m_column << " " << get_sql_type() << ");";
 
     std::string sql = ss.str();
@@ -571,7 +580,7 @@ void bmit::SqlColumn<T>::update_values() {
         sql_quote = "'";
     }
 
-    auto ids = sql_get_table_ids(m_db, m_table);
+    auto ids = sql_get_table_ids(m_db, m_table, m_pk_name);
     if (ids.size() != m_data.size()) {
         throw std::runtime_error(
             "Length of output column does not match destination table");
@@ -583,7 +592,7 @@ void bmit::SqlColumn<T>::update_values() {
         auto ss = std::stringstream {};
         ss << "UPDATE " << m_table << " SET " << m_column
            << " = " << sql_quote << m_data[index++] << sql_quote
-           << " WHERE id = " << id << ";";
+           << " WHERE " << m_pk_name << " = " << id << ";";
 
         std::string sql = ss.str();
         sqlite3_stmt* qry = nullptr;
@@ -823,11 +832,12 @@ bool sql_table_is_empty(sqlite3* db, const std::string& table) {
 }
 
 
-std::vector<int> sql_get_table_ids(sqlite3* db, const std::string& table) {
+std::vector<int> sql_get_table_ids(
+    sqlite3* db, const std::string& table, const std::string& pk_name) {
     int ret;
     sqlite3_stmt* qry = nullptr;
     const char* qry_tail = nullptr;
-    auto sql = "SELECT id FROM " + table + ";";
+    auto sql = "SELECT " + pk_name + " FROM " + table + ";";
 
     ret = sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail);
     if (ret != SQLITE_OK) throw std::runtime_error(

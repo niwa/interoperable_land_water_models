@@ -31,6 +31,7 @@ outputs:
     path: data/tables.db
     table: output_table_1
     column: output_1
+    pk_name: id
   output_2:
   	type: int
     format: csv
@@ -56,12 +57,13 @@ Depending on the `format`,  additional fields may be required or optional.
 Required:
 
 - `table`: the corresponding table name in the database
+- 
 
 Optional:
 
 - `column`: a specific column
-
 - `path`: the path to the SQLite database file. If not provided, a SQLite connection pointer must be passed to the iterator (after initializing it) by calling its `set_value` method for variable `sqlite_ptr`.
+- `pk_name`: output columns can only be written to existing, non empty tables, if the primary key is known. The primary key must be of type integer. The name of the PK defaults to `id` but can be specified with `pk_name` option. If a table is empty or does not exist, no primary key is required.
 
 #### csv
 
