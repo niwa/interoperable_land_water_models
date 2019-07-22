@@ -1,4 +1,4 @@
-##LumassBMI
+## LumassBMI
 
 - **Ecotopes** -- A configurable LUMASS model for creating ecotopes from input shapefiles
 and continous raster files. In its current configuration, the model can handle up to ten different input layers.
