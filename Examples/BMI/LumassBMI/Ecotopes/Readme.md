@@ -1,12 +1,12 @@
-##Ecotopes
+## Ecotopes
 
 ### Contents
 Folder structure and input data as required by the LUMASS model 
 for generating ecotopes from various input data. 
 
-- **Data** -- Folder for input files of the model.
-- **MakeEcotopes** -- The LUMASS model files.
-- **working_directory** -- Folder for intermediary model files.
+- ** Data ** -- Folder for input files of the model.
+- ** MakeEcotopes ** -- The LUMASS model files.
+- ** working_directory ** -- Folder for intermediary model files.
 
 ### Setup and configuration
 

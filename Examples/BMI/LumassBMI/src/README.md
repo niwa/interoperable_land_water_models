@@ -1,15 +1,15 @@
-##LumassBMITest application
+## LumassBMITest application
 
-**NOTE: Alternatively, you can use the version shipped with LUMASS. **
+** NOTE: Alternatively, you can use the version shipped with LUMASS. **
 Jump straight to [Ecotopes](https://github.com/niwa/interoperable_land_water_models/tree/master/Examples/BMI/LumassBMI/Ecotopes)!
 
-###Build the LumassBMITest application
+### Build the LumassBMITest application
 The LumassBMITest application (executable) is a sample
 application that uses the BMI compliant LumassBMI.<so | dll>
 library to run an arbitrary LUMASS model or optimisation
 scenario.  
 
-*Build instructions for Windows*
+* Build instructions for Windows *
  
 1. Copy the content of this directory to different directory
    of your choice, e.g. D:\Temp\LumassBMITest.
