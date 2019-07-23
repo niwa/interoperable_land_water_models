@@ -1,0 +1,23 @@
+# Configuration file for testing aggregator model
+
+weights:
+    format: sqlite
+    path: .\WeightedAverage.db
+    table: Weights
+    aggregate_column: Zone
+    entity_column: Id
+    weight_column: Weight
+
+output:
+    format: sqlite
+    path: .\WeightedAverage.db
+    table: AveragedResults
+    aggregate_column: Zone
+    value_column: Average
+
+input:
+    format: sqlite
+    path: .\WeightedAverage.db
+    table: Inputs
+    entity_column: Id
+    value_column: Score
