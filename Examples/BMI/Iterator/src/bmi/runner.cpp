@@ -7,7 +7,7 @@
 
 static Level log_level = LEVEL_INFO;
 
-void log(Level level, const char* msg) {
+CALLCONV void log(Level level, const char* msg) {
     if (level >= log_level) {
         std::cout << "[" << level << "] " << msg << std::endl;
     }
