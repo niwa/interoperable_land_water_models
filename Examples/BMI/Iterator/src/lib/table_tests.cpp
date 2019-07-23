@@ -665,7 +665,7 @@ SCENARIO("Writing a SQL table") {
 
 SCENARIO("Reading a SQL column") {
 
-    GIVEN("A SQL column with integer data") {
+    GIVEN("A SQL column with integer data and default primary key") {
 
         auto test_file = TempFile("_temporary_file.db");
         std::string sql;
@@ -677,6 +677,7 @@ SCENARIO("Reading a SQL column") {
 
         sql = "\
             CREATE TABLE input_a_tbl (\
+                id    INTEGER PRIMARY KEY,\
                 col_1 INTEGER NOT NULL,\
                 col_2 INTEGER NOT NULL,\
                 col_3 INTEGER NOT NULL\
@@ -686,9 +687,9 @@ SCENARIO("Reading a SQL column") {
         CHECK(sqlite3_finalize(qry) == SQLITE_OK);
 
         sql = "\
-            INSERT INTO input_a_tbl (col_1, col_2, col_3) VALUES\
-                (11, 12, 13),\
-                (21, 22, 23);";
+            INSERT INTO input_a_tbl (id, col_1, col_2, col_3) VALUES\
+                (1, 11, 12, 13),\
+                (2, 21, 22, 23);";
         CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
         CHECK(sqlite3_step(qry) == SQLITE_DONE);
         CHECK(sqlite3_finalize(qry) == SQLITE_OK);
@@ -706,6 +707,7 @@ SCENARIO("Reading a SQL column") {
                 CHECK(t.name() == name);
                 CHECK(t.path() == path);
                 CHECK(t.column() == column);
+                CHECK(t.pk_name() == "id");
                 CHECK(t.nb_cols() == 1);
                 CHECK(t.nb_rows() == 2);
             }
@@ -720,7 +722,7 @@ SCENARIO("Reading a SQL column") {
         }
     }
 
-    GIVEN("A SQL column with double data") {
+    GIVEN("A SQL column with double data and custom primary key") {
 
         auto test_file = TempFile("_temporary_file.db");
         std::string sql;
@@ -732,6 +734,7 @@ SCENARIO("Reading a SQL column") {
 
         sql = "\
             CREATE TABLE input_a_tbl (\
+                pk_id INTEGER PRIMARY KEY,\
                 col_1 DOUBLE NOT NULL,\
                 col_2 DOUBLE NOT NULL,\
                 col_3 DOUBLE NOT NULL\
@@ -741,9 +744,9 @@ SCENARIO("Reading a SQL column") {
         CHECK(sqlite3_finalize(qry) == SQLITE_OK);
 
         sql = "\
-            INSERT INTO input_a_tbl (col_1, col_2, col_3) VALUES\
-                (1.1, 1.2, 1.3),\
-                (2.1, 2.2, 2.3);";
+            INSERT INTO input_a_tbl (pk_id, col_1, col_2, col_3) VALUES\
+                (1, 1.1, 1.2, 1.3),\
+                (2, 2.1, 2.2, 2.3);";
         CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
         CHECK(sqlite3_step(qry) == SQLITE_DONE);
         CHECK(sqlite3_finalize(qry) == SQLITE_OK);
@@ -755,12 +758,14 @@ SCENARIO("Reading a SQL column") {
             auto path = test_file.path();
             auto table = "input_a_tbl";
             auto column = "col_2";
-            auto t = bmit::SqlColumn<double>(name, path, table, column);
+            auto pk_name = "pk_id";
+            auto t = bmit::SqlColumn<double>(name, path, table, column, pk_name);
 
             THEN("Properties are set") {
                 CHECK(t.name() == name);
                 CHECK(t.path() == path);
                 CHECK(t.column() == column);
+                CHECK(t.pk_name() == pk_name);
                 CHECK(t.nb_cols() == 1);
                 CHECK(t.nb_rows() == 2);
             }
@@ -775,7 +780,7 @@ SCENARIO("Reading a SQL column") {
         }
     }
 
-    GIVEN("A SQL column with str data") {
+    GIVEN("A SQL column with str data and no primary key") {
 
         auto test_file = TempFile("_temporary_file.db");
         std::string sql;
@@ -834,7 +839,7 @@ SCENARIO("Reading a SQL column") {
 
 SCENARIO("Writing a SQL column") {
 
-    GIVEN("A SqlColumn and int data") {
+    GIVEN("A SqlColumn and int data with default primary key") {
 
         const int rows = 3;
         auto values = std::vector<int> {1, 2, 3};
@@ -870,7 +875,7 @@ SCENARIO("Writing a SQL column") {
                 // Call write
                 t.write();
 
-                // And check table was indeed created
+                // Check table was indeed created
                 CHECK(sqlite3_open_v2(test_file.c_str(), &db, SQLITE_OPEN_READONLY, nullptr) == SQLITE_OK);
                 sql = "SELECT " + column + " FROM " + table + ";";
                 CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
@@ -882,6 +887,15 @@ SCENARIO("Writing a SQL column") {
                 }
                 CHECK(sqlite3_step(qry) == SQLITE_DONE);
                 CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+
+                // Check table has a PK column with default name
+                sql = "SELECT COUNT(id) FROM " + table + ";";
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+                CHECK(sqlite3_step(qry) == SQLITE_ROW);
+                CHECK(sqlite3_column_int(qry, 0) == 3);
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+
                 CHECK(sqlite3_close(db) == SQLITE_OK);
 
                 CHECK(vals == std::vector<int> {1, 2, 3});
@@ -918,7 +932,7 @@ SCENARIO("Writing a SQL column") {
                 // Call write
                 t.write();
 
-                // And check table was indeed created
+                // Check column was indeed created
                 CHECK(sqlite3_open_v2(test_file.c_str(), &db, SQLITE_OPEN_READONLY, nullptr) == SQLITE_OK);
                 sql = "SELECT " + column + " FROM " + table + ";";
                 CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
@@ -967,7 +981,7 @@ SCENARIO("Writing a SQL column") {
                 // Call write
                 t.write();
 
-                // And check table was indeed created
+                // Check column was indeed updated
                 CHECK(sqlite3_open_v2(test_file.c_str(), &db, SQLITE_OPEN_READONLY, nullptr) == SQLITE_OK);
                 sql = "SELECT " + column + " FROM " + table + ";";
                 CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
@@ -986,15 +1000,16 @@ SCENARIO("Writing a SQL column") {
         }
     }
 
-    GIVEN("A SqlColumn and double data") {
+    GIVEN("A SqlColumn and double data with custom primary key") {
 
         const int rows = 3;
         auto values = std::vector<double> {1.1, 2.2, 3.3};
         auto name = std::string("var_name");
         auto table = std::string("table_name");
         auto column = std::string("col_name") ;
+        auto pk_name = std::string("pk_id") ;
         auto test_file = TempFile("_temporary_file.db");
-        auto t = bmit::SqlColumn<double>(name, test_file.path(), table, column, rows);
+        auto t = bmit::SqlColumn<double>(name, test_file.path(), table, column, rows, pk_name);
 
         THEN("Properties are set") {
 
@@ -1022,7 +1037,7 @@ SCENARIO("Writing a SQL column") {
                 // Call write
                 t.write();
 
-                // And check table was indeed created
+                // Check table was indeed created
                 CHECK(sqlite3_open_v2(test_file.c_str(), &db, SQLITE_OPEN_READONLY, nullptr) == SQLITE_OK);
                 sql = "SELECT " + column + " FROM " + table + ";";
                 CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
@@ -1034,6 +1049,15 @@ SCENARIO("Writing a SQL column") {
                 }
                 CHECK(sqlite3_step(qry) == SQLITE_DONE);
                 CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+
+                // Check table has a PK column with default name
+                sql = "SELECT COUNT(" + pk_name + ") FROM " + table + ";";
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+                CHECK(sqlite3_step(qry) == SQLITE_ROW);
+                CHECK(sqlite3_column_int(qry, 0) == 3);
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+
                 CHECK(sqlite3_close(db) == SQLITE_OK);
 
                 CHECK(vals == std::vector<double> {1.1, 2.2, 3.3});
@@ -1054,7 +1078,7 @@ SCENARIO("Writing a SQL column") {
                 CHECK(sqlite3_finalize(qry) == SQLITE_OK);
                 sql = "\
                     CREATE TABLE table_name (\
-                        id INTEGER PRIMARY KEY,\
+                        pk_id INTEGER PRIMARY KEY,\
                         other INTEGER NOT NULL\
                     );";
                 CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
@@ -1069,7 +1093,7 @@ SCENARIO("Writing a SQL column") {
                 // Call write
                 t.write();
 
-                // And check table was indeed created
+                // Check column was indeed created
                 CHECK(sqlite3_open_v2(test_file.c_str(), &db, SQLITE_OPEN_READONLY, nullptr) == SQLITE_OK);
                 sql = "SELECT " + column + " FROM " + table + ";";
                 CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
@@ -1101,7 +1125,7 @@ SCENARIO("Writing a SQL column") {
                 CHECK(sqlite3_finalize(qry) == SQLITE_OK);
                 sql = "\
                     CREATE TABLE table_name (\
-                        id INTEGER PRIMARY KEY,\
+                        pk_id INTEGER PRIMARY KEY,\
                         other INTEGER NOT NULL,\
                         col_name FLOAT\
                     );";
@@ -1117,7 +1141,7 @@ SCENARIO("Writing a SQL column") {
                 // Call write
                 t.write();
 
-                // And check table was indeed created
+                // Check column was indeed updated
                 CHECK(sqlite3_open_v2(test_file.c_str(), &db, SQLITE_OPEN_READONLY, nullptr) == SQLITE_OK);
                 sql = "SELECT " + column + " FROM " + table + ";";
                 CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
@@ -1136,7 +1160,7 @@ SCENARIO("Writing a SQL column") {
         }
     }
 
-    GIVEN("A SqlColumn and str data") {
+    GIVEN("A SqlColumn and str data with default primary key") {
 
         const int rows = 3;
         auto values = std::vector<std::string> {"one","two","three"};
@@ -1172,7 +1196,7 @@ SCENARIO("Writing a SQL column") {
                 // Call write
                 t.write();
 
-                // And check table was indeed created
+                // Check table was indeed created
                 CHECK(sqlite3_open_v2(test_file.c_str(), &db, SQLITE_OPEN_READONLY, nullptr) == SQLITE_OK);
                 sql = "SELECT " + column + " FROM " + table + ";";
                 CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
@@ -1185,6 +1209,15 @@ SCENARIO("Writing a SQL column") {
                 }
                 CHECK(sqlite3_step(qry) == SQLITE_DONE);
                 CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+
+                // Check table has a PK column with default name
+                sql = "SELECT COUNT(id) FROM " + table + ";";
+                CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
+                CHECK(sqlite3_step(qry) == SQLITE_ROW);
+                CHECK(sqlite3_column_int(qry, 0) == 3);
+                CHECK(sqlite3_step(qry) == SQLITE_DONE);
+                CHECK(sqlite3_finalize(qry) == SQLITE_OK);
+
                 CHECK(sqlite3_close(db) == SQLITE_OK);
 
                 CHECK(vals == std::vector<std::string> {"one","two","three"});
@@ -1220,7 +1253,7 @@ SCENARIO("Writing a SQL column") {
                 // Call write
                 t.write();
 
-                // And check table was indeed created
+                // Check column was indeed created
                 CHECK(sqlite3_open_v2(test_file.c_str(), &db, SQLITE_OPEN_READONLY, nullptr) == SQLITE_OK);
                 sql = "SELECT " + column + " FROM " + table + ";";
                 CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);
@@ -1269,7 +1302,7 @@ SCENARIO("Writing a SQL column") {
                 // Call write
                 t.write();
 
-                // And check table was indeed created
+                // Check column was indeed updated
                 CHECK(sqlite3_open_v2(test_file.c_str(), &db, SQLITE_OPEN_READONLY, nullptr) == SQLITE_OK);
                 sql = "SELECT " + column + " FROM " + table + ";";
                 CHECK(sqlite3_prepare_v2(db, sql.c_str(), -1, &qry, &qry_tail) == SQLITE_OK);

@@ -1,0 +1,38 @@
+### LUMASS Engine (BMI) configuration TEMPLATE
+# configuration of the LUMASS Engine
+#
+# *** NOTE: all pathnames must use slashes '/' as directory separator
+# *** regardless of the platform you're running LUMASS on!
+#
+EngineConfig:
+    # mandatory: <model | moso>
+    #    model: spatial system dynamics model (*.lmx)
+    #    moso:  multi-objective spatial optimisation scenario(s) (*.los)
+    mode: "model"
+    # mandatory for 'model' mode: absolute path to the directory containing LumassBMI.<so | dll> 
+    # optional  for 'moso' mode: this setting is ignored in 'moso' mode
+    enginepath: "C:/opt/lumass-0.9.60-test/bin"
+    # mandatory: absolute path to the model file
+    #    model: spatial system dynamics model file (*.lmx)
+    #    moso:  LUMASS optimisation settings file (*.los)
+    modelfile: "D:/Temp/IOMTest/MakeEcotopes/MakeEcotopes.lmx"
+    # mandatory: absolute path to the working directory for storing intermediary files
+    #    model: in 'model' mode this is the output directory for  the provenance (PROV-N) file produced for each LUMASS model run
+    workspace: "D:/Temp/IOMTest/working_directory"
+    # optional: filename for LUMASS specific logging
+    logfile: "D:/Temp/IOMTest/working_directory/IOM_MakeEcotopes.log"
+    # whether or not LUMASS should log data provenance
+    logprovenance: true
+ModelConfig:
+    # optional: this section contains optional configuration parameters
+    #           for a LUMASS model or optimisation scenario
+    #
+    # Specification of 'global' LUMASS model settings. 
+    # The specified settings can be accessed inside a LUMASS 
+    # model using the LUMASS expression '$[LUMASS:<parameter>]$', for example 
+    # '$[LUMASS:DataPath]$' is evaluated to 'D:/Temp/IOMTest/Data' during a model run
+    Settings:
+        ParameterTable: "D:/Temp/IOMTest/MakeEcotopes/EcotopesParas.xls"
+        DataPath: "D:/Temp/IOMTest/Data"
+    #ExternalExec:
+        #Environment: GDAL_DATA=$[LUMASS:LUMASSPath]$/../utils/share/epsg_csv

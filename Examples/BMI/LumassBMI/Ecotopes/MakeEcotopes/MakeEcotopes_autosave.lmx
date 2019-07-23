@@ -1,0 +1,4184 @@
+<Model description="the one and only model element">
+    <NMSequentialIterComponent name="AggrComp1">
+        <Property name="objectName">
+            <string>AggrComp1</string>
+        </Property>
+        <Property name="UserID">
+            <string>MakeEcotopes</string>
+        </Property>
+        <Property name="Description">
+            <string>MakeEcotopes</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>0</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Subcomponents>DataBuffer TableReader AggrComp3 AggrComp4 AggrComp6 AggrComp7</Subcomponents>
+    </NMSequentialIterComponent>
+    <NMDataComponent name="DataBuffer">
+        <Property name="objectName">
+            <string>DataBuffer</string>
+        </Property>
+        <Property name="UserID">
+            <string>para</string>
+        </Property>
+        <Property name="Description">
+            <string>para</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>4</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist>
+                <stringlist>
+                    <string>TableReader</string>
+                </stringlist>
+            </list_stringlist>
+        </Property>
+    </NMDataComponent>
+    <NMSequentialIterComponent name="TableReader">
+        <Property name="objectName">
+            <string>TableReader</string>
+        </Property>
+        <Property name="UserID">
+            <string>ReadPara</string>
+        </Property>
+        <Property name="Description">
+            <string>ReadPara</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>4</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMTableReader">
+            <Property name="objectName">
+                <string>NMTableReader</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist/>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>unknown</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>unknown</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="CreateTable">
+                <bool>false</bool>
+            </Property>
+            <Property name="FileName">
+                <stringlist>
+                    <string>$[LUMASS:ParameterTable]$</string>
+                </stringlist>
+            </Property>
+            <Property name="TableName">
+                <stringlist/>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="AggrComp3">
+        <Property name="objectName">
+            <string>AggrComp3</string>
+        </Property>
+        <Property name="UserID">
+            <string>Preprocessor</string>
+        </Property>
+        <Property name="Description">
+            <string>Preprocessor</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>3</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>4</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist>
+                <string>$[para:rowcount]$</string>
+            </stringlist>
+        </Property>
+        <Subcomponents>AggrComp61 AggrComp2</Subcomponents>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="AggrComp61">
+        <Property name="objectName">
+            <string>AggrComp61</string>
+        </Property>
+        <Property name="UserID">
+            <string>RasterizeShape</string>
+        </Property>
+        <Property name="Description">
+            <string>RasterizeShape</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>3</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist>
+                <string>$[para:Rasterize:$[Preprocessor]$]$</string>
+            </stringlist>
+        </Property>
+        <Subcomponents>ExternalExec AggrComp77 AggrComp</Subcomponents>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="ExternalExec">
+        <Property name="objectName">
+            <string>ExternalExec</string>
+        </Property>
+        <Property name="UserID">
+            <string></string>
+        </Property>
+        <Property name="Description">
+            <string>rasterize layer</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>7</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMExternalExecWrapper">
+            <Property name="objectName">
+                <string>NMExternalExecWrapper</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist/>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>unknown</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>unknown</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="Command">
+                <stringlist>
+                    <string>$[LUMASS:LUMASSPath]$/../utils/gdal_rasterize.bat -a $[para:RasterizationAttribute:$[Preprocessor]$]$ -of HFA  -a_srs EPSG:$[para:EPSG_Code]$ -a_nodata $[para:Nodata:$[Preprocessor]$]$ -te $[para:Extent:$[Preprocessor]$]$  -tr $[para:CellSize:$[Preprocessor]$]$  -ot Int32 "$[LUMASS:DataPath]$/$[para:ShapeFileName:$[Preprocessor]$]$" "$[LUMASS:Workspace]$/$[func:fileBaseName($[para:RasterName:$[Preprocessor]$]$)]$_norat.img"</string>
+                </stringlist>
+            </Property>
+            <Property name="Environment">
+                <list_stringlist>
+                    <stringlist>
+                        <string>GDAL_DATA=$[LUMASS:LUMASSPath]$/../utils/share/epsg_csv</string>
+                    </stringlist>
+                </list_stringlist>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="AggrComp77">
+        <Property name="objectName">
+            <string>AggrComp77</string>
+        </Property>
+        <Property name="UserID">
+            <string>DeleteOldFiles</string>
+        </Property>
+        <Property name="Description">
+            <string>DeleteOldFiles</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>8</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>2</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Subcomponents>ExternalExec17</Subcomponents>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="ExternalExec17">
+        <Property name="objectName">
+            <string>ExternalExec17</string>
+        </Property>
+        <Property name="UserID">
+            <string>deleteFiles</string>
+        </Property>
+        <Property name="Description">
+            <string>delete prev. outputs</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>8</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMExternalExecWrapper">
+            <Property name="objectName">
+                <string>NMExternalExecWrapper</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist/>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>unknown</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>unknown</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="Command">
+                <stringlist>
+                    <string>"$[LUMASS:LUMASSPath]$/../utils/del.bat" "$[LUMASS:Workspace]$" "$[func:fileBaseName($[para:RasterName:$[Preprocessor]$]$)]$_*"</string>
+                    <string>"$[LUMASS:LUMASSPath]$/../utils/del.bat" "$[LUMASS:DataPath]$" "$[func:fileBaseName($[para:RasterName:$[Preprocessor]$]$)]$*"</string>
+                </stringlist>
+            </Property>
+            <Property name="Environment">
+                <list_stringlist/>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="AggrComp">
+        <Property name="objectName">
+            <string>AggrComp</string>
+        </Property>
+        <Property name="UserID">
+            <string>JoinAttributes</string>
+        </Property>
+        <Property name="Description">
+            <string>JoinAttributes</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>3</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist>
+                <string>$[para:JoinAttributes:$[Preprocessor]$]$</string>
+            </stringlist>
+        </Property>
+        <Subcomponents>SQLProcessor79 MapAlgebra14 ImageReader76 TableReader6 SQLProcessor55 ImageWriter42 ImageReader42 SQLProcessor76 ImageReader75 SQLProcessor78 ImageWriter45 SummarizeZones15 SQLProcessor56 ImageWriter47 ImageReader43 SummarizeZones11 SQLProcessor77</Subcomponents>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="SQLProcessor79">
+        <Property name="objectName">
+            <string>SQLProcessor79</string>
+        </Property>
+        <Property name="UserID">
+            <string>layer</string>
+        </Property>
+        <Property name="Description">
+            <string>index rasterisation attribute column</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>3</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist>
+                <stringlist>
+                    <string>SQLProcessor78</string>
+                </stringlist>
+            </list_stringlist>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMSQLiteProcessorWrapper">
+            <Property name="objectName">
+                <string>NMSQLiteProcessorWrapper</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist>
+                    <stringlist>
+                        <string>SQLProcessor78</string>
+                    </stringlist>
+                </list_stringlist>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="SQLStatement">
+                <stringlist>
+                    <string>create index if not exists $[para:RasterizationAttribute:$[Preprocessor]$]$_idx on $[func:fileBaseName($[para:RasterName:$[Preprocessor]$]$)]$_1 ($[para:RasterizationAttribute:$[Preprocessor]$]$);</string>
+                </stringlist>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="MapAlgebra14">
+        <Property name="objectName">
+            <string>MapAlgebra14</string>
+        </Property>
+        <Property name="UserID">
+            <string>layerrat</string>
+        </Property>
+        <Property name="Description">
+            <string>extract 0-based continuous zone_id</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>5</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist>
+                <stringlist>
+                    <string>ImageReader75</string>
+                </stringlist>
+            </list_stringlist>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMRATBandMathImageFilterWrapper">
+            <Property name="objectName">
+                <string>NMRATBandMathImageFilterWrapper</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist>
+                    <stringlist>
+                        <string>ImageReader75</string>
+                    </stringlist>
+                </list_stringlist>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="InputTables">
+                <list_stringlist/>
+            </Property>
+            <Property name="InputTableVarNames">
+                <list_list_stringlist/>
+            </Property>
+            <Property name="MapExpressions">
+                <stringlist>
+                    <string>layerrat__zone_id</string>
+                </stringlist>
+            </Property>
+            <Property name="NumExpressions">
+                <stringlist/>
+            </Property>
+            <Property name="UseTableColumnCache">
+                <bool>true</bool>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="ImageReader76">
+        <Property name="objectName">
+            <string>ImageReader76</string>
+        </Property>
+        <Property name="UserID">
+            <string>layerrat</string>
+        </Property>
+        <Property name="Description">
+            <string>layerrat</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>3</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMImageReader">
+            <Property name="objectName">
+                <string>NMImageReader</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist/>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="FileNames">
+                <stringlist>
+                    <string>$[LUMASS:Workspace]$/$[func:fileBaseName($[para:RasterName:$[Preprocessor]$]$)]$_rat.img</string>
+                </stringlist>
+            </Property>
+            <Property name="RATType">
+                <string>ATTABLE_TYPE_SQLITE</string>
+            </Property>
+            <Property name="RATEnum">
+                <stringlist>
+                    <string>ATTABLE_TYPE_RAM</string>
+                    <string>ATTABLE_TYPE_SQLITE</string>
+                </stringlist>
+            </Property>
+            <Property name="RGBMode">
+                <bool>false</bool>
+            </Property>
+            <Property name="BandList">
+                <list_stringlist/>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="TableReader6">
+        <Property name="objectName">
+            <string>TableReader6</string>
+        </Property>
+        <Property name="UserID">
+            <string>shp</string>
+        </Property>
+        <Property name="Description">
+            <string>LayerShapeFile Attribute Table</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>3</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMTableReader">
+            <Property name="objectName">
+                <string>NMTableReader</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist/>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>unknown</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>unknown</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="CreateTable">
+                <bool>false</bool>
+            </Property>
+            <Property name="FileName">
+                <stringlist>
+                    <string>$[LUMASS:DataPath]$/$[func:fileBaseName($[para:ShapeFileName:$[Preprocessor]$]$)]$.dbf</string>
+                </stringlist>
+            </Property>
+            <Property name="TableName">
+                <stringlist/>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="SQLProcessor55">
+        <Property name="objectName">
+            <string>SQLProcessor55</string>
+        </Property>
+        <Property name="UserID">
+            <string>layer</string>
+        </Property>
+        <Property name="Description">
+            <string>join tables > newout</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>3</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist>
+                <stringlist>
+                    <string>ImageReader42</string>
+                    <string>TableReader6</string>
+                    <string>ImageReader76</string>
+                </stringlist>
+            </list_stringlist>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMSQLiteProcessorWrapper">
+            <Property name="objectName">
+                <string>NMSQLiteProcessorWrapper</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist>
+                    <stringlist>
+                        <string>ImageReader42</string>
+                        <string>TableReader6</string>
+                        <string>ImageReader76</string>
+                    </stringlist>
+                </list_stringlist>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="SQLStatement">
+                <stringlist>
+                    <string>create table newout as select norm.*, shp.* 
+from $[func:fileBaseName($[para:RasterName:$[Preprocessor]$]$)]$_1 norm 
+
+inner join $[func:fileBaseName($[para:RasterName:$[Preprocessor]$]$)]$_rat_1 rat on rat.zone_id = norm.rowidx 
+
+left outer join (select distinct * from $[func:fileBaseName($[para:ShapeFileName:$[Preprocessor]$]$)]$) shp on rat.rowidx = shp.$[para:RasterizationAttribute:$[Preprocessor]$]$ order by norm.rowidx asc;</string>
+                </stringlist>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="ImageWriter42">
+        <Property name="objectName">
+            <string>ImageWriter42</string>
+        </Property>
+        <Property name="UserID">
+            <string></string>
+        </Property>
+        <Property name="Description">
+            <string>layerrat</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>6</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist>
+                <stringlist>
+                    <string>SummarizeZones11</string>
+                </stringlist>
+            </list_stringlist>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMStreamingImageFileWriterWrapper">
+            <Property name="objectName">
+                <string>NMStreamingImageFileWriterWrapper</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist>
+                    <stringlist>
+                        <string>SummarizeZones11</string>
+                    </stringlist>
+                </list_stringlist>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="FileNames">
+                <stringlist>
+                    <string>$[LUMASS:Workspace]$/$[func:fileBaseName($[para:RasterName:$[Preprocessor]$]$)]$_rat.img</string>
+                </stringlist>
+            </Property>
+            <Property name="InputTables">
+                <stringlist/>
+            </Property>
+            <Property name="WriteImage">
+                <bool>true</bool>
+            </Property>
+            <Property name="WriteTable">
+                <bool>true</bool>
+            </Property>
+            <Property name="UpdateMode">
+                <bool>true</bool>
+            </Property>
+            <Property name="StreamingMethodType">
+                <string>STRIPPED</string>
+            </Property>
+            <Property name="StreamingMethodEnum">
+                <stringlist>
+                    <string>STRIPPED</string>
+                    <string>TILED</string>
+                    <string>NO_STREAMING</string>
+                </stringlist>
+            </Property>
+            <Property name="StreamingSize">
+                <int>512</int>
+            </Property>
+            <Property name="PyramidResamplingType">
+                <string>NEAREST</string>
+            </Property>
+            <Property name="PyramidResamplingEnum">
+                <stringlist>
+                    <string>NONE</string>
+                    <string>NEAREST</string>
+                    <string>GAUSS</string>
+                    <string>CUBIC</string>
+                    <string>AVERAGE</string>
+                    <string>MODE</string>
+                </stringlist>
+            </Property>
+            <Property name="RGBMode">
+                <bool>false</bool>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="ImageReader42">
+        <Property name="objectName">
+            <string>ImageReader42</string>
+        </Property>
+        <Property name="UserID">
+            <string>layer</string>
+        </Property>
+        <Property name="Description">
+            <string>layer</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>3</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMImageReader">
+            <Property name="objectName">
+                <string>NMImageReader</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist/>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="FileNames">
+                <stringlist>
+                    <string>$[LUMASS:DataPath]$/$[para:RasterName:$[Preprocessor]$]$</string>
+                </stringlist>
+            </Property>
+            <Property name="RATType">
+                <string>ATTABLE_TYPE_SQLITE</string>
+            </Property>
+            <Property name="RATEnum">
+                <stringlist>
+                    <string>ATTABLE_TYPE_RAM</string>
+                    <string>ATTABLE_TYPE_SQLITE</string>
+                </stringlist>
+            </Property>
+            <Property name="RGBMode">
+                <bool>false</bool>
+            </Property>
+            <Property name="BandList">
+                <list_stringlist/>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="SQLProcessor76">
+        <Property name="objectName">
+            <string>SQLProcessor76</string>
+        </Property>
+        <Property name="UserID">
+            <string>layer</string>
+        </Property>
+        <Property name="Description">
+            <string>newout > layer_1</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>3</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist>
+                <stringlist>
+                    <string>SQLProcessor56</string>
+                </stringlist>
+            </list_stringlist>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMSQLiteProcessorWrapper">
+            <Property name="objectName">
+                <string>NMSQLiteProcessorWrapper</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist>
+                    <stringlist>
+                        <string>SQLProcessor56</string>
+                    </stringlist>
+                </list_stringlist>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="SQLStatement">
+                <stringlist>
+                    <string>create table $[func:fileBaseName($[para:RasterName:$[Preprocessor]$]$)]$_1 as select * from newout;</string>
+                </stringlist>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="ImageReader75">
+        <Property name="objectName">
+            <string>ImageReader75</string>
+        </Property>
+        <Property name="UserID">
+            <string>layerrat</string>
+        </Property>
+        <Property name="Description">
+            <string>layerrat</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>5</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMImageReader">
+            <Property name="objectName">
+                <string>NMImageReader</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist/>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="FileNames">
+                <stringlist>
+                    <string>$[LUMASS:Workspace]$/$[func:fileBaseName($[para:RasterName:$[Preprocessor]$]$)]$_rat.img</string>
+                </stringlist>
+            </Property>
+            <Property name="RATType">
+                <string>ATTABLE_TYPE_SQLITE</string>
+            </Property>
+            <Property name="RATEnum">
+                <stringlist>
+                    <string>ATTABLE_TYPE_RAM</string>
+                    <string>ATTABLE_TYPE_SQLITE</string>
+                </stringlist>
+            </Property>
+            <Property name="RGBMode">
+                <bool>false</bool>
+            </Property>
+            <Property name="BandList">
+                <list_stringlist/>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="SQLProcessor78">
+        <Property name="objectName">
+            <string>SQLProcessor78</string>
+        </Property>
+        <Property name="UserID">
+            <string>layer</string>
+        </Property>
+        <Property name="Description">
+            <string>index rowidx</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>3</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist>
+                <stringlist>
+                    <string>SQLProcessor77</string>
+                </stringlist>
+            </list_stringlist>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMSQLiteProcessorWrapper">
+            <Property name="objectName">
+                <string>NMSQLiteProcessorWrapper</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist>
+                    <stringlist>
+                        <string>SQLProcessor77</string>
+                    </stringlist>
+                </list_stringlist>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="SQLStatement">
+                <stringlist>
+                    <string>create index if not exists rowidx_idx on $[func:fileBaseName($[para:RasterName:$[Preprocessor]$]$)]$_1 (rowidx);</string>
+                </stringlist>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="ImageWriter45">
+        <Property name="objectName">
+            <string>ImageWriter45</string>
+        </Property>
+        <Property name="UserID">
+            <string>layer</string>
+        </Property>
+        <Property name="Description">
+            <string>update layer's RAT</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>3</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist>
+                <stringlist>
+                    <string>SQLProcessor79</string>
+                </stringlist>
+            </list_stringlist>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMStreamingImageFileWriterWrapper">
+            <Property name="objectName">
+                <string>NMStreamingImageFileWriterWrapper</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist>
+                    <stringlist>
+                        <string>SQLProcessor79</string>
+                    </stringlist>
+                </list_stringlist>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="FileNames">
+                <stringlist>
+                    <string>$[LUMASS:DataPath]$/$[para:RasterName:$[Preprocessor]$]$</string>
+                </stringlist>
+            </Property>
+            <Property name="InputTables">
+                <stringlist/>
+            </Property>
+            <Property name="WriteImage">
+                <bool>false</bool>
+            </Property>
+            <Property name="WriteTable">
+                <bool>true</bool>
+            </Property>
+            <Property name="UpdateMode">
+                <bool>false</bool>
+            </Property>
+            <Property name="StreamingMethodType">
+                <string>STRIPPED</string>
+            </Property>
+            <Property name="StreamingMethodEnum">
+                <stringlist>
+                    <string>STRIPPED</string>
+                    <string>TILED</string>
+                    <string>NO_STREAMING</string>
+                </stringlist>
+            </Property>
+            <Property name="StreamingSize">
+                <int>512</int>
+            </Property>
+            <Property name="PyramidResamplingType">
+                <string>NEAREST</string>
+            </Property>
+            <Property name="PyramidResamplingEnum">
+                <stringlist>
+                    <string>NONE</string>
+                    <string>NEAREST</string>
+                    <string>GAUSS</string>
+                    <string>CUBIC</string>
+                    <string>AVERAGE</string>
+                    <string>MODE</string>
+                </stringlist>
+            </Property>
+            <Property name="RGBMode">
+                <bool>false</bool>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="SummarizeZones15">
+        <Property name="objectName">
+            <string>SummarizeZones15</string>
+        </Property>
+        <Property name="UserID">
+            <string>layerrat</string>
+        </Property>
+        <Property name="Description">
+            <string>create RAT based on new ID</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>5</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist>
+                <stringlist>
+                    <string>MapAlgebra14</string>
+                </stringlist>
+            </list_stringlist>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMSumZonesFilterWrapper">
+            <Property name="objectName">
+                <string>NMSumZonesFilterWrapper</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist>
+                    <stringlist>
+                        <string>MapAlgebra14</string>
+                    </stringlist>
+                </list_stringlist>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="IgnoreNodataValue">
+                <stringlist>
+                    <string>0</string>
+                </stringlist>
+            </Property>
+            <Property name="NodataValue">
+                <stringlist>
+                    <string>0</string>
+                </stringlist>
+            </Property>
+            <Property name="HaveMaxKeyRows">
+                <stringlist>
+                    <string>0</string>
+                </stringlist>
+            </Property>
+            <Property name="ZoneTableFileName">
+                <stringlist/>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="SQLProcessor56">
+        <Property name="objectName">
+            <string>SQLProcessor56</string>
+        </Property>
+        <Property name="UserID">
+            <string>layer</string>
+        </Property>
+        <Property name="Description">
+            <string>drop table layer_1</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>3</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist>
+                <stringlist>
+                    <string>SQLProcessor55</string>
+                </stringlist>
+            </list_stringlist>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMSQLiteProcessorWrapper">
+            <Property name="objectName">
+                <string>NMSQLiteProcessorWrapper</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist>
+                    <stringlist>
+                        <string>SQLProcessor55</string>
+                    </stringlist>
+                </list_stringlist>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="SQLStatement">
+                <stringlist>
+                    <string>drop table $[func:fileBaseName($[para:RasterName:$[Preprocessor]$]$)]$_1;</string>
+                </stringlist>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="ImageWriter47">
+        <Property name="objectName">
+            <string>ImageWriter47</string>
+        </Property>
+        <Property name="UserID">
+            <string>layer</string>
+        </Property>
+        <Property name="Description">
+            <string>write layer with 0-based RAT ID</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>5</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist>
+                <stringlist>
+                    <string>SummarizeZones15</string>
+                </stringlist>
+            </list_stringlist>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMStreamingImageFileWriterWrapper">
+            <Property name="objectName">
+                <string>NMStreamingImageFileWriterWrapper</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist>
+                    <stringlist>
+                        <string>SummarizeZones15</string>
+                    </stringlist>
+                </list_stringlist>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="FileNames">
+                <stringlist>
+                    <string>$[LUMASS:DataPath]$/$[para:RasterName:$[Preprocessor]$]$</string>
+                </stringlist>
+            </Property>
+            <Property name="InputTables">
+                <stringlist/>
+            </Property>
+            <Property name="WriteImage">
+                <bool>true</bool>
+            </Property>
+            <Property name="WriteTable">
+                <bool>true</bool>
+            </Property>
+            <Property name="UpdateMode">
+                <bool>true</bool>
+            </Property>
+            <Property name="StreamingMethodType">
+                <string>STRIPPED</string>
+            </Property>
+            <Property name="StreamingMethodEnum">
+                <stringlist>
+                    <string>STRIPPED</string>
+                    <string>TILED</string>
+                    <string>NO_STREAMING</string>
+                </stringlist>
+            </Property>
+            <Property name="StreamingSize">
+                <int>512</int>
+            </Property>
+            <Property name="PyramidResamplingType">
+                <string>NEAREST</string>
+            </Property>
+            <Property name="PyramidResamplingEnum">
+                <stringlist>
+                    <string>NONE</string>
+                    <string>NEAREST</string>
+                    <string>GAUSS</string>
+                    <string>CUBIC</string>
+                    <string>AVERAGE</string>
+                    <string>MODE</string>
+                </stringlist>
+            </Property>
+            <Property name="RGBMode">
+                <bool>false</bool>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="ImageReader43">
+        <Property name="objectName">
+            <string>ImageReader43</string>
+        </Property>
+        <Property name="UserID">
+            <string>layernorat</string>
+        </Property>
+        <Property name="Description">
+            <string>layernorat</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>6</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMImageReader">
+            <Property name="objectName">
+                <string>NMImageReader</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist/>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="FileNames">
+                <stringlist>
+                    <string>$[LUMASS:Workspace]$/$[func:fileBaseName($[para:RasterName:$[Preprocessor]$]$)]$_norat.img</string>
+                </stringlist>
+            </Property>
+            <Property name="RATType">
+                <string>ATTABLE_TYPE_RAM</string>
+            </Property>
+            <Property name="RATEnum">
+                <stringlist>
+                    <string>ATTABLE_TYPE_RAM</string>
+                    <string>ATTABLE_TYPE_SQLITE</string>
+                </stringlist>
+            </Property>
+            <Property name="RGBMode">
+                <bool>false</bool>
+            </Property>
+            <Property name="BandList">
+                <list_stringlist/>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="SummarizeZones11">
+        <Property name="objectName">
+            <string>SummarizeZones11</string>
+        </Property>
+        <Property name="UserID">
+            <string>layernorat</string>
+        </Property>
+        <Property name="Description">
+            <string>create layer RAT</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>6</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist>
+                <stringlist>
+                    <string>ImageReader43</string>
+                </stringlist>
+            </list_stringlist>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMSumZonesFilterWrapper">
+            <Property name="objectName">
+                <string>NMSumZonesFilterWrapper</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist>
+                    <stringlist>
+                        <string>ImageReader43</string>
+                    </stringlist>
+                </list_stringlist>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="IgnoreNodataValue">
+                <stringlist>
+                    <string>0</string>
+                </stringlist>
+            </Property>
+            <Property name="NodataValue">
+                <stringlist>
+                    <string>0</string>
+                </stringlist>
+            </Property>
+            <Property name="HaveMaxKeyRows">
+                <stringlist>
+                    <string>0</string>
+                </stringlist>
+            </Property>
+            <Property name="ZoneTableFileName">
+                <stringlist/>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="SQLProcessor77">
+        <Property name="objectName">
+            <string>SQLProcessor77</string>
+        </Property>
+        <Property name="UserID">
+            <string>layer</string>
+        </Property>
+        <Property name="Description">
+            <string>drop table newout</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>3</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist>
+                <stringlist>
+                    <string>SQLProcessor76</string>
+                </stringlist>
+            </list_stringlist>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMSQLiteProcessorWrapper">
+            <Property name="objectName">
+                <string>NMSQLiteProcessorWrapper</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist>
+                    <stringlist>
+                        <string>SQLProcessor76</string>
+                    </stringlist>
+                </list_stringlist>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="SQLStatement">
+                <stringlist>
+                    <string>drop table newout;</string>
+                </stringlist>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="AggrComp2">
+        <Property name="objectName">
+            <string>AggrComp2</string>
+        </Property>
+        <Property name="UserID">
+            <string>Reclass</string>
+        </Property>
+        <Property name="Description">
+            <string>Raster Reclass</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>3</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist>
+                <string>$[para:Reclassify:$[Preprocessor]$]$</string>
+            </stringlist>
+        </Property>
+        <Subcomponents>MapAlgebra ImageReader ImageWriter CastImage SummarizeZones ResampleImage AggrComp78</Subcomponents>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="MapAlgebra">
+        <Property name="objectName">
+            <string>MapAlgebra</string>
+        </Property>
+        <Property name="UserID">
+            <string>ReclassRaster</string>
+        </Property>
+        <Property name="Description">
+            <string>reclass raster</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>3</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist>
+                <stringlist>
+                    <string>ResampleImage</string>
+                </stringlist>
+            </list_stringlist>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMRATBandMathImageFilterWrapper">
+            <Property name="objectName">
+                <string>NMRATBandMathImageFilterWrapper</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist>
+                    <stringlist>
+                        <string>ResampleImage</string>
+                    </stringlist>
+                </list_stringlist>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>float</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>float</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="InputTables">
+                <list_stringlist/>
+            </Property>
+            <Property name="InputTableVarNames">
+                <list_list_stringlist/>
+            </Property>
+            <Property name="MapExpressions">
+                <stringlist>
+                    <string>$[para:Reclass:$[Preprocessor]$]$</string>
+                </stringlist>
+            </Property>
+            <Property name="NumExpressions">
+                <stringlist/>
+            </Property>
+            <Property name="UseTableColumnCache">
+                <bool>false</bool>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="ImageReader">
+        <Property name="objectName">
+            <string>ImageReader</string>
+        </Property>
+        <Property name="UserID">
+            <string>img</string>
+        </Property>
+        <Property name="Description">
+            <string>img</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>3</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMImageReader">
+            <Property name="objectName">
+                <string>NMImageReader</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist/>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>float</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>float</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="FileNames">
+                <stringlist>
+                    <string>$[LUMASS:DataPath]$/$[para:RasterName:$[Preprocessor]$]$</string>
+                </stringlist>
+            </Property>
+            <Property name="RATType">
+                <string>ATTABLE_TYPE_RAM</string>
+            </Property>
+            <Property name="RATEnum">
+                <stringlist>
+                    <string>ATTABLE_TYPE_RAM</string>
+                    <string>ATTABLE_TYPE_SQLITE</string>
+                </stringlist>
+            </Property>
+            <Property name="RGBMode">
+                <bool>false</bool>
+            </Property>
+            <Property name="BandList">
+                <list_stringlist/>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="ImageWriter">
+        <Property name="objectName">
+            <string>ImageWriter</string>
+        </Property>
+        <Property name="UserID">
+            <string></string>
+        </Property>
+        <Property name="Description">
+            <string>write reclassified image</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>3</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist>
+                <stringlist>
+                    <string>SummarizeZones</string>
+                </stringlist>
+            </list_stringlist>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMStreamingImageFileWriterWrapper">
+            <Property name="objectName">
+                <string>NMStreamingImageFileWriterWrapper</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist>
+                    <stringlist>
+                        <string>SummarizeZones</string>
+                    </stringlist>
+                </list_stringlist>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="FileNames">
+                <stringlist>
+                    <string>$[LUMASS:DataPath]$/$[para:FileLabel:$[Preprocessor]$]$.img</string>
+                </stringlist>
+            </Property>
+            <Property name="InputTables">
+                <stringlist/>
+            </Property>
+            <Property name="WriteImage">
+                <bool>true</bool>
+            </Property>
+            <Property name="WriteTable">
+                <bool>true</bool>
+            </Property>
+            <Property name="UpdateMode">
+                <bool>true</bool>
+            </Property>
+            <Property name="StreamingMethodType">
+                <string>STRIPPED</string>
+            </Property>
+            <Property name="StreamingMethodEnum">
+                <stringlist>
+                    <string>STRIPPED</string>
+                    <string>TILED</string>
+                    <string>NO_STREAMING</string>
+                </stringlist>
+            </Property>
+            <Property name="StreamingSize">
+                <int>512</int>
+            </Property>
+            <Property name="PyramidResamplingType">
+                <string>NEAREST</string>
+            </Property>
+            <Property name="PyramidResamplingEnum">
+                <stringlist>
+                    <string>NONE</string>
+                    <string>NEAREST</string>
+                    <string>GAUSS</string>
+                    <string>CUBIC</string>
+                    <string>AVERAGE</string>
+                    <string>MODE</string>
+                </stringlist>
+            </Property>
+            <Property name="RGBMode">
+                <bool>false</bool>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="CastImage">
+        <Property name="objectName">
+            <string>CastImage</string>
+        </Property>
+        <Property name="UserID">
+            <string></string>
+        </Property>
+        <Property name="Description">
+            <string>float --> int</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>3</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist>
+                <stringlist>
+                    <string>MapAlgebra</string>
+                </stringlist>
+            </list_stringlist>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMItkCastImageFilterWrapper">
+            <Property name="objectName">
+                <string>NMItkCastImageFilterWrapper</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist>
+                    <stringlist>
+                        <string>MapAlgebra</string>
+                    </stringlist>
+                </list_stringlist>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>float</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="SummarizeZones">
+        <Property name="objectName">
+            <string>SummarizeZones</string>
+        </Property>
+        <Property name="UserID">
+            <string></string>
+        </Property>
+        <Property name="Description">
+            <string>create RAT</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>3</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist>
+                <stringlist>
+                    <string>CastImage</string>
+                </stringlist>
+            </list_stringlist>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMSumZonesFilterWrapper">
+            <Property name="objectName">
+                <string>NMSumZonesFilterWrapper</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist>
+                    <stringlist>
+                        <string>CastImage</string>
+                    </stringlist>
+                </list_stringlist>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="IgnoreNodataValue">
+                <stringlist>
+                    <string>0</string>
+                </stringlist>
+            </Property>
+            <Property name="NodataValue">
+                <stringlist>
+                    <string>$[para:Nodata:$[Preprocessor]$]$</string>
+                </stringlist>
+            </Property>
+            <Property name="HaveMaxKeyRows">
+                <stringlist>
+                    <string>0</string>
+                </stringlist>
+            </Property>
+            <Property name="ZoneTableFileName">
+                <stringlist/>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="ResampleImage">
+        <Property name="objectName">
+            <string>ResampleImage</string>
+        </Property>
+        <Property name="UserID">
+            <string>img</string>
+        </Property>
+        <Property name="Description">
+            <string>cookie cutter</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>3</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist>
+                <stringlist>
+                    <string>ImageReader</string>
+                </stringlist>
+            </list_stringlist>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMResampleImageFilterWrapper">
+            <Property name="objectName">
+                <string>NMResampleImageFilterWrapper</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist>
+                    <stringlist>
+                        <string>ImageReader</string>
+                    </stringlist>
+                </list_stringlist>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>float</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>float</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="InterpolationMethod">
+                <stringlist>
+                    <string>Linear</string>
+                </stringlist>
+            </Property>
+            <Property name="DefaultPixelValue">
+                <stringlist>
+                    <string>$[para:Nodata:$[Preprocessor]$]$</string>
+                </stringlist>
+            </Property>
+            <Property name="OutputSpacing">
+                <list_stringlist>
+                    <stringlist>
+                        <string>$[func:strListItem($[para:CellSize:1]$, " ", 0)]$</string>
+                        <string>$[func:strListItem($[para:CellSize:1]$, " ", 1)]$</string>
+                    </stringlist>
+                </list_stringlist>
+            </Property>
+            <Property name="OutputOrigin">
+                <list_stringlist>
+                    <stringlist>
+                        <string>$[math: $[func:strListItem($[para:Extent:1]$, " ", 0)]$ + $[func:strListItem($[para:CellSize:1]$, " ", 0)]$ * 0.5]$</string>
+                        <string>$[math: $[func:strListItem($[para:Extent:1]$, " ", 3)]$ - $[func:strListItem($[para:CellSize:1]$, " ", 1)]$ * 0.5]$</string>
+                    </stringlist>
+                </list_stringlist>
+            </Property>
+            <Property name="Size">
+                <list_stringlist>
+                    <stringlist>
+                        <string>$[math: rint(($[func:strListItem($[para:Extent:1]$, " ", 2)]$  -  $[func:strListItem($[para:Extent:1]$, " ", 0)]$) / $[func:strListItem($[para:CellSize:1]$, " ", 0)]$)]$</string>
+                        <string>$[math: rint(($[func:strListItem($[para:Extent:1]$," ", 3)]$  -  $[func:strListItem($[para:Extent:1]$, " ", 1)]$) / $[func:strListItem($[para:CellSize:1]$, " ", 1)]$)]$</string>
+                    </stringlist>
+                </list_stringlist>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="AggrComp78">
+        <Property name="objectName">
+            <string>AggrComp78</string>
+        </Property>
+        <Property name="UserID">
+            <string>DeleteOldFiles</string>
+        </Property>
+        <Property name="Description">
+            <string>DeleteOldFiles</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>8</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>2</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Subcomponents>ExternalExec18</Subcomponents>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="ExternalExec18">
+        <Property name="objectName">
+            <string>ExternalExec18</string>
+        </Property>
+        <Property name="UserID">
+            <string>deleteFiles</string>
+        </Property>
+        <Property name="Description">
+            <string>delete prev. outputs</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>8</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMExternalExecWrapper">
+            <Property name="objectName">
+                <string>NMExternalExecWrapper</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist/>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>unknown</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>unknown</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="Command">
+                <stringlist>
+                    <string>"$[LUMASS:LUMASSPath]$/../utils/del.bat" "$[LUMASS:DataPath]$" "$[para:FileLabel:$[Preprocessor]$]$.*"</string>
+                </stringlist>
+            </Property>
+            <Property name="Environment">
+                <list_stringlist/>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="AggrComp4">
+        <Property name="objectName">
+            <string>AggrComp4</string>
+        </Property>
+        <Property name="UserID">
+            <string>CombineInputs</string>
+        </Property>
+        <Property name="Description">
+            <string>Combine Inputs to Ecotopes</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>2</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Subcomponents>ImageReader2 ImageReader1 UniqueCombination ImageReader3 ImageReader4 AggrComp79 ImageReader5 ImageReader6 ImageReader7 ImageReader8 ImageReader9 ImageReader10</Subcomponents>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="ImageReader2">
+        <Property name="objectName">
+            <string>ImageReader2</string>
+        </Property>
+        <Property name="UserID">
+            <string>soil</string>
+        </Property>
+        <Property name="Description">
+            <string>img 2</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>2</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist>
+                <string>$[math: 2 &lt;= $[para:rowcount]$]$</string>
+            </stringlist>
+        </Property>
+        <Process name="NMImageReader">
+            <Property name="objectName">
+                <string>NMImageReader</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist/>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="FileNames">
+                <stringlist>
+                    <string>$[LUMASS:DataPath]$/$[para:FileLabel:$[func:cond($[math: 2 &lt;= $[para:rowcount]$]$, 2, 1)]$]$.img</string>
+                </stringlist>
+            </Property>
+            <Property name="RATType">
+                <string>ATTABLE_TYPE_RAM</string>
+            </Property>
+            <Property name="RATEnum">
+                <stringlist>
+                    <string>ATTABLE_TYPE_RAM</string>
+                    <string>ATTABLE_TYPE_SQLITE</string>
+                </stringlist>
+            </Property>
+            <Property name="RGBMode">
+                <bool>false</bool>
+            </Property>
+            <Property name="BandList">
+                <list_stringlist/>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="ImageReader1">
+        <Property name="objectName">
+            <string>ImageReader1</string>
+        </Property>
+        <Property name="UserID">
+            <string>rec</string>
+        </Property>
+        <Property name="Description">
+            <string>img 1</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>2</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist>
+                <string>$[math: 1 &lt;= $[para:rowcount]$]$</string>
+            </stringlist>
+        </Property>
+        <Process name="NMImageReader">
+            <Property name="objectName">
+                <string>NMImageReader</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist/>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="FileNames">
+                <stringlist>
+                    <string>$[LUMASS:DataPath]$/$[para:FileLabel:$[func:cond($[math: 1 &lt;= $[para:rowcount]$]$, 1, 1)]$]$.img</string>
+                </stringlist>
+            </Property>
+            <Property name="RATType">
+                <string>ATTABLE_TYPE_RAM</string>
+            </Property>
+            <Property name="RATEnum">
+                <stringlist>
+                    <string>ATTABLE_TYPE_RAM</string>
+                    <string>ATTABLE_TYPE_SQLITE</string>
+                </stringlist>
+            </Property>
+            <Property name="RGBMode">
+                <bool>false</bool>
+            </Property>
+            <Property name="BandList">
+                <list_stringlist/>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="UniqueCombination">
+        <Property name="objectName">
+            <string>UniqueCombination</string>
+        </Property>
+        <Property name="UserID">
+            <string></string>
+        </Property>
+        <Property name="Description">
+            <string>ecotopes creation</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>2</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist>
+                <stringlist>
+                    <string>ImageReader1</string>
+                    <string>ImageReader2</string>
+                    <string>ImageReader3</string>
+                    <string>ImageReader4</string>
+                    <string>ImageReader6</string>
+                    <string>ImageReader5</string>
+                    <string>ImageReader7</string>
+                    <string>ImageReader10</string>
+                    <string>ImageReader9</string>
+                    <string>ImageReader8</string>
+                </stringlist>
+            </list_stringlist>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMUniqueCombinationFilterWrapper">
+            <Property name="objectName">
+                <string>NMUniqueCombinationFilterWrapper</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist>
+                    <stringlist>
+                        <string>ImageReader1</string>
+                        <string>ImageReader2</string>
+                        <string>ImageReader3</string>
+                        <string>ImageReader4</string>
+                        <string>ImageReader6</string>
+                        <string>ImageReader5</string>
+                        <string>ImageReader7</string>
+                        <string>ImageReader10</string>
+                        <string>ImageReader9</string>
+                        <string>ImageReader8</string>
+                    </stringlist>
+                </list_stringlist>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputImageFileName">
+                <stringlist>
+                    <string>$[LUMASS:DataPath]$/ecotopes.img</string>
+                </stringlist>
+            </Property>
+            <Property name="InputNodata">
+                <list_stringlist>
+                    <stringlist>
+                        <string>0</string>
+                        <string>0</string>
+                        <string>0</string>
+                        <string>0</string>
+                    </stringlist>
+                </list_stringlist>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="ImageReader3">
+        <Property name="objectName">
+            <string>ImageReader3</string>
+        </Property>
+        <Property name="UserID">
+            <string>gw</string>
+        </Property>
+        <Property name="Description">
+            <string>img 3</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>2</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist>
+                <string>$[math: 3 &lt;= $[para:rowcount]$]$</string>
+            </stringlist>
+        </Property>
+        <Process name="NMImageReader">
+            <Property name="objectName">
+                <string>NMImageReader</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist/>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="FileNames">
+                <stringlist>
+                    <string>$[LUMASS:DataPath]$/$[para:FileLabel:$[func:cond($[math: 3 &lt;= $[para:rowcount]$]$, 3, 1)]$]$.img</string>
+                </stringlist>
+            </Property>
+            <Property name="RATType">
+                <string>ATTABLE_TYPE_RAM</string>
+            </Property>
+            <Property name="RATEnum">
+                <stringlist>
+                    <string>ATTABLE_TYPE_RAM</string>
+                    <string>ATTABLE_TYPE_SQLITE</string>
+                </stringlist>
+            </Property>
+            <Property name="RGBMode">
+                <bool>false</bool>
+            </Property>
+            <Property name="BandList">
+                <list_stringlist/>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="ImageReader4">
+        <Property name="objectName">
+            <string>ImageReader4</string>
+        </Property>
+        <Property name="UserID">
+            <string>slope</string>
+        </Property>
+        <Property name="Description">
+            <string>img 4</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>2</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist>
+                <string>$[math: 4 &lt;= $[para:rowcount]$]$</string>
+            </stringlist>
+        </Property>
+        <Process name="NMImageReader">
+            <Property name="objectName">
+                <string>NMImageReader</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist/>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="FileNames">
+                <stringlist>
+                    <string>$[LUMASS:DataPath]$/$[para:FileLabel:$[func:cond($[math: 4 &lt;= $[para:rowcount]$]$, 4, 1)]$]$.img</string>
+                </stringlist>
+            </Property>
+            <Property name="RATType">
+                <string>ATTABLE_TYPE_RAM</string>
+            </Property>
+            <Property name="RATEnum">
+                <stringlist>
+                    <string>ATTABLE_TYPE_RAM</string>
+                    <string>ATTABLE_TYPE_SQLITE</string>
+                </stringlist>
+            </Property>
+            <Property name="RGBMode">
+                <bool>false</bool>
+            </Property>
+            <Property name="BandList">
+                <list_stringlist/>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="AggrComp79">
+        <Property name="objectName">
+            <string>AggrComp79</string>
+        </Property>
+        <Property name="UserID">
+            <string>DeleteOldFiles</string>
+        </Property>
+        <Property name="Description">
+            <string>DeleteOldFiles</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>10</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>2</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Subcomponents>ExternalExec19</Subcomponents>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="ExternalExec19">
+        <Property name="objectName">
+            <string>ExternalExec19</string>
+        </Property>
+        <Property name="UserID">
+            <string>deleteFiles</string>
+        </Property>
+        <Property name="Description">
+            <string>delete prev. outputs</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>10</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMExternalExecWrapper">
+            <Property name="objectName">
+                <string>NMExternalExecWrapper</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist/>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>unknown</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>unknown</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="Command">
+                <stringlist>
+                    <string>"$[LUMASS:LUMASSPath]$/../utils/del.bat" "$[LUMASS:DataPath]$" "ecotopes.*"</string>
+                </stringlist>
+            </Property>
+            <Property name="Environment">
+                <list_stringlist/>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="ImageReader5">
+        <Property name="objectName">
+            <string>ImageReader5</string>
+        </Property>
+        <Property name="UserID">
+            <string>rec</string>
+        </Property>
+        <Property name="Description">
+            <string>img 6</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>2</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist>
+                <string>$[math: 6 &lt;= $[para:rowcount]$]$</string>
+            </stringlist>
+        </Property>
+        <Process name="NMImageReader">
+            <Property name="objectName">
+                <string>NMImageReader</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist/>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="FileNames">
+                <stringlist>
+                    <string>$[LUMASS:DataPath]$/$[para:FileLabel:$[func:cond($[math: 6 &lt;= $[para:rowcount]$]$, 6, 1)]$]$.img</string>
+                </stringlist>
+            </Property>
+            <Property name="RATType">
+                <string>ATTABLE_TYPE_RAM</string>
+            </Property>
+            <Property name="RATEnum">
+                <stringlist>
+                    <string>ATTABLE_TYPE_RAM</string>
+                    <string>ATTABLE_TYPE_SQLITE</string>
+                </stringlist>
+            </Property>
+            <Property name="RGBMode">
+                <bool>false</bool>
+            </Property>
+            <Property name="BandList">
+                <list_stringlist/>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="ImageReader6">
+        <Property name="objectName">
+            <string>ImageReader6</string>
+        </Property>
+        <Property name="UserID">
+            <string>rec</string>
+        </Property>
+        <Property name="Description">
+            <string>img 5</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>2</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist>
+                <string>$[math: 5 &lt;= $[para:rowcount]$]$</string>
+            </stringlist>
+        </Property>
+        <Process name="NMImageReader">
+            <Property name="objectName">
+                <string>NMImageReader</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist/>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="FileNames">
+                <stringlist>
+                    <string>$[LUMASS:DataPath]$/$[para:FileLabel:$[func:cond($[math: 5 &lt;= $[para:rowcount]$]$, 5, 1)]$]$.img</string>
+                </stringlist>
+            </Property>
+            <Property name="RATType">
+                <string>ATTABLE_TYPE_RAM</string>
+            </Property>
+            <Property name="RATEnum">
+                <stringlist>
+                    <string>ATTABLE_TYPE_RAM</string>
+                    <string>ATTABLE_TYPE_SQLITE</string>
+                </stringlist>
+            </Property>
+            <Property name="RGBMode">
+                <bool>false</bool>
+            </Property>
+            <Property name="BandList">
+                <list_stringlist/>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="ImageReader7">
+        <Property name="objectName">
+            <string>ImageReader7</string>
+        </Property>
+        <Property name="UserID">
+            <string>rec</string>
+        </Property>
+        <Property name="Description">
+            <string>img 7</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>2</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist>
+                <string>$[math: 7 &lt;= $[para:rowcount]$]$</string>
+            </stringlist>
+        </Property>
+        <Process name="NMImageReader">
+            <Property name="objectName">
+                <string>NMImageReader</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist/>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="FileNames">
+                <stringlist>
+                    <string>$[LUMASS:DataPath]$/$[para:FileLabel:$[func:cond($[math: 7 &lt;= $[para:rowcount]$]$, 7, 1)]$]$.img</string>
+                </stringlist>
+            </Property>
+            <Property name="RATType">
+                <string>ATTABLE_TYPE_RAM</string>
+            </Property>
+            <Property name="RATEnum">
+                <stringlist>
+                    <string>ATTABLE_TYPE_RAM</string>
+                    <string>ATTABLE_TYPE_SQLITE</string>
+                </stringlist>
+            </Property>
+            <Property name="RGBMode">
+                <bool>false</bool>
+            </Property>
+            <Property name="BandList">
+                <list_stringlist/>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="ImageReader8">
+        <Property name="objectName">
+            <string>ImageReader8</string>
+        </Property>
+        <Property name="UserID">
+            <string>rec</string>
+        </Property>
+        <Property name="Description">
+            <string>img 10</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>2</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist>
+                <string>$[math: 10 &lt;= $[para:rowcount]$]$</string>
+            </stringlist>
+        </Property>
+        <Process name="NMImageReader">
+            <Property name="objectName">
+                <string>NMImageReader</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist/>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="FileNames">
+                <stringlist>
+                    <string>$[LUMASS:OutputDirectory]$/$[para:FileLabel:$[func:cond($[math: 10 &lt;= $[para:rowcount]$]$, 10, 1)]$]$.img</string>
+                </stringlist>
+            </Property>
+            <Property name="RATType">
+                <string>ATTABLE_TYPE_RAM</string>
+            </Property>
+            <Property name="RATEnum">
+                <stringlist>
+                    <string>ATTABLE_TYPE_RAM</string>
+                    <string>ATTABLE_TYPE_SQLITE</string>
+                </stringlist>
+            </Property>
+            <Property name="RGBMode">
+                <bool>false</bool>
+            </Property>
+            <Property name="BandList">
+                <list_stringlist/>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="ImageReader9">
+        <Property name="objectName">
+            <string>ImageReader9</string>
+        </Property>
+        <Property name="UserID">
+            <string>img9</string>
+        </Property>
+        <Property name="Description">
+            <string>img 9</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>2</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist>
+                <string>$[math: 9 &lt;= $[para:rowcount]$]$</string>
+            </stringlist>
+        </Property>
+        <Process name="NMImageReader">
+            <Property name="objectName">
+                <string>NMImageReader</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist/>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="FileNames">
+                <stringlist>
+                    <string>$[LUMASS:DataPath]$/$[para:FileLabel:$[func:cond($[math: 9 &lt;= $[para:rowcount]$]$, 9, 1)]$]$.img</string>
+                </stringlist>
+            </Property>
+            <Property name="RATType">
+                <string>ATTABLE_TYPE_RAM</string>
+            </Property>
+            <Property name="RATEnum">
+                <stringlist>
+                    <string>ATTABLE_TYPE_RAM</string>
+                    <string>ATTABLE_TYPE_SQLITE</string>
+                </stringlist>
+            </Property>
+            <Property name="RGBMode">
+                <bool>false</bool>
+            </Property>
+            <Property name="BandList">
+                <list_stringlist/>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="ImageReader10">
+        <Property name="objectName">
+            <string>ImageReader10</string>
+        </Property>
+        <Property name="UserID">
+            <string>rec</string>
+        </Property>
+        <Property name="Description">
+            <string>img 8</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>2</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist>
+                <string>$[math: 8 &lt;= $[para:rowcount]$]$</string>
+            </stringlist>
+        </Property>
+        <Process name="NMImageReader">
+            <Property name="objectName">
+                <string>NMImageReader</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist/>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="FileNames">
+                <stringlist>
+                    <string>$[LUMASS:DataPath]$/$[para:FileLabel:$[func:cond($[math: 8 &lt;= $[para:rowcount]$]$, 8, 1)]$]$.img</string>
+                </stringlist>
+            </Property>
+            <Property name="RATType">
+                <string>ATTABLE_TYPE_RAM</string>
+            </Property>
+            <Property name="RATEnum">
+                <stringlist>
+                    <string>ATTABLE_TYPE_RAM</string>
+                    <string>ATTABLE_TYPE_SQLITE</string>
+                </stringlist>
+            </Property>
+            <Property name="RGBMode">
+                <bool>false</bool>
+            </Property>
+            <Property name="BandList">
+                <list_stringlist/>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="AggrComp6">
+        <Property name="objectName">
+            <string>AggrComp6</string>
+        </Property>
+        <Property name="UserID">
+            <string>Joiner</string>
+        </Property>
+        <Property name="Description">
+            <string>Join Iterator</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>1</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>4</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist>
+                <string>$[para:rowcount]$</string>
+            </stringlist>
+        </Property>
+        <Subcomponents>AggrComp5</Subcomponents>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="AggrComp5">
+        <Property name="objectName">
+            <string>AggrComp5</string>
+        </Property>
+        <Property name="UserID">
+            <string>JoinerWorker</string>
+        </Property>
+        <Property name="Description">
+            <string>Join Worker</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>1</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist>
+                <string>$[para:Rasterize:$[Joiner]$]$</string>
+            </stringlist>
+        </Property>
+        <Subcomponents>SQLProcessor82 SQLProcessor57 SQLProcessor83 ImageReader44 ImageWriter46 SQLProcessor58 SQLProcessor80 TableReader7</Subcomponents>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="SQLProcessor82">
+        <Property name="objectName">
+            <string>SQLProcessor82</string>
+        </Property>
+        <Property name="UserID">
+            <string>layer</string>
+        </Property>
+        <Property name="Description">
+            <string>newout > layer_1</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>4</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist>
+                <stringlist>
+                    <string>SQLProcessor57</string>
+                </stringlist>
+            </list_stringlist>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMSQLiteProcessorWrapper">
+            <Property name="objectName">
+                <string>NMSQLiteProcessorWrapper</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist>
+                    <stringlist>
+                        <string>SQLProcessor57</string>
+                    </stringlist>
+                </list_stringlist>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="SQLStatement">
+                <stringlist>
+                    <string>create table ecotopes_1 as select * from newout;</string>
+                </stringlist>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="SQLProcessor57">
+        <Property name="objectName">
+            <string>SQLProcessor57</string>
+        </Property>
+        <Property name="UserID">
+            <string>layer</string>
+        </Property>
+        <Property name="Description">
+            <string>drop table layer_1</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>4</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist>
+                <stringlist>
+                    <string>SQLProcessor58</string>
+                </stringlist>
+            </list_stringlist>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMSQLiteProcessorWrapper">
+            <Property name="objectName">
+                <string>NMSQLiteProcessorWrapper</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist>
+                    <stringlist>
+                        <string>SQLProcessor58</string>
+                    </stringlist>
+                </list_stringlist>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="SQLStatement">
+                <stringlist>
+                    <string>drop table ecotopes_1;</string>
+                </stringlist>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="SQLProcessor83">
+        <Property name="objectName">
+            <string>SQLProcessor83</string>
+        </Property>
+        <Property name="UserID">
+            <string>layer</string>
+        </Property>
+        <Property name="Description">
+            <string>drop table newout</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>4</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist>
+                <stringlist>
+                    <string>SQLProcessor82</string>
+                </stringlist>
+            </list_stringlist>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMSQLiteProcessorWrapper">
+            <Property name="objectName">
+                <string>NMSQLiteProcessorWrapper</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist>
+                    <stringlist>
+                        <string>SQLProcessor82</string>
+                    </stringlist>
+                </list_stringlist>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="SQLStatement">
+                <stringlist>
+                    <string>drop table newout;</string>
+                </stringlist>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="ImageReader44">
+        <Property name="objectName">
+            <string>ImageReader44</string>
+        </Property>
+        <Property name="UserID">
+            <string>layer</string>
+        </Property>
+        <Property name="Description">
+            <string>layer</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>4</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMImageReader">
+            <Property name="objectName">
+                <string>NMImageReader</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist/>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="FileNames">
+                <stringlist>
+                    <string>$[LUMASS:DataPath]$/ecotopes.img</string>
+                </stringlist>
+            </Property>
+            <Property name="RATType">
+                <string>ATTABLE_TYPE_SQLITE</string>
+            </Property>
+            <Property name="RATEnum">
+                <stringlist>
+                    <string>ATTABLE_TYPE_RAM</string>
+                    <string>ATTABLE_TYPE_SQLITE</string>
+                </stringlist>
+            </Property>
+            <Property name="RGBMode">
+                <bool>false</bool>
+            </Property>
+            <Property name="BandList">
+                <list_stringlist/>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="ImageWriter46">
+        <Property name="objectName">
+            <string>ImageWriter46</string>
+        </Property>
+        <Property name="UserID">
+            <string>layer</string>
+        </Property>
+        <Property name="Description">
+            <string>update layer's RAT</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>4</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist>
+                <stringlist>
+                    <string>SQLProcessor80</string>
+                </stringlist>
+            </list_stringlist>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMStreamingImageFileWriterWrapper">
+            <Property name="objectName">
+                <string>NMStreamingImageFileWriterWrapper</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist>
+                    <stringlist>
+                        <string>SQLProcessor80</string>
+                    </stringlist>
+                </list_stringlist>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="FileNames">
+                <stringlist>
+                    <string>$[LUMASS:DataPath]$/ecotopes.img</string>
+                </stringlist>
+            </Property>
+            <Property name="InputTables">
+                <stringlist/>
+            </Property>
+            <Property name="WriteImage">
+                <bool>false</bool>
+            </Property>
+            <Property name="WriteTable">
+                <bool>true</bool>
+            </Property>
+            <Property name="UpdateMode">
+                <bool>false</bool>
+            </Property>
+            <Property name="StreamingMethodType">
+                <string>STRIPPED</string>
+            </Property>
+            <Property name="StreamingMethodEnum">
+                <stringlist>
+                    <string>STRIPPED</string>
+                    <string>TILED</string>
+                    <string>NO_STREAMING</string>
+                </stringlist>
+            </Property>
+            <Property name="StreamingSize">
+                <int>512</int>
+            </Property>
+            <Property name="PyramidResamplingType">
+                <string>NEAREST</string>
+            </Property>
+            <Property name="PyramidResamplingEnum">
+                <stringlist>
+                    <string>NONE</string>
+                    <string>NEAREST</string>
+                    <string>GAUSS</string>
+                    <string>CUBIC</string>
+                    <string>AVERAGE</string>
+                    <string>MODE</string>
+                </stringlist>
+            </Property>
+            <Property name="RGBMode">
+                <bool>false</bool>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="SQLProcessor58">
+        <Property name="objectName">
+            <string>SQLProcessor58</string>
+        </Property>
+        <Property name="UserID">
+            <string>layer</string>
+        </Property>
+        <Property name="Description">
+            <string>join tables > newout</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>4</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist>
+                <stringlist>
+                    <string>ImageReader44</string>
+                    <string>TableReader7</string>
+                </stringlist>
+            </list_stringlist>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMSQLiteProcessorWrapper">
+            <Property name="objectName">
+                <string>NMSQLiteProcessorWrapper</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist>
+                    <stringlist>
+                        <string>ImageReader44</string>
+                        <string>TableReader7</string>
+                    </stringlist>
+                </list_stringlist>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="SQLStatement">
+                <stringlist>
+                    <string>create table newout as select norm.*, shp.* 
+from ecotopes_1 norm 
+
+left outer join (select distinct * from $[func:fileBaseName($[para:ShapeFileName:$[Joiner]$]$)]$) shp on norm.$[para:FileLabel:$[Joiner]$]$ = shp.$[para:RasterizationAttribute:$[Joiner]$]$ order by norm.rowidx asc;</string>
+                </stringlist>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="SQLProcessor80">
+        <Property name="objectName">
+            <string>SQLProcessor80</string>
+        </Property>
+        <Property name="UserID">
+            <string>layer</string>
+        </Property>
+        <Property name="Description">
+            <string>index rowidx</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>4</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist>
+                <stringlist>
+                    <string>SQLProcessor83</string>
+                </stringlist>
+            </list_stringlist>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMSQLiteProcessorWrapper">
+            <Property name="objectName">
+                <string>NMSQLiteProcessorWrapper</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist>
+                    <stringlist>
+                        <string>SQLProcessor83</string>
+                    </stringlist>
+                </list_stringlist>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="SQLStatement">
+                <stringlist>
+                    <string>create index if not exists rowidx_idx on ecotopes_1 (rowidx);</string>
+                </stringlist>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="TableReader7">
+        <Property name="objectName">
+            <string>TableReader7</string>
+        </Property>
+        <Property name="UserID">
+            <string>shp</string>
+        </Property>
+        <Property name="Description">
+            <string>LayerShapeFile Attribute Table</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>4</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMTableReader">
+            <Property name="objectName">
+                <string>NMTableReader</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist/>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>unknown</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>unknown</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="CreateTable">
+                <bool>false</bool>
+            </Property>
+            <Property name="FileName">
+                <stringlist>
+                    <string>$[LUMASS:DataPath]$/$[func:fileBaseName($[para:ShapeFileName:$[Joiner]$]$)]$.dbf</string>
+                </stringlist>
+            </Property>
+            <Property name="TableName">
+                <stringlist/>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="AggrComp7">
+        <Property name="objectName">
+            <string>AggrComp7</string>
+        </Property>
+        <Property name="UserID">
+            <string>ConvertImg</string>
+        </Property>
+        <Property name="Description">
+            <string>Convert IMG -> TIFF</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>0</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>2</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Subcomponents>ImageWriter1 ImageReader11</Subcomponents>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="ImageWriter1">
+        <Property name="objectName">
+            <string>ImageWriter1</string>
+        </Property>
+        <Property name="UserID">
+            <string></string>
+        </Property>
+        <Property name="Description">
+            <string>ecotopes.tiff</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>0</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist>
+                <stringlist>
+                    <string>ImageReader11</string>
+                </stringlist>
+            </list_stringlist>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMStreamingImageFileWriterWrapper">
+            <Property name="objectName">
+                <string>NMStreamingImageFileWriterWrapper</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist>
+                    <stringlist>
+                        <string>ImageReader11</string>
+                    </stringlist>
+                </list_stringlist>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="FileNames">
+                <stringlist>
+                    <string>$[LUMASS:DataPath]$/ecotopes.tiff</string>
+                </stringlist>
+            </Property>
+            <Property name="InputTables">
+                <stringlist/>
+            </Property>
+            <Property name="WriteImage">
+                <bool>true</bool>
+            </Property>
+            <Property name="WriteTable">
+                <bool>true</bool>
+            </Property>
+            <Property name="UpdateMode">
+                <bool>false</bool>
+            </Property>
+            <Property name="StreamingMethodType">
+                <string>STRIPPED</string>
+            </Property>
+            <Property name="StreamingMethodEnum">
+                <stringlist>
+                    <string>STRIPPED</string>
+                    <string>TILED</string>
+                    <string>NO_STREAMING</string>
+                </stringlist>
+            </Property>
+            <Property name="StreamingSize">
+                <int>512</int>
+            </Property>
+            <Property name="PyramidResamplingType">
+                <string>NEAREST</string>
+            </Property>
+            <Property name="PyramidResamplingEnum">
+                <stringlist>
+                    <string>NONE</string>
+                    <string>NEAREST</string>
+                    <string>GAUSS</string>
+                    <string>CUBIC</string>
+                    <string>AVERAGE</string>
+                    <string>MODE</string>
+                </stringlist>
+            </Property>
+            <Property name="RGBMode">
+                <bool>false</bool>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+    <NMSequentialIterComponent name="ImageReader11">
+        <Property name="objectName">
+            <string>ImageReader11</string>
+        </Property>
+        <Property name="UserID">
+            <string>Ecotopes</string>
+        </Property>
+        <Property name="Description">
+            <string>ecotopes.img</string>
+        </Property>
+        <Property name="TimeLevel">
+            <short>0</short>
+        </Property>
+        <Property name="Inputs">
+            <list_stringlist/>
+        </Property>
+        <Property name="IterationStep">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterations">
+            <uint>1</uint>
+        </Property>
+        <Property name="NumIterationsExpression">
+            <stringlist/>
+        </Property>
+        <Process name="NMImageReader">
+            <Property name="objectName">
+                <string>NMImageReader</string>
+            </Property>
+            <Property name="InputComponents">
+                <list_stringlist/>
+            </Property>
+            <Property name="ParameterHandling">
+                <advance_parameter>NM_USE_UP</advance_parameter>
+            </Property>
+            <Property name="NMInputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="NMOutputComponentType">
+                <component_type>int</component_type>
+            </Property>
+            <Property name="InputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="OutputNumDimensions">
+                <uint>2</uint>
+            </Property>
+            <Property name="InputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="OutputNumBands">
+                <uint>1</uint>
+            </Property>
+            <Property name="FileNames">
+                <stringlist>
+                    <string>$[LUMASS:DataPath]$/ecotopes.img</string>
+                </stringlist>
+            </Property>
+            <Property name="RATType">
+                <string>ATTABLE_TYPE_RAM</string>
+            </Property>
+            <Property name="RATEnum">
+                <stringlist>
+                    <string>ATTABLE_TYPE_RAM</string>
+                    <string>ATTABLE_TYPE_SQLITE</string>
+                </stringlist>
+            </Property>
+            <Property name="RGBMode">
+                <bool>false</bool>
+            </Property>
+            <Property name="BandList">
+                <list_stringlist/>
+            </Property>
+        </Process>
+    </NMSequentialIterComponent>
+</Model>

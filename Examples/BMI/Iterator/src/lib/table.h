@@ -23,6 +23,7 @@
 #include "sqlite3.h"
 
 #define DEFAULT_CSV_SEP ','
+#define DEFAULT_PK_NAME "id"
 
 namespace bmit {
 
@@ -194,14 +195,16 @@ namespace bmit {
             const std::string& name,
             const std::string& path,
             const std::string& table,
-            const std::string& column);
+            const std::string& column,
+            const std::string& pk_name=DEFAULT_PK_NAME);
 
         /* Readonly from db pointer */
         explicit SqlColumn(
             const std::string& name,
             sqlite3* db,
             const std::string& table,
-            const std::string& column);
+            const std::string& column,
+            const std::string& pk_name=DEFAULT_PK_NAME);
 
         /* Read/Write from db file */
         explicit SqlColumn(
@@ -209,7 +212,8 @@ namespace bmit {
             const std::string& path,
             const std::string& table,
             const std::string& column,
-            const size_t rows);
+            const size_t rows,
+            const std::string& pk_name=DEFAULT_PK_NAME);
 
         /* Read/Write from db pointer */
         explicit SqlColumn(
@@ -217,7 +221,8 @@ namespace bmit {
             sqlite3* db,
             const std::string& table,
             const std::string& column,
-            const size_t rows);
+            const size_t rows,
+            const std::string& pk_name=DEFAULT_PK_NAME);
 
         SqlColumn(const SqlColumn &) = delete;
         SqlColumn(SqlColumn &&) noexcept = delete;
@@ -227,6 +232,8 @@ namespace bmit {
 
         const std::string& path() {return m_path;}
         const std::string& column() {return m_column;}
+        const std::string& pk_name() {return m_pk_name;}
+        void pk_name(const std::string& pk_name) {m_pk_name = pk_name;}
 
         // ITable functions
         virtual const std::string& name() {return m_name;}
@@ -237,6 +244,7 @@ namespace bmit {
         std::string m_path;
         std::string m_table;
         std::string m_column;
+        std::string m_pk_name;
         sqlite3* m_db = nullptr;
 
         std::string get_sql_type();
