@@ -61,10 +61,6 @@ def initialize(config_file):
 
     # Validate inputs (not implemented yet)
 
-    # sort by hydseq, first setting up the original sort order from row id
-    Segments['OriginalOrder'] = range(len(Segments))
-    Segments.sort_values('Hydseq',inplace=True)
-
     modelHasInitialized = True
 #endregion
 #************************************************************
@@ -72,7 +68,7 @@ def initialize(config_file):
 #************************************************************
 
 def update(dt):
-    global modelHasRun    
+    global modelHasRun, Segments
     if modelHasRun or not modelHasInitialized:
         return
 
@@ -90,6 +86,7 @@ def update(dt):
     nsegments = len(Segments)
 
     #convert dataframe columns to vectors for efficient calculations
+    HydseqVect = Segments.Hydseq.values
     FromNodeVect = Segments.FromNode.values
     ToNodeVect = Segments.ToNode.values
 
@@ -112,16 +109,16 @@ def update(dt):
 
     SourceTotalVect = Segments.SourceTotal.values  
     StreamCarryVect = Segments.StreamCarry.values
-    LoadVec = np.zeros(nsegments)
+    LoadVect = np.zeros(nsegments)
 
-    for segment in range(nsegments):
+    for segment in np.argsort(HydseqVect): #iterate in order of Hydseq
         streamcarry = StreamCarryVect[segment]
         load = NodeLoad[FromNodeVect[segment]] * streamcarry + SourceTotalVect[segment] * streamcarry**0.5
         tonode = ToNodeVect[segment]
         NodeLoad[tonode] += load # Add the segment outlet load to the node load.
-        LoadVec[segment] = load
+        LoadVect[segment] = load
 
-    Segments['SegmentLoad'] = LoadVec
+    Segments['SegmentLoad'] = LoadVect
     modelHasRun = True
 #endregion
 #************************************************************
@@ -129,13 +126,11 @@ def update(dt):
 #************************************************************
 
 def finalize():
-    global FileDb, modelHasRun
+    global FileDb, modelHasRun, Segments
 
     if not modelHasRun:
         return
     # Output the variables
-
-    Segments.sort_values('OriginalOrder',inplace=True)
 
     # check that the sqlite can be opened in write mode (not implemented yet)
 
@@ -145,11 +140,12 @@ def finalize():
     conn = sqlite3.connect(FileDb)
 
     SegmentLoad = Segments[['SegmentID','SegmentLoad']]
-    conn.execute('DROP TABLE if exists SegmentLoad')
-    SegmentLoad.to_sql('SegmentLoad', conn) 
+    #conn.execute('DROP TABLE if exists SegmentLoad')
+    #SegmentLoad.to_sql('SegmentLoad', conn) 
 
     conn.execute('DROP TABLE if exists SegmentsNew')
-    conn.execute('Create table SegmentsNew as Select Segments.*, SegmentLoad.SegmentLoad from Segments LEFT JOIN SegmentLoad Using(SegmentID)')
+    Segments.to_sql('SegmentsNew', conn)
+    #conn.execute('Create table SegmentsNew as Select Segments.*, SegmentLoad.SegmentLoad from Segments LEFT JOIN SegmentLoad Using(SegmentID)')
 
     conn.close()
 
