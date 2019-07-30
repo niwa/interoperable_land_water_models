@@ -48,9 +48,7 @@ inner join <inputs table> on <inputs entity> = <weights entity>
 group by <aggregate>;
 ```
 
-## Contents
-
-### Folders
+## Folder Contents
 
 * data
   * aggregator.yaml -- a sample configuration file
