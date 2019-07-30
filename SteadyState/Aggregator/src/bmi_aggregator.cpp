@@ -1,13 +1,14 @@
-// Aggregator.cpp : Defines the exported functions for the DLL application.
+// bmi_ggregator.cpp : Defines the exported functions for the DLL application.
 //
 
 #include "stdafx.h"
 #include "AggregatorConfiguration.h"
 #include "bmi.h"
 #include <stdexcept>
+#include <filesystem>
 #include "sqlite3.h"
 
-static model_timer timer;
+static model_times m_times;
 static model_tables_info tables_info;
 static Logger logger = nullptr;
 
@@ -24,6 +25,7 @@ int initialize(const char *config_file) {
 	std::string msg = "Initializing from configuration file: ";
 	msg.append(config_file);
 	log(log_level, msg.c_str());
+	int status = 0;
 	try {
 		get_table_info_from_yaml(config_file, &tables_info);
 	}
@@ -33,62 +35,122 @@ int initialize(const char *config_file) {
 		log(log_level, e.what());
 		return -1;
 	}
+	if (initialize_sqlite_connections(&tables_info, &msg)) {
+		log(LEVEL_ERROR, msg.c_str());
+		return -1;
+	}
+	else {
+		log(LEVEL_INFO, "Connected to SQLITE files.");
+	}
+	if (verify_sqlite_tables(&tables_info, &msg)) {
+		// something's wrong with the table setup
+		log(LEVEL_ERROR, msg.c_str());
+		if (clean_up_connections(tables_info)) {
+			log(LEVEL_ERROR, tables_info.errMsg);
+		}
+		else {
+			log(LEVEL_INFO, "Closed SQLITE files and connections.");
+		}
+		return -1;
+	}
+	else {
+		// Only the output database connection is used for updates
+		if (tables_info.itDbConnection != tables_info.otDbConnection) {
+			status = sqlite3_close(tables_info.itDbConnection);
+			if (status == SQLITE_OK) {
+				tables_info.itDbConnection = NULL;
+			}
+		}
+		if (tables_info.wtDbConnection != tables_info.otDbConnection) {
+			status = sqlite3_close(tables_info.wtDbConnection);
+			if (status == SQLITE_OK) {
+				tables_info.wtDbConnection = NULL;
+			}
+		}
+		log(LEVEL_INFO, "SQLITE tables verified.");
+	}
 	return 0;
 }
 
 int update(double dt) {
-	timer.current_time += timer.time_step;
+	m_times.current_time += m_times.time_step;
 	Level log_level = LEVEL_INFO;
 	char step_str[20];
-	sprintf_s(step_str, "%lf3.1", timer.current_time);
-	std::string msg = "Update step: " + std::to_string(timer.current_time);
+	int status;
+	sprintf_s(step_str, "%lf3.1", m_times.current_time);
+	std::string msg = "Update step: " + std::to_string(m_times.current_time);
 	log(log_level, msg.c_str());
 
-	sqlite3 *outputDbConnection;
-	int status = sqlite3_open(tables_info.otFileName.c_str(), &outputDbConnection);
+	std::string SQL_statement("");
+	char* errMsg;
 
 	// BLUNT INSTRUMENT!! Clearing output table completely. 
-	std::string SQL_statement = "DELETE FROM " + tables_info.otTableName + ";";
-	status = sqlite3_exec(outputDbConnection, SQL_statement.c_str(), 0, 0, 0);
+	SQL_statement.assign("DELETE FROM " + tables_info.otTableName + ";");
+	status = sqlite3_exec(tables_info.otDbConnection, SQL_statement.c_str(), 0, 0, 0);
+	if (status == SQLITE_OK) {
+		msg = "Cleared old results from table " + tables_info.otTableName + '.';
+		log(LEVEL_INFO, msg.c_str());
+	}
+	SQL_statement.clear();
+
+	std::string itPrefix = "";
+	std::string wtPrefix = "";
+	if (tables_info.inputsDbAttached) {
+		itPrefix = tables_info.itDbName + '.';
+	}
+	if (tables_info.weightsDbAttached) {
+		wtPrefix = tables_info.wtDbName + '.';
+	}
 
 	SQL_statement.assign("INSERT INTO " + tables_info.otTableName
 		+ " SELECT " + tables_info.wtAggColName + ", SUM("
 		+ tables_info.itValueColName + " * " + tables_info.wtWeightColName
 		+ ")/SUM(" + tables_info.wtWeightColName + ") AS "
-		+ tables_info.otValueColName + " FROM " + tables_info.wtTableName
-		+ " INNER JOIN " + tables_info.itTableName + " ON "
+		+ tables_info.otValueColName + " FROM " + wtPrefix + tables_info.wtTableName
+		+ " INNER JOIN " + itPrefix + tables_info.itTableName + " ON "
 		+ tables_info.itTableName + "." + tables_info.itEntityColName + " = "
 		+ tables_info.wtTableName + "." + tables_info.wtEntityColName
 		+ " GROUP BY " + tables_info.wtAggColName + ";");
-	status = sqlite3_exec(outputDbConnection, SQL_statement.c_str(), 0, 0, 0);
 
-	status = sqlite3_close(outputDbConnection);
+	status = sqlite3_exec(tables_info.otDbConnection, SQL_statement.c_str(), 0, 0, &errMsg);
+	if (status == SQLITE_ERROR) {
+		log(LEVEL_ERROR, errMsg);
+		sqlite3_free((void*)errMsg);
+		return -1;
+	}
 
 	return 0;
 }
 
 int finalize() {
-	Level log_level = LEVEL_INFO;
-	std::string msg = "Finalizing aggregator.";
-	log(log_level, msg.c_str());
+	std::string msg = "Finalizing aggregator: Closing database connections";
+	log(LEVEL_INFO, msg.c_str());
+	if (clean_up_connections(tables_info)) {
+		log(LEVEL_ERROR, tables_info.errMsg);
+	}
+	else {
+		log(LEVEL_INFO, "Closed SQLITE files and connections.");
+	}
+	msg = "Finished.";
+	log(LEVEL_INFO, msg.c_str());
 	return 0;
 }
 
 /* time control functions */
 void get_start_time(double *t) {
-	*t = timer.start_time;
+	*t = m_times.start_time;
 }
 
 void get_end_time(double *t) {
-	*t = timer.end_time;
+	*t = m_times.end_time;
 }
 
 void get_current_time(double *t) {
-	*t = timer.current_time;
+	*t = m_times.current_time;
 }
 
 void get_time_step(double *dt) {
-	*dt = timer.time_step;
+	*dt = m_times.time_step;
 }
 
 
