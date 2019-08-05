@@ -1,25 +1,40 @@
 ## Ecotopes
 
 ### Contents
-Folder structure and input data as required by the LUMASS model 
-for generating ecotopes from various input data. 
 
-- ** Data ** -- Folder for input files of the model.
-- ** MakeEcotopes ** -- The LUMASS model files.
-- ** working_directory ** -- Folder for intermediary model files.
+- **MakeEcotopes** -- Folder containing the LUMASS model files.
 
 ### Setup and configuration
 
-0. Build the [LumassBMITest](https://github.com/niwa/interoperable_land_water_models/tree/master/Examples/BMI/LumassBMI/src) application. Alternatively, you can use the version that is shipped with LUMASS, i.e. `test\LumassBMIText.exe`.  
+0. Build the [LumassBMITest](https://github.com/niwa/interoperable_land_water_models/tree/master/Examples/BMI/LumassBMI/src) application. Alternatively, you can use the version that is shipped with LUMASS, i.e. `test\LumassBMIText.exe` (s. link below).  
 
 1. Download LUMASS`ftp://ftp.landcareresearch.co.nz/HerzigA/lumass-0.9.60-test.zip` 
    and extract the zip file into a directory of your choice, e.g. `C:\opt`. Note 
    the zip file contains the directory `lumass-0.9.60-test`.
 
-2. Copy the content of this folder to a directory of your choice, e.g. `D:\Temp\IOMTest`.
+2. Create the following directories in a folder of your choice, e.g. `D:\Temp\IOMTest`,
+	- **Data** -- Folder for input files of the model.
+	- **MakeEcotopes** -- Folder containing the LUMASS model files (copy content from above folder)
+	- **working_directory** -- Folder for intermediary model files.
+
+ 
+3. Download 
+	- the input data `ftp://ftp.landcareresearch.co.nz/HerzigA/Data.zip` for the pre-configured model and extract the individual files into `D:\Temp\IOMTest\Data`
+	- the LUMASS model files from [MakeEcotopes](https://github.com/niwa/interoperable_land_water_models/tree/master/Examples/BMI/LumassBMI/Ecotopes/MakeEcotopes) into `D:\Temp\IOMTest\MakeEcotopes`.
+
+	to create the following file structure
+	
+	```
+	D:
+	|-\Temp
+	     |-\IOMTest
+				|-\Data
+					|-\ <copy  data from Data.zip here, s. below>
+				|-\MakeEcotopes
+					|-\ <copy LUMASS model files from  github repo here>
+				|-\working_directory
+	```
   
-3. Download the input data `ftp://ftp.landcareresearch.co.nz/HerzigA/Data.zip` for the pre-configured model and extract the individual files 
-   into `D:\Temp\IOMTest\Data`.
  
   
 4. Configure the [MakeEcotopes](https://github.com/niwa/interoperable_land_water_models/tree/master/Examples/BMI/LumassBMI/Ecotopes/MakeEcotopes) model to reflect your datasets and parameters. Note: To run the model with the provided datasets, you only have to adjust the `MakeEcotopes\MakeEcotopes.yaml` file.
@@ -32,7 +47,7 @@ for generating ecotopes from various input data.
 	  D:/Temp/IOMTest/MakeEcotopes/EcotopesParas.xls
 	  ```
 		
-	- adapt the 'DataPath' parameter to point to the   
+	- adapt the `DataPath` parameter to point to the   
 	  subdirectory containing the model input data; this 
 	  is also where the ouput data is going to be stored
 	  
@@ -42,7 +57,7 @@ for generating ecotopes from various input data.
 
 ### Run the MakeEcotopes model using the LumassBMITest application
 
-* Instructions for Windows *
+*Instructions for Windows*
 	  
 1. 	WINDOWS ONLY: Open a Windows CommandPrompt and run
 	```
