@@ -65,7 +65,7 @@ mappings:
 
   atmosphere_water~10-year-average__precipitation_volume_flux:
     0: dry      # >= 0
-    1200: moist # >= 1200
+    1100: moist # >= 1100
     1700: wet   # >= 1700
 
   # Anion Sorption Capacity
