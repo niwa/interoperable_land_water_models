@@ -1,0 +1,3 @@
+run_dir: c:\Models\data\aparima-groundwater\run
+args:
+  timeword: steady
