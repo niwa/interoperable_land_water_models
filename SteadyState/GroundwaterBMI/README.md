@@ -24,6 +24,6 @@ And then:
 
 or:
 
-    python ../Test/bmi-runner.exe x64/Release/GroundwaterBMI.dll misc/aparima.yaml
+    python ../Test/bmi-runner.py x64/Release/GroundwaterBMI.dll misc/aparima.yaml
 
 The Aparima groundwater model is located in a separate repository.

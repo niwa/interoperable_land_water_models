@@ -272,7 +272,7 @@ def bmi_runner(engine: str, config: str) -> int:
             logger.debug('get_var_type for %r is %r', name, type)
 
     if bmi.is_implemented('update'):
-        res = bmi.update(1.2)
+        res = bmi.update(-1.0)
         if res != 0:
             logger.error('update return code: %s', res)
             retcode += abs(res)
