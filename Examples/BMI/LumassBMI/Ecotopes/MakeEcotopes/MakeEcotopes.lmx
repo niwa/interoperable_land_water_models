@@ -4070,7 +4070,7 @@ left outer join (select distinct * from $[func:fileBaseName($[para:ShapeFileName
                 <bool>true</bool>
             </Property>
             <Property name="WriteTable">
-                <bool>true</bool>
+                <bool>false</bool>
             </Property>
             <Property name="UpdateMode">
                 <bool>false</bool>
