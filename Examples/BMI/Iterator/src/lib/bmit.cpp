@@ -34,7 +34,7 @@ public:
 
     void get_var(const std::string& name, void** ptr) override;
 
-    void set_var(const std::string& name, void* ptr) override;
+    void set_var(const std::string& name, const void* ptr) override;
 private:
     YAML::Node m_config;
 
@@ -178,7 +178,7 @@ void _Iterator::get_var(const std::string& name, void** ptr) {
 }
 
 
-void _Iterator::set_var(const std::string& name, void* ptr) {
+void _Iterator::set_var(const std::string& name, const void* ptr) {
     if (name == BMIT_SQLITE_PTR_NAME) {
         m_sqlite_pointer = (sqlite3*) ptr;
     }

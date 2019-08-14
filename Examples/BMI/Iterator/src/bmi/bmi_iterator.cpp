@@ -20,7 +20,7 @@ static void log (Level level, std::string msg) {
 
 
 /* control functions. These return an error code. */
-BMI_API int initialize(const char* config_file) {
+int initialize(const char* config_file) {
     log(LEVEL_DEBUG, "Initializing iterator");
 	/* Avoid initializing over existing instance */
 	if (IT != nullptr) {
@@ -45,7 +45,7 @@ BMI_API int initialize(const char* config_file) {
 }
 
 
-BMI_API int update(double dt) {
+int update(double dt) {
 	try {
         IT->run();
     }
@@ -59,7 +59,7 @@ BMI_API int update(double dt) {
 }
 
 
-BMI_API int finalize() {
+int finalize() {
 	log(LEVEL_DEBUG, "Finalizing iterator");
     bmit::Iterator::Dispose(IT);
 	IT = nullptr;
@@ -69,20 +69,20 @@ BMI_API int finalize() {
 
 
 /* time control functions */
-BMI_API void get_start_time(double* t) {}
+void get_start_time(double* t) {}
 
 
-BMI_API void get_end_time(double* t) {}
+void get_end_time(double* t) {}
 
 
-BMI_API void get_current_time(double* t) {}
+void get_current_time(double* t) {}
 
 
-BMI_API void get_time_step(double* dt) {}
+void get_time_step(double* dt) {}
 
 
 /* variable info */
-BMI_API void get_var_shape(const char *name, int shape[MAXDIMS]) {
+void get_var_shape(const char *name, int shape[MAXDIMS]) {
     std::vector<int> dims = IT->get_var_shape(name);
     if (dims.size() > MAXDIMS) {
         // TODO: log this
@@ -95,35 +95,35 @@ BMI_API void get_var_shape(const char *name, int shape[MAXDIMS]) {
 }
 
 
-BMI_API void get_var_rank(const char* name, int* rank) {
+void get_var_rank(const char* name, int* rank) {
     *rank = IT->get_var_rank(name);
 }
 
 
-BMI_API void get_var_type(const char* name, char* type) {
+void get_var_type(const char* name, char* type) {
     auto s = IT->get_var_type(name);
     strncpy_s(type, MAXSTRINGLEN, s.c_str(), s.size() + 1);
 }
 
 
-BMI_API void get_var_count(int* count) {
+void get_var_count(int* count) {
     *count = IT->get_var_count();
 }
 
 
-BMI_API void get_var_name(int index, char* name) {
+void get_var_name(int index, char* name) {
     auto str = IT->get_var_name(index);
     strncpy_s(name, MAXSTRINGLEN, str.c_str(), str.size() + 1);
 }
 
 
 /* data access */
-BMI_API void get_var(const char* name, void** ptr) {
+void get_var(const char* name, void** ptr) {
     IT->get_var(name, ptr);
 }
 
 
-BMI_API void set_var(const char* name, void* ptr) {
+void set_var(const char* name, const void* ptr) {
     IT->set_var(name, ptr);
 }
 

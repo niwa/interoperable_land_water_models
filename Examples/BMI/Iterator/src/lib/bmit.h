@@ -29,7 +29,7 @@ namespace bmit {
 
         virtual void get_var(const std::string& name, void** ptr) = 0;
 
-        virtual void set_var(const std::string& name, void* ptr) = 0;
+        virtual void set_var(const std::string& name, const void* ptr) = 0;
     };
 
 }
