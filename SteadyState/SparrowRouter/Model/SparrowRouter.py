@@ -1,4 +1,5 @@
-""" 
+"""A steady-state constituent routing model for streams.
+
 Takes input fluxes to stream segments in a drainage network, and accumulates the flux down the network with decay. \
 The inputs are read in from a sql database containing segment information, as described in a configuration file, and outputs are placed \
 into a further sql database. A BMI interface is provided for running the model, but input and output are file-based rather than through memory mapping.
@@ -14,9 +15,6 @@ import yaml  # for reading in parameter files
 from inspect import getsourcefile
 import time
 import sqlite3
-import math
-from math import exp
-
 
 ProjectDir =''
 FileDb = "Sparrow.db" # can be overidden in configuration file
@@ -33,6 +31,7 @@ pd.set_option('display.width', 150)
 #************************************************************
 
 def initialize(config_file):
+    '''Implements the BMI initialize function.'''
     # Read control and parameter files
     global FileDb, modelHasInitialized
     global Segments, Parameters
@@ -44,7 +43,7 @@ def initialize(config_file):
 
     try:
         fn = Parameters["DatabaseFile"]
-        FileDb = fn
+        FileDb = os.path.abspath(fn)
     except KeyError:
         pass
 
@@ -54,6 +53,7 @@ def initialize(config_file):
     # working with the variables, requiring specific type coercion later).
     conn = sqlite3.connect(FileDb)
     Segments = pd.read_sql_query("select * from Segments;", conn)
+    # print ("Loaded {} segments from {}.".format(len(Segments), os.path.abspath(FileDb)))
     conn.close()
     #From CSV
     #Segments = pd.read_csv("Segments.csv")
@@ -68,6 +68,7 @@ def initialize(config_file):
 #************************************************************
 
 def update(dt):
+    '''Implements the BMI update function.'''
     global modelHasRun, Segments
     if modelHasRun or not modelHasInitialized:
         return
@@ -126,6 +127,7 @@ def update(dt):
 #************************************************************
 
 def finalize():
+    '''Implements the BMI finalize function.'''
     global FileDb, modelHasRun, Segments
 
     if not modelHasRun:
