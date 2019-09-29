@@ -68,21 +68,21 @@ extern "C" {
 		ret = PyRun_SimpleString("import yaml");
 		if (ret != 0) {
 			_log(LEVEL_FATAL, "PyYAML package is required; pip install pyyaml");
-			return 1;
+			return -1;
 		}
 		ret = PyRun_SimpleString("fp = open(config_file, 'r')");
 		if (ret != 0) {
 			std::ostringstream msg;
 			msg << "config file not found: " << config_file;
 			_log(LEVEL_FATAL, msg.str());
-			return 2;
+			return -2;
 		}
 		ret = PyRun_SimpleString("config = yaml.safe_load(fp)");
 		if (ret != 0) {
 			std::ostringstream msg;
 			msg << "config file cannot be loaded as YAML: " << config_file;
 			_log(LEVEL_FATAL, msg.str());
-			return 3;
+			return -3;
 		}
 		PyRun_SimpleString("fp.close()");
 
@@ -90,14 +90,14 @@ extern "C" {
 		ret = PyRun_SimpleString("run_dir = config['run_dir']");
 		if (ret != 0) {
 			_log(LEVEL_FATAL, "config file does not have 'run_dir' entry");
-			return 4;
+			return -4;
 		}
 
 		// ensure 'run_dir' is a directory
 		ret = PyRun_SimpleString("assert os.path.isdir(run_dir)");
 		if (ret != 0) {
 			_log(LEVEL_FATAL, "'run_dir' entry is not a directory");
-			return 5;
+			return -5;
 		}
 		//PyRun_SimpleString("os.chdir(run_dir)");
 		PyRun_SimpleString("sys.path.insert(0, run_dir)");
@@ -108,7 +108,7 @@ extern "C" {
 		if (pName == NULL) {
 			_log(LEVEL_FATAL, "cannot import run module");
 			PyErr_Print();
-			return 6;
+			return -6;
 		}
 		else
 			Py_DECREF(pName);
@@ -116,7 +116,7 @@ extern "C" {
 		if (pClass == NULL) {
 			_log(LEVEL_FATAL, "cannot import GroundwaterModel class");
 			PyErr_Print();
-			return 7;
+			return -7;
 		}
 
 		// do equivalent of: gm = GroundwaterModel.initialize(config_file)
@@ -125,7 +125,7 @@ extern "C" {
 		if (pGM == NULL) {
 			_log(LEVEL_FATAL, "cannot initialize GroundwaterModel");
 			PyErr_Print();
-			return 8;
+			return -8;
 		}
 		is_initialized = true;
 		return 0;
@@ -134,7 +134,7 @@ extern "C" {
 	BMI_API int update(double dt)
 	{
 		if (!is_initialized)
-			return 1;
+			return -1;
 		int ret = 0;
 		_log(LEVEL_DEBUG, "updating ... ");
 		PyRun_SimpleString("os.chdir(run_dir)");
@@ -153,7 +153,7 @@ extern "C" {
 	BMI_API int finalize()
 	{
 		if (!is_initialized)
-			return 1;
+			return -1;
 		int ret = 0;
 		_log(LEVEL_DEBUG, "finalize ... ");
 		PyRun_SimpleString("os.chdir(run_dir)");
@@ -175,6 +175,10 @@ extern "C" {
 
 	BMI_API void get_start_time(double *t)
 	{
+		if (!is_initialized) {
+			*t = -1.0;
+			return;
+		}
 		_log(LEVEL_DEBUG, "get_start_time ... ");
 		PyObject* pRes = PyObject_CallMethod(pGM, (char*)"get_start_time", "()", NULL);
 		if (PyFloat_Check(pRes))
@@ -188,6 +192,10 @@ extern "C" {
 
 	BMI_API void get_end_time(double *t)
 	{
+		if (!is_initialized) {
+			*t = -1.0;
+			return;
+		}
 		_log(LEVEL_DEBUG, "get_end_time ... ");
 		PyObject* pRes = PyObject_CallMethod(pGM, (char*)"get_end_time", "()", NULL);
 		if (PyFloat_Check(pRes))
@@ -201,6 +209,10 @@ extern "C" {
 
 	BMI_API void get_current_time(double *t)
 	{
+		if (!is_initialized) {
+			*t = -1.0;
+			return;
+		}
 		_log(LEVEL_DEBUG, "get_current_time ... ");
 		PyObject* pRes = PyObject_CallMethod(pGM, (char*)"get_current_time", "()", NULL);
 		if (PyFloat_Check(pRes))
@@ -214,6 +226,10 @@ extern "C" {
 
 	BMI_API void get_time_step(double *dt)
 	{
+		if (!is_initialized) {
+			*dt = -1.0;
+			return;
+		}
 		_log(LEVEL_DEBUG, "get_time_step ... ");
 		PyObject* pRes = PyObject_CallMethod(pGM, (char*)"get_time_step", "()", NULL);
 		if (PyFloat_Check(pRes))
@@ -227,6 +243,10 @@ extern "C" {
 
 	BMI_API void get_var_count(int *count)
 	{
+		if (!is_initialized) {
+			*count = -1;
+			return;
+		}
 		_log(LEVEL_DEBUG, "get_var_count ... ");
 		PyObject* pRes = PyObject_CallMethod(pGM, (char*)"get_var_count", "()", NULL);
 		if (PyLong_Check(pRes))
@@ -240,6 +260,10 @@ extern "C" {
 
 	BMI_API void get_var_name(int index, char *name)
 	{
+		if (!is_initialized) {
+			name[0] = '\0';
+			return;
+		}
 		PyObject* pRes = PyObject_CallMethod(pGM, (char*)"get_var_name", "(i)", index);
 		if (PyUnicode_Check(pRes)) {
 			Py_ssize_t size;
@@ -263,6 +287,10 @@ extern "C" {
 
 	BMI_API void get_var_rank(const char *name, int *rank)
 	{
+		if (!is_initialized) {
+			*rank = -1;
+			return;
+		}
 		PyObject* pRes = PyObject_CallMethod(pGM, (char*)"get_var_rank", "(s)", name);
 		if (PyLong_Check(pRes))
 			*rank = (int)PyLong_AsLong(pRes);
@@ -274,6 +302,11 @@ extern "C" {
 	}
 
 	BMI_API void get_var_shape(const char *name, int shape[MAXDIMS]) {
+		if (!is_initialized) {
+			for (int i = 0; i < MAXDIMS; i++)
+				shape[i] = -1;
+			return;
+		}
 		for (int i = 0; i < MAXDIMS; i++)
 			shape[i] = 0;
 		PyObject* pTuple = PyObject_CallMethod(pGM, (char*)"get_var_shape", "(s)", name);
@@ -285,7 +318,7 @@ extern "C" {
 					shape[i] = (int)PyLong_AsLong(pItem);
 				else
 					_log(LEVEL_WARNING, "unexpected return item from 'gm.get_var_shape(name)'");
-				Py_DECREF(pItem);
+				// do not call Py_DECREF(pItem)
 			}
 		}
 		else {
@@ -296,6 +329,10 @@ extern "C" {
 
 	BMI_API void get_var_type(const char *name, char *type)
 	{
+		if (!is_initialized) {
+			type[0] = '\0';
+			return;
+		}
 		PyObject* pRes = PyObject_CallMethod(pGM, (char*)"get_var_type", "(s)", name);
 		if (PyUnicode_Check(pRes)) {
 			Py_ssize_t size;
