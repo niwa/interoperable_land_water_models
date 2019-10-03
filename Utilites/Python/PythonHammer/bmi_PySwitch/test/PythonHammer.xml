@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<dimrConfig xmlns="http://schemas.deltares.nl/dimr" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.deltares.nl/dimr http://content.oss.deltares.nl/schemas/dimr-1.2.xsd">
+  <documentation>
+    <fileVersion>1.00</fileVersion>
+    <createdBy>OLW/NIWA, Interoperable Models Team</createdBy>
+    <creationDate>2019-09-23</creationDate>
+  </documentation>
+  
+  <control>
+        <start name="StartUp" />
+        <start name="ShutDown" />
+  </control>
+  <component name="StartUp">
+    <library>bmi_PySwitch</library>
+    <workingDir>.</workingDir>
+    <inputFile>start</inputFile>
+  </component>
+  <component name="ShutDown">
+    <library>bmi_PySwitch</library>
+    <workingDir>.</workingDir>
+    <inputFile>shutdown</inputFile>
+  </component>
+</dimrConfig>

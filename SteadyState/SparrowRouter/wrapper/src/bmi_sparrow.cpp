@@ -1,5 +1,23 @@
-// bmi_sparrow.cpp : Defines the exported functions for the DLL application.
-//
+/* bmi_sparrow.cpp
+*
+*  Sparrow is a steady-state contaminant routing model written in Python. It is 
+*  wrapped in a C++ DLL to make it run from Delta Shell or DIMR using the Open Earth
+*  version of BMI. 
+*
+*  The functions that are declared in "bmi.h" are defined here for Sparrow.
+*  These functions are pass-throughs to the Python model:
+*      initialize()
+*      update()
+*      finalize()
+*  The remaining BMI functions are defined here in the C++ wrapper.
+*
+*  The Python model is accessed through the Pybind11 library. If no Python interpreter 
+*  is active when the initialize() function is called, pybind11::initialize_interpreter()
+*  is called. Sparrow's Python module is freed for garbage collection in the finalize()
+*  function, but the Python interpreter is not shut down. In a DIMR configuration, 
+*  bmi_sparrow should be followed by another program that shuts down the Python interpreter.
+*
+*/
 #include <cstdio>
 #include <string>
 #include <sstream>
@@ -19,14 +37,15 @@ Logger logger = NULL;
 /* Logger function */
 void _log(Level level, std::string msg);
 
-py::scoped_interpreter guard{}; // start the interpreter and keep it alive
-py::module srModule = py::module::import("SparrowRouter");
-// py::object srObj = srModule.attr("SparrowRouter")();
+// static object to represent the Sparrow Router Python module
+py::module srModule;
 
+/*
 PYBIND11_MODULE(SparrowRouter, bmi_log) {
 	bmi_log.doc() = "Logging methods using OE BMI";
 	bmi_log.def("log", &_log, "Invokes the BMI logger");
 }
+*/
 
 int initialize(const char *config_file)
 {
@@ -36,9 +55,17 @@ int initialize(const char *config_file)
 
 	try
 	{
+		if (!Py_IsInitialized()) {
+			py::initialize_interpreter();
+		}
 		// py::print("In initialize");
+
+		// Interpreter is initialized; we can import the Sparrow module
+		srModule = py::module::import("SparrowRouter");
+		// call the initialize function of the Sparrow module
 		srModule.attr("initialize")(config_file);
 	}
+	// all-purpose catch block for Python errors
 	catch (py::error_already_set const &pythonErr)
 	{
 		std::cout << pythonErr.what();
@@ -67,7 +94,7 @@ int update(double dt)
 	return 0;
 }
 
-BMI_API int finalize()
+int finalize()
 {
 	try {
 		// py::print("In finalize");
@@ -77,6 +104,10 @@ BMI_API int finalize()
 	{
 		std::cout << pythonErr.what();
 	}
+	// srModule is global, but is instantiated in initialize().
+	// Its Python reference count is decremented here so that the interpreter
+	// can garbage-collect it before the interpreter is shut down.
+	srModule.dec_ref();
 	return 0;
 }
 
@@ -101,6 +132,51 @@ void get_time_step(double *dt)
 	*dt = timestep;
 }
 
+/* variable info */
+void get_var_shape(const char *name, int shape[MAXDIMS]) {
+	_log(LEVEL_DEBUG, "Function get_var_shape not implemented in Sparrow wrapper.");
+	return;
+}
+
+void get_var_rank(const char *name, int *rank) {
+	_log(LEVEL_DEBUG, "Function get_var_rank not implemented in Sparrow wrapper.");
+	return;
+}
+
+void get_var_type(const char *name, char *type) {
+	_log(LEVEL_DEBUG, "Function get_var_type not implemented in Sparrow wrapper.");
+	return;
+}
+
+void get_var_count(int *count) {
+	_log(LEVEL_DEBUG, "Function get_var_count not implemented in Sparrow wrapper.");
+	return;
+}
+
+void get_var_name(int index, char *name) {
+	_log(LEVEL_DEBUG, "Function get_var_name not implemented in Sparrow wrapper.");
+	return;
+}
+
+/* get a pointer pointer - a reference to a multidimensional array */
+void get_var(const char *name, void **ptr) {
+	_log(LEVEL_DEBUG, "Function get_var not implemented in Sparrow wrapper.");
+	return;
+}
+
+/* Set the variable from contiguous memory referenced to by ptr */
+void set_var(const char *name, const void *ptr) {
+	_log(LEVEL_DEBUG, "Function set_var not implemented in Sparrow wrapper.");
+	return;
+}
+
+/* Set a slice of the variable from contiguous memory using start / count multi-dimensional indices */
+void set_var_slice(const char *name, const int *start, const int *count, const void *ptr) {
+	_log(LEVEL_DEBUG, "Function set_var_slice not implemented in Sparrow wrapper.");
+	return;
+}
+
+
 void set_logger(Logger callback)
 {
 	Level level = LEVEL_INFO;
@@ -114,5 +190,3 @@ void _log(Level level, std::string msg) {
 		logger(level, msg.c_str());
 	}
 }
-
-
