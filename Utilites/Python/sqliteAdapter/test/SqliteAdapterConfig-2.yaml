@@ -1,0 +1,26 @@
+CloseInterpreterOnExit: True
+
+# A list of links, representing the transfer of items between two tables
+Links:
+-  LinkID: 1
+   Sourcedb: Sparrow.db
+   Destinationdb: Sparrow3.db
+   SourceTable: Segments
+   DestinationTable: Segments2 # must be different from SourceTable if in the same database
+   SourceKeyColumn: SegmentID
+   DestinationKeyColumn: SegmentID
+   Variables:        # a list of dictionaries, with each dictionary having source and destination column names
+       - {SourceColumn: FromNode,DestinationColumn: FromNode}
+       - {SourceColumn: ToNode,DestinationColumn: ToNode}
+
+-  LinkID: 2
+   Sourcedb: Sparrow.db
+   Destinationdb: Sparrow4.db
+   SourceTable: Segments
+   DestinationTable: Segments2 # must be different from SourceTable if in the same database
+   SourceKeyColumn: SegmentID
+   DestinationKeyColumn: SegmentID
+   Variables:        # a list of dictionaries, with each dictionary having source and destination column names
+       - {SourceColumn: FromNode, DestinationColumn: FromNode}
+       - {SourceColumn: ToNode, DestinationColumn: ToNode}
+
