@@ -10,7 +10,7 @@
 
 inputs:
   model_land-use-type__identification_number: {type: int}
-  model_climate-type__identification_number: {type: int}
+  model_mean_annual_temperature__class: {type: int}
   model_basin__slope_class: {type: int}
   model_soil-type__identification_number: {type: int}
   model_basin_irrigation_area__fraction: {type: double}
@@ -39,14 +39,12 @@ mappings:
     11: VEG #Vegatable growing
     12: VIT #Viticulture
 
-  # REC climate to typology climate
-  model_climate-type__identification_number:
-    1: warm # Warm-Extremely-Wet
-    2: warm # Warm-Wet
-    3: warm # Warm-Dry
-    4: cool # Cool-Extremely-Wet
-    5: cool # Cool-Wet
-    6: cool # Cool-Dry
+  # Typology climate
+  # cool: mean annual temperature <  12 °C
+  # warm: mean annual temperature >= 12 °C
+  model_mean_annual_temperature__class:
+    1: cool # All 5 classes are < 12
+    6: warm # Does not occur in Aparima
 
   model_basin__slope_class:
     1: low      # class 1 (0-3) & class 2 (3-7)
