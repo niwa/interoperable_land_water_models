@@ -25,19 +25,36 @@ fallback_output: [-999.9, -999.9]
 
 mappings:
   # Land use
+  # Some of the land use classes are less detailed than available in the typology framework.
+  # Some of the typology land uses will not be used.
+  # The typology land uses are:
+  #    ARA: Arable
+  #    BEF: Beef
+  #    DAI: Dairy
+  #    DEE: Deer
+  #    FOR: Forestry
+  #    NAT: Native bush
+  #    NOF: Not farmed (Gorse)
+  #    OTH: Winter Crops
+  #    SHP: Sheep
+  #    SNB: Sheep & Beef
+  #    VEG: Vegatable growing
+  #    VIT: Viticulture
+  # The land use classes also contain a number of land covers not included in the typology
+  # framework (eg water bodies, tussock), for which loss numbers where retrieved from literature.
   model_land-use-type__identification_number:
-    1 : ARA #Arable
-    2 : BEF #Beef
-    3 : DAI #Dairy
-    4 : DEE #Deer
-    5 : FOR #Forestry
-    6 : NAT #Native bush
-    7 : NOF #Not farmed (Gorse)
-    8 : OTH #Winter Crops
-    9 : SHP #Sheep
-    10: SNB #Sheep & Beef
-    11: VEG #Vegatable growing
-    12: VIT #Viticulture
+    1: VEG # class 1: Crops and Horticulture
+           # There's a choice to be made here between `ARA` (arable land) and `VEG` (vegetable growing),
+           # maybe `OTH` (winter crops) as well. But not too significant as < 1% of catchment area.
+    2: DAI # class 2: Dairy
+    3: FWB # class 3: Freshwater Body NOT_PART_OF_TYPOLOGIES
+    4: ELS # class 4: Other (urban and ?) NOT_PART_OF_TYPOLOGIES
+    5: DEE # class 5: Other pasture
+           # Not dairy, nor SnB, so assuming deer.
+    6: SNB # class 6: Sheep & Beef (note that the typology framework also distinguishes sheep only and beef only)
+    7: TUS # class 7: Tussock NOT_PART_OF_TYPOLOGIES
+    8: FOR # class 8: Forestry
+    9: NAT # class 9: Native forest & scrub
 
   # Typology climate
   # cool: mean annual temperature <  12 °C
@@ -633,3 +650,26 @@ lookup:
           _ANY_:
             _ANY_:
               _ANY_: [10.50, 0.16]
+  # From here on land uses/covers are not part of the typology framework
+  # Numbers retrieved from literature
+  FWB:
+    _ANY_:
+      _ANY_:
+        _ANY_:
+          _ANY_:
+            _ANY_:
+              _ANY_: [0.5, 0.01] # `Other` from Mojsilovic et al. 2015
+  TUS:
+    _ANY_:
+      _ANY_:
+        _ANY_:
+          _ANY_:
+            _ANY_:
+              _ANY_: [1.0, 0.01] # `Tussock` from Mojsilovic et al. 2015
+  ELS:
+    _ANY_:
+      _ANY_:
+        _ANY_:
+          _ANY_:
+            _ANY_:
+              _ANY_: [0.5, 0.4] # `Urban` from Mojsilovic et al. 2015
