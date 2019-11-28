@@ -4,14 +4,14 @@
 # Inputs must have a type.
 # All outputs are doubles, type attribute will be ignored.
 # String inputs can have a mapping.
-# Double inputs must have a mapping.
-# Double input mappings assumed lower bound.
+# Numeric inputs must have a mapping.
+# All mappings assumed lower bound.
 #====================================================================
 
 inputs:
   model_land-use-type__identification_number: {type: int}
   model_climate-type__identification_number: {type: int}
-  model_basin__slope: {type: double, units: "degrees"}
+  model_basin__slope_class: {type: int}
   model_soil-type__identification_number: {type: int}
   model_basin_irrigation_area__fraction: {type: double}
   atmosphere_water~10-year-average__precipitation_volume_flux: {type: double, units: mm_year-1}
@@ -48,10 +48,10 @@ mappings:
     5: cool # Cool-Wet
     6: cool # Cool-Dry
 
-  model_basin__slope:
-    0: low      # >=  0
-    7: moderate # >=  7
-    15: steep   # >= 15
+  model_basin__slope_class:
+    1: low      # class 1 (0-3) & class 2 (3-7)
+    3: moderate # class 3 (7-15)
+    4: steep    # class 4 and up (>15)
 
   # Soil to drainage class
   model_soil-type__identification_number:
