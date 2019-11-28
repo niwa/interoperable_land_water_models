@@ -14,7 +14,7 @@ inputs:
   model_basin__slope_class: {type: int}
   model_soil-type__identification_number: {type: int}
   model_basin_irrigation_area__fraction: {type: double}
-  atmosphere_water~10-year-average__precipitation_volume_flux: {type: double, units: mm_year-1}
+  atmosphere_water~10-year-average__precipitation_volume_class: {type: int}
   anion_storage__capacity: {type: double, units: \"%\"}
 
 outputs:
@@ -61,10 +61,10 @@ mappings:
     0.0: not_irrigated
     0.5: irrigated
 
-  atmosphere_water~10-year-average__precipitation_volume_flux:
-    0: dry      # >= 0
-    1100: moist # >= 1100
-    1700: wet   # >= 1700
+  atmosphere_water~10-year-average__precipitation_volume_class:
+    1: dry   # class 1, 2 & 3 (800 - 1100)
+    4: moist # class 4, 5, 6, 7, 8 & 9 (1100 - 1700)
+    10: wet  # class 10 & 11 (1700 - 1900)
 
   # Anion Sorption Capacity
   anion_storage__capacity:
