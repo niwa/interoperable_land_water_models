@@ -13,7 +13,7 @@ inputs:
   model_mean_annual_temperature__class: {type: int}
   model_basin__slope_class: {type: int}
   model_soil-type__identification_number: {type: int}
-  model_basin_irrigation_area__fraction: {type: double}
+  model_basin_irrigation__class: {type: int}
   atmosphere_water~10-year-average__precipitation_volume_class: {type: int}
   anion_storage__capacity: {type: double, units: \"%\"}
 
@@ -74,9 +74,9 @@ mappings:
     2: poor
     3: well
 
-  model_basin_irrigation_area__fraction:
-    0.0: not_irrigated
-    0.5: irrigated
+  model_basin_irrigation__class:
+    0: not_irrigated
+    1: irrigated
 
   atmosphere_water~10-year-average__precipitation_volume_class:
     1: dry   # class 1, 2 & 3 (800 - 1100)
