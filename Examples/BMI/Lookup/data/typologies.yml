@@ -15,7 +15,10 @@ inputs:
   model_soil-type__identification_number: {type: int}
   model_basin_irrigation__class: {type: int}
   atmosphere_water~10-year-average__precipitation_volume_class: {type: int}
-  anion_storage__capacity: {type: double, units: \"%\"}
+  # This is the same as model_soil-type__identification_number, but needed
+  # a second time to derive P-retention (ASC).
+  # The lookup only supports one mapping per input, so we use this hack for now.
+  model_asc-soil-type__identification_number: {type: int}
 
 outputs:
   model_basin_N__loss: {type: double, units: kg_ha-1_yr-1}
@@ -70,9 +73,59 @@ mappings:
 
   # Soil to drainage class
   model_soil-type__identification_number:
-    1: light
-    2: poor
-    3: well
+    1 : light
+    2 : light
+    3 : well
+    4 : poor
+    5 : well
+    6 : light
+    7 : light
+    8 : well
+    9 : light
+    10: light
+    11: light
+    12: light
+    13: well
+    14: poor
+    15: light
+    16: light
+    17: light
+    18: light
+    19: well
+    20: well
+    21: light
+    22: poor
+    23: poor
+    24: well
+    25: poor
+    26: light
+    27: poor
+    28: well
+    29: poor
+    30: light
+    31: light
+    32: poor
+    33: light
+    34: poor
+    35: well
+    36: well
+    37: light
+    38: well
+    39: light
+    40: light
+    41: well
+    42: light
+    43: light
+    44: poor
+    45: light
+    46: light
+    47: well
+    48: well
+    49: well
+    50: light
+    51: well
+    52: well
+    53: well
 
   model_basin_irrigation__class:
     0: not_irrigated
@@ -83,11 +136,61 @@ mappings:
     4: moist # class 4, 5, 6, 7, 8 & 9 (1100 - 1700)
     10: wet  # class 10 & 11 (1700 - 1900)
 
-  # Anion Sorption Capacity
-  anion_storage__capacity:
-    0: zero_to_ten
-    10: ten_to_sixty
-    60: greater_than_sixty
+  # Anion Storage Capacity (aka P retention)
+  model_asc-soil-type__identification_number:
+    1 : ten_to_sixty
+    2 : zero_to_ten
+    3 : ten_to_sixty
+    4 : ten_to_sixty
+    5 : ten_to_sixty
+    6 : ten_to_sixty
+    7 : ten_to_sixty
+    8 : ten_to_sixty
+    9 : ten_to_sixty
+    10: zero_to_ten
+    11: ten_to_sixty
+    12: ten_to_sixty
+    13: zero_to_ten
+    14: greater_than_sixty
+    15: ten_to_sixty
+    16: ten_to_sixty
+    17: greater_than_sixty
+    18: zero_to_ten
+    19: ten_to_sixty
+    20: ten_to_sixty
+    21: ten_to_sixty
+    22: ten_to_sixty
+    23: ten_to_sixty
+    24: ten_to_sixty
+    25: greater_than_sixty
+    26: ten_to_sixty
+    27: ten_to_sixty
+    28: zero_to_ten
+    29: ten_to_sixty
+    30: ten_to_sixty
+    31: ten_to_sixty
+    32: greater_than_sixty
+    33: greater_than_sixty
+    34: greater_than_sixty
+    35: ten_to_sixty
+    36: ten_to_sixty
+    37: zero_to_ten
+    38: ten_to_sixty
+    39: ten_to_sixty
+    40: ten_to_sixty
+    41: ten_to_sixty
+    42: zero_to_ten
+    43: ten_to_sixty
+    44: ten_to_sixty
+    45: zero_to_ten
+    46: zero_to_ten
+    47: ten_to_sixty
+    48: ten_to_sixty
+    49: ten_to_sixty
+    50: ten_to_sixty
+    51: ten_to_sixty
+    52: ten_to_sixty
+    53: ten_to_sixty
 
 lookup:
   ARA:
