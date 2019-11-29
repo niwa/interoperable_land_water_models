@@ -243,12 +243,12 @@ TEST_CASE("Running the typology lookup") {
         char buffer[MAXSTRINGLEN];
         // Inputs
         get_var_name(0, buffer); CHECK(!strcmp(buffer, "model_land-use-type__identification_number"));
-        get_var_name(1, buffer); CHECK(!strcmp(buffer, "model_climate-type__identification_number"));
-        get_var_name(2, buffer); CHECK(!strcmp(buffer, "model_basin__slope"));
+        get_var_name(1, buffer); CHECK(!strcmp(buffer, "model_mean_annual_temperature__class"));
+        get_var_name(2, buffer); CHECK(!strcmp(buffer, "model_basin__slope_class"));
         get_var_name(3, buffer); CHECK(!strcmp(buffer, "model_soil-type__identification_number"));
-        get_var_name(4, buffer); CHECK(!strcmp(buffer, "model_basin_irrigation_area__fraction"));
-        get_var_name(5, buffer); CHECK(!strcmp(buffer, "atmosphere_water~10-year-average__precipitation_volume_flux"));
-        get_var_name(6, buffer); CHECK(!strcmp(buffer, "anion_storage__capacity"));
+        get_var_name(4, buffer); CHECK(!strcmp(buffer, "model_basin_irrigation__class"));
+        get_var_name(5, buffer); CHECK(!strcmp(buffer, "atmosphere_water~10-year-average__precipitation_volume_class"));
+        get_var_name(6, buffer); CHECK(!strcmp(buffer, "model_asc-soil-type__identification_number"));
         // Outputs
         get_var_name(7, buffer); CHECK(!strcmp(buffer, "model_basin_N__loss"));
         get_var_name(8, buffer); CHECK(!strcmp(buffer, "model_basin_P__loss"));
@@ -259,18 +259,18 @@ TEST_CASE("Running the typology lookup") {
         // Inputs
         get_var_type("model_land-use-type__identification_number", type);
         CHECK(!strcmp(type, "int"));
-        get_var_type("model_climate-type__identification_number", type);
+        get_var_type("model_mean_annual_temperature__class", type);
         CHECK(!strcmp(type, "int"));
-        get_var_type("model_basin__slope", type);
-        CHECK(!strcmp(type, "double"));
+        get_var_type("model_basin__slope_class", type);
+        CHECK(!strcmp(type, "int"));
         get_var_type("model_soil-type__identification_number", type);
         CHECK(!strcmp(type, "int"));
-        get_var_type("model_basin_irrigation_area__fraction", type);
-        CHECK(!strcmp(type, "double"));
-        get_var_type("atmosphere_water~10-year-average__precipitation_volume_flux", type);
-        CHECK(!strcmp(type, "double"));
-        get_var_type("anion_storage__capacity", type);
-        CHECK(!strcmp(type, "double"));
+        get_var_type("model_basin_irrigation__class", type);
+        CHECK(!strcmp(type, "int"));
+        get_var_type("atmosphere_water~10-year-average__precipitation_volume_class", type);
+        CHECK(!strcmp(type, "int"));
+        get_var_type("model_asc-soil-type__identification_number", type);
+        CHECK(!strcmp(type, "int"));
         // Outputs
         get_var_type("model_basin_N__loss", type);
         CHECK(!strcmp(type, "double"));
@@ -283,17 +283,17 @@ TEST_CASE("Running the typology lookup") {
         // Inputs
         get_var_rank("model_land-use-type__identification_number", &rank);
         CHECK(rank == 1);
-        get_var_rank("model_climate-type__identification_number", &rank);
+        get_var_rank("model_mean_annual_temperature__class", &rank);
         CHECK(rank == 1);
-        get_var_rank("model_basin__slope", &rank);
+        get_var_rank("model_basin__slope_class", &rank);
         CHECK(rank == 1);
         get_var_rank("model_soil-type__identification_number", &rank);
         CHECK(rank == 1);
-        get_var_rank("model_basin_irrigation_area__fraction", &rank);
+        get_var_rank("model_basin_irrigation__class", &rank);
         CHECK(rank == 1);
-        get_var_rank("atmosphere_water~10-year-average__precipitation_volume_flux", &rank);
+        get_var_rank("atmosphere_water~10-year-average__precipitation_volume_class", &rank);
         CHECK(rank == 1);
-        get_var_rank("anion_storage__capacity", &rank);
+        get_var_rank("model_asc-soil-type__identification_number", &rank);
         CHECK(rank == 1);
         // Outputs
         get_var_rank("model_basin_N__loss", &rank);
@@ -313,14 +313,14 @@ TEST_CASE("Running the typology lookup") {
 
         {
             int shape[MAXDIMS] = {0};
-            get_var_shape("model_climate-type__identification_number", shape);
+            get_var_shape("model_mean_annual_temperature__class", shape);
             CHECK(shape[0] == 1);
             CHECK(shape[1] == 0);
         }
 
         {
             int shape[MAXDIMS] = {0};
-            get_var_shape("model_basin__slope", shape);
+            get_var_shape("model_basin__slope_class", shape);
             CHECK(shape[0] == 1);
             CHECK(shape[1] == 0);
         }
@@ -334,21 +334,21 @@ TEST_CASE("Running the typology lookup") {
 
         {
             int shape[MAXDIMS] = {0};
-            get_var_shape("model_basin_irrigation_area__fraction", shape);
+            get_var_shape("model_basin_irrigation__class", shape);
             CHECK(shape[0] == 1);
             CHECK(shape[1] == 0);
         }
 
         {
             int shape[MAXDIMS] = {0};
-            get_var_shape("atmosphere_water~10-year-average__precipitation_volume_flux", shape);
+            get_var_shape("atmosphere_water~10-year-average__precipitation_volume_class", shape);
             CHECK(shape[0] == 1);
             CHECK(shape[1] == 0);
         }
 
         {
             int shape[MAXDIMS] = {0};
-            get_var_shape("anion_storage__capacity", shape);
+            get_var_shape("model_asc-soil-type__identification_number", shape);
             CHECK(shape[0] == 1);
             CHECK(shape[1] == 0);
         }
@@ -371,64 +371,62 @@ TEST_CASE("Running the typology lookup") {
 
     SECTION("Looking up a known input combination") {
         auto int_buff = int {};
-        auto dbl_buff = double {};
 
-        int_buff = 1;
+        int_buff = 2; // dairy
         set_var("model_land-use-type__identification_number", (void*) &int_buff);
 
-        int_buff = 2;
-        set_var("model_climate-type__identification_number", (void*) &int_buff);
+        int_buff = 2; // cool
+        set_var("model_mean_annual_temperature__class", (void*) &int_buff);
 
-        dbl_buff = 1;
-        set_var("model_basin__slope", (void*) &dbl_buff);
+        int_buff = 2; // low slope
+        set_var("model_basin__slope_class", (void*) &int_buff);
 
-        int_buff = 3;
+        int_buff = 5; // well drained
         set_var("model_soil-type__identification_number", (void*) &int_buff);
 
-        dbl_buff = 0.0;
-        set_var("model_basin_irrigation_area__fraction", (void*) &dbl_buff);
+        int_buff = 0; // not irrigated
+        set_var("model_basin_irrigation__class", (void*) &int_buff);
 
-        dbl_buff = 1700.0;
-        set_var("atmosphere_water~10-year-average__precipitation_volume_flux", (void*) &dbl_buff);
+        int_buff = 5; // moist
+        set_var("atmosphere_water~10-year-average__precipitation_volume_class", (void*) &int_buff);
 
-        dbl_buff = 10.0;
-        set_var("anion_storage__capacity", (void*) &dbl_buff);
+        int_buff = 5; // ten to sixty
+        set_var("model_asc-soil-type__identification_number", (void*) &int_buff);
 
         // Outputs can be retrieved after calling update
         REQUIRE(update(0) == 0);
 
         double* ptr;
         get_var("model_basin_N__loss", (void **) &ptr);
-        CHECK(*ptr == 127.0);
+        CHECK(*ptr == 47.0);
 
         get_var("model_basin_P__loss", (void **) &ptr);
-        CHECK(*ptr == 2.80);
+        CHECK(*ptr == 1.10);
     }
 
     SECTION("Looking up an unknwon input combination with fallback") {
         auto int_buff = int {};
-        auto dbl_buff = double {};
 
-        int_buff = 1;
+        int_buff = 2; // dairy
         set_var("model_land-use-type__identification_number", (void*) &int_buff);
 
-        int_buff = 2;
-        set_var("model_climate-type__identification_number", (void*) &int_buff);
+        int_buff = 2; // cool
+        set_var("model_mean_annual_temperature__class", (void*) &int_buff);
 
-        dbl_buff = 1;
-        set_var("model_basin__slope", (void*) &dbl_buff);
+        int_buff = 2; // low slope
+        set_var("model_basin__slope_class", (void*) &int_buff);
 
-        int_buff = 3;
+        int_buff = 14; // poor drainage
         set_var("model_soil-type__identification_number", (void*) &int_buff);
 
-        dbl_buff = 0.0;
-        set_var("model_basin_irrigation_area__fraction", (void*) &dbl_buff);
+        int_buff = 0; // not irrigated
+        set_var("model_basin_irrigation__class", (void*) &int_buff);
 
-        dbl_buff = 1200.0;
-        set_var("atmosphere_water~10-year-average__precipitation_volume_flux", (void*) &dbl_buff);
+        int_buff = 5; // moist
+        set_var("atmosphere_water~10-year-average__precipitation_volume_class", (void*) &int_buff);
 
-        dbl_buff = 10.0;
-        set_var("anion_storage__capacity", (void*) &dbl_buff);
+        int_buff = 14; // greater than sixty
+        set_var("model_asc-soil-type__identification_number", (void*) &int_buff);
 
         // Outputs can be retrieved after calling update
         REQUIRE(update(0) == 0);
