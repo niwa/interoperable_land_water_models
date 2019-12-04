@@ -1,4 +1,4 @@
-// bmi_ggregator.cpp : Defines the exported functions for the DLL application.
+// bmi_aggregator.cpp : Defines the exported functions for the DLL application.
 //
 
 #include "stdafx.h"
@@ -104,8 +104,14 @@ int update(double dt) {
 
 	SQL_statement.assign("INSERT INTO " + tables_info.otTableName
 		+ " SELECT " + tables_info.wtAggColName + ", SUM("
-		+ tables_info.itValueColName + " * " + tables_info.wtWeightColName
-		+ ")/SUM(" + tables_info.wtWeightColName + ") AS "
+		+ tables_info.itValueColName + " * " + tables_info.wtWeightColName + ")");
+	if (tables_info.aggOperation.compare("AVERAGE") == 0) {
+		SQL_statement.append("/SUM(" + tables_info.wtWeightColName + ")");
+	}
+	if (tables_info.aggScale.compare("1.0") != 0) {
+		SQL_statement.append("*" + tables_info.aggScale );
+	}
+	SQL_statement.append(" AS "
 		+ tables_info.otValueColName + " FROM " + wtPrefix + tables_info.wtTableName
 		+ " INNER JOIN " + itPrefix + tables_info.itTableName + " ON "
 		+ tables_info.itTableName + "." + tables_info.itEntityColName + " = "
@@ -198,7 +204,7 @@ typedef void (CALLCONV *Logger)(Level level, const char *msg);
 void set_logger(Logger callback)
 {
 	Level level = LEVEL_INFO;
-	std::string msg = "Logging attached to BMI Iterator";
+	std::string msg = "Logging attached to BMI Aggregator";
 	logger = callback;
 	logger(level, msg.c_str());
 }

@@ -21,3 +21,7 @@ input:
     table: Inputs
     entity_column: Id
     value_column: Score
+
+aggregate:
+    operation: sum
+    scale: 0.5

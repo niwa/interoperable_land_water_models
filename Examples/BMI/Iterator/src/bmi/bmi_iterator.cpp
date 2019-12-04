@@ -6,6 +6,7 @@
 #include "bmit.h"
 
 bmit::Iterator* IT = nullptr;
+double current_time = 0.;
 
 /* Store callback */
 Logger logger = nullptr;
@@ -46,6 +47,17 @@ int initialize(const char* config_file) {
 
 
 int update(double dt) {
+	double current, end;
+	get_current_time(&current);
+	get_end_time(&end);
+	if (current > end) return 0;
+
+	if (dt < 0.0) { 
+		double step;
+		get_time_step(&step);
+		current_time += step;
+	}
+	else { current_time += dt; }
 	try {
         IT->run();
     }
@@ -69,16 +81,16 @@ int finalize() {
 
 
 /* time control functions */
-void get_start_time(double* t) {}
+void get_start_time(double* t) { *t = 0.; }
 
 
-void get_end_time(double* t) {}
+void get_end_time(double* t) { *t = 1.0; }
 
 
-void get_current_time(double* t) {}
+void get_current_time(double* t) { *t = current_time; }
 
 
-void get_time_step(double* dt) {}
+void get_time_step(double* dt) { *dt = 1.0; }
 
 
 /* variable info */

@@ -18,44 +18,90 @@ void get_table_info_from_yaml(const char *config_file, model_tables_info *tables
 	YAML::Node weightTableNode = tablesConfig["weights"];
 	YAML::Node inputTableNode = tablesConfig["input"];
 	YAML::Node outputTableNode = tablesConfig["output"];
+	YAML::Node aggTableNode = tablesConfig["aggregate"];
 
-	if (not weightTableNode) { 
+	if (not weightTableNode.IsMap()) { 
 		hasRuntimeError = true;
 		errMsg.append("No Weights table definition.\n");
 	}
-	if (not inputTableNode) {
+	if (not inputTableNode.IsMap()) {
 		hasRuntimeError = true;
 		errMsg.append("No Input table definition.\n");
 	}
-	if (not outputTableNode) {
+	if (not outputTableNode.IsMap()) {
 		hasRuntimeError = true;
 		errMsg.append("No Output table definition.\n");
 	}
 	if (hasRuntimeError) { throw std::runtime_error(errMsg); }
 
-
 	// table of weights
+	try {
 	tables_info->wtFormat.assign(weightTableNode["format"].as<std::string>());
 	tables_info->wtFileName.assign(weightTableNode["path"].as<std::string>());
 	tables_info->wtTableName.assign(weightTableNode["table"].as<std::string>());
 	tables_info->wtAggColName.assign(weightTableNode["aggregate_column"].as<std::string>());
 	tables_info->wtEntityColName.assign(weightTableNode["entity_column"].as<std::string>());
 	tables_info->wtWeightColName.assign(weightTableNode["weight_column"].as<std::string>());
+	}
+	catch (YAML::ParserException) {
+		errMsg.append("Error in 'inputs' section of config file");
+		throw(std::runtime_error(errMsg));
+	}
 
 	// table of inputs
+	try {
 	tables_info->itFormat.assign(inputTableNode["format"].as<std::string>());
 	tables_info->itFileName.assign(inputTableNode["path"].as<std::string>());
 	tables_info->itTableName.assign(inputTableNode["table"].as<std::string>());
 	tables_info->itValueColName.assign(inputTableNode["value_column"].as<std::string>());
 	tables_info->itEntityColName.assign(inputTableNode["entity_column"].as<std::string>());
+	}
+	catch (YAML::ParserException) {
+		errMsg.append("Error in 'weights' section of config file");
+		throw(std::runtime_error(errMsg));
+	}
 
 	// table of outputs
+	try {
 	tables_info->otFormat.assign(outputTableNode["format"].as<std::string>());
 	tables_info->otFileName.assign(outputTableNode["path"].as<std::string>());
 	tables_info->otTableName.assign(outputTableNode["table"].as<std::string>());
 	tables_info->otValueColName.assign(outputTableNode["value_column"].as<std::string>());
 	tables_info->otAggColName.assign(outputTableNode["aggregate_column"].as<std::string>());
+	}
+	catch (YAML::ParserException) {
+		errMsg.append("Error in 'outputs' section of config file");
+		throw(std::runtime_error(errMsg));
+	}
 
+	// aggregation settings
+
+	if (aggTableNode.IsMap()) {
+		if (aggTableNode["operation"]) {
+			// Choices are SUM or AVERAGE (default)
+			tables_info->aggOperation.assign(
+				aggTableNode["operation"].as<std::string>());
+			// capitalize
+			for (char &c : tables_info->aggOperation) c = toupper(c);
+			if (tables_info->aggOperation.compare("SUM")
+				&& tables_info->aggOperation.compare("AVERAGE"))
+			{
+				errMsg.append(tables_info->aggOperation
+				+ " not recognized.");
+				throw(std::runtime_error(errMsg));
+			}
+		}
+		if (aggTableNode["scale"]){
+			tables_info->aggScale.assign(aggTableNode["scale"].as<std::string>());
+			try { std::stod(tables_info->aggScale.c_str(), nullptr); }
+			catch (std::invalid_argument) {
+				errMsg.append(tables_info->aggScale
+					+ " is not convertable to a number.");
+				throw(std::runtime_error(errMsg));
+			}
+
+		}
+	}
 	return;
 }
 
@@ -107,7 +153,6 @@ int initialize_sqlite_connections(model_tables_info* info, std::string *msg) {
 		}
 	}
 	return 0;
-
 }
 
 int verify_sqlite_tables(model_tables_info* info, std::string* msg) {

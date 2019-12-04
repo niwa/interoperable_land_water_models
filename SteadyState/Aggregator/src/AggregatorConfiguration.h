@@ -35,6 +35,10 @@ public:
 	std::string wtWeightColName = std::string("");
 	std::string wtWeightColType = std::string("");
 
+	// aggregator operation
+	std::string aggOperation = std::string("AVERAGE");
+	std::string aggScale = std::string("1.0");
+
 	// table of inputs
 	std::string itFormat = std::string("");
 	std::string itFileName = std::string("");
