@@ -103,13 +103,13 @@ BMI_API int finalize() {
 
 
 /* time control functions */
-BMI_API void get_start_time(double *t) {}
+BMI_API void get_start_time(double *t) { *t = 0.; }
 
-BMI_API void get_end_time(double *t) {}
+BMI_API void get_end_time(double *t) { *t = 1.; }
 
-BMI_API void get_current_time(double *t) {}
+BMI_API void get_current_time(double *t) { *t = 0.; }
 
-BMI_API void get_time_step(double *dt) {}
+BMI_API void get_time_step(double *dt) { *dt = 1.; }
 
 
 /* variable info */
