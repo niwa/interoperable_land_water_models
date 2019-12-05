@@ -1,11 +1,12 @@
-""" 
-Sqlite Adapter. Takes variables from one sqlite table column and puts them into a column in \
+"""Copies values between SQLite tables
+
+Copies variables from one sqlite table column and puts them into a column in \
 another table, which could be in a different database and could have a different name. \
 Columns can be renamed. The mapping is defined in an input yaml configuration file. \
 Each table needs an index column.
 
-$$$$$$ currently assumes that the yaml file and databases are in the working directory. This should be altered. Might need to 
-specify directories in the links yaml file.
+$$$$$$ currently assumes that the yaml file and databases are in the working directory. \
+This should be altered. Might need to specify directories in the links yaml file.
 
 """
 #region Imports and settings 
@@ -23,21 +24,25 @@ modelHasRun = False
 closeInterpreterOnExit = False
 
 # function definitions
-def GetColumnNames(conn,tablename,schemaname='main'): # get list of columns in a sqlite table
+
+def GetColumnNames(conn,tablename,schemaname='main'):
+    '''get list of columns in a sqlite table'''
     sqlstring =  'PRAGMA '+ schemaname + '.TABLE_INFO(' + tablename + ')'
     curs = conn.cursor()
     curs.execute(sqlstring)
     ColumnNameList = [tup[1] for tup in curs.fetchall()]
     return ColumnNameList # list of column names
 
-def GetColumnTypes(conn,tablename,schemaname='main'): # get list of data type in a sqlite table table
+def GetColumnTypes(conn,tablename,schemaname='main'):
+    '''get list of data type in a sqlite table table'''
     sqlstring =  'PRAGMA '+ schemaname + '.TABLE_INFO(' + tablename + ')'
     curs = conn.cursor()
     curs.execute(sqlstring)
     ColumnTypes = [tup[2] for tup in curs.fetchall()]
     return ColumnTypes # list of column names
 
-def SQLexecute(conn,query): # execute sqlite query and report error if it fails
+def SQLexecute(conn,query):
+    '''execute sqlite query and report error if it fails'''
     try:
         conn.execute(query)
         conn.commit()
@@ -55,7 +60,7 @@ def SQLexecute(conn,query): # execute sqlite query and report error if it fails
 #region     initialise
 #************************************************************
 def initialize(config_file):
-    '''Implements the BMI initialize function.'''
+    '''Implements the BMI initialize function'''
     global Links, modelHasInitialized, closeInterpreterOnExit
 
     # Read control and parameter files
