@@ -190,7 +190,7 @@ void set_var_slice(const char *name, const int *start, const int *count, const v
 void set_logger(Logger callback)
 {
 	Level level = LEVEL_INFO;
-	std::string msg = "Logging attached to cxx model";
+	std::string msg = "Logging attached to sqliteAdapter";
 	logger = callback;
 	logger(level, msg.c_str());
 }
