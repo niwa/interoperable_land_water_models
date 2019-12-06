@@ -72,7 +72,7 @@ def initialize(config_file):
     # Read parameters as yaml file
     try:
         with open(InitialiseDir + Linksyaml, 'r') as f:
-            config = yaml.load(f)
+            config = yaml.safe_load(f)
             if isinstance(config, list):
                 Links = config
             else:
