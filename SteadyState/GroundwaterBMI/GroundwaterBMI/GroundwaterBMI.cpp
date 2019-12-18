@@ -355,6 +355,21 @@ extern "C" {
 
 	}
 
+	BMI_API void get_var(const char *name, void **ptr)
+	{
+		logger(LEVEL_DEBUG, "Function get_var not implemented in GroundwaterBMI");
+	}
+
+	BMI_API void set_var(const char *name, const void *ptr)
+	{
+		logger(LEVEL_DEBUG, "Function set_var not implemented in GroundwaterBMI");
+	}
+
+	BMI_API void set_var_slice(const char *name, const int *start, const int *count, const void *ptr)
+	{
+		logger(LEVEL_DEBUG, "Function set_var_slice not implemented in GroundwaterBMI");
+	}
+
 	BMI_API void set_logger(Logger callback)
 	{
 		logger = callback;
