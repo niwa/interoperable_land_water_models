@@ -20,6 +20,7 @@ ProjectDir =''
 FileDb = "Sparrow.db" # can be overidden in configuration file
 modelHasInitialized = False
 modelHasRun = False
+Segments = None
 
 pd.set_option('display.width', 150)
 # pylint:disable=E1101     
@@ -39,13 +40,10 @@ def initialize(config_file):
     # Read parameters as yaml file
     # with open(ProjectDir + 'Parameters.yaml', 'r') as f:
     with open(os.path.join(ProjectDir, config_file), 'r') as f:
-        Parameters = yaml.load(f)
+        Parameters = yaml.safe_load(f)
 
-    try:
-        fn = Parameters["DatabaseFile"]
-        FileDb = os.path.abspath(fn)
-    except KeyError:
-        pass
+    fn = Parameters.get("DatabaseFile", FileDb)
+    FileDb = os.path.abspath(fn)
 
     # Obtain initial input variables for segments from sqlite.
     # (Note that the affinity types of the columns must be specified in the database,
@@ -128,7 +126,7 @@ def update(dt):
 
 def finalize():
     '''Implements the BMI finalize function.'''
-    global FileDb, modelHasRun, Segments
+    global FileDb, modelHasInitialized, modelHasRun, Segments
 
     if not modelHasRun:
         return
@@ -150,6 +148,9 @@ def finalize():
     #conn.execute('Create table SegmentsNew as Select Segments.*, SegmentLoad.SegmentLoad from Segments LEFT JOIN SegmentLoad Using(SegmentID)')
 
     conn.close()
+    Segments = None
+    modelHasInitialized = False
+    modelHasRun = False
 
 #endregion
 
