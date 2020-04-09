@@ -10,7 +10,7 @@
 
 1. Download [LUMASS](https://bitbucket.org/landcareresearch/lumass/downloads/lumass-0.9.62.zip) and extract the zip file into a directory of your choice, e.g. `C:\opt`. Note that the zip file contains the directory `lumass-0.9.62`.
 
-2. Download the Apariama data set and the LUMASS optimisation settings files from [AparimaOptimisation](https://github.com/niwa/interoperable_land_water_models/tree/master/Examples/BMI/LumassBMI/Optimisation/AparimaOptimisation) into `D:\Temp\IOMTest` to create the following file structure
+2. Download the Apariama data set from the project's [OneDrive folder](https://niwa-my.sharepoint.com/:f:/r/personal/sandy_elliott_niwa_co_nz/Documents/Interoperable%20models%20OLW/Stage%202%20Work/LumassBMI_data/AparimaOptimisation?csf=1&web=1&e=lMXPvA) and the LUMASS optimisation settings files from [AparimaOptimisation](https://github.com/niwa/interoperable_land_water_models/tree/master/Examples/BMI/LumassBMI/Optimisation/AparimaOptimisation) into `D:\Temp\IOMTest` to create the following file structure
 	
 	```
 	D:
