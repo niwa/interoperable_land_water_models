@@ -48,121 +48,81 @@ std::string GetErrorMsg(void)
 	return sstr.str();
 }
 
+#define GET_LIB_PTR( libpath ) HMODULE lumassbmi = LoadLibraryA((LPCSTR) libpath );
+#define GET_FUNC_PTR( funname ) GetProcAddress(lumassbmi, funname)
+#define CLOSE_LUMASSBMI FreeLibrary( (HMODULE)lumassbmi );
+
+#else
+    #ifdef __linux
+        #define GET_LIB_PTR( libpath ) lumassbmi = dlopen( libpath , RTLD_LAZY );
+        #define GET_FUNC_PTR( funname ) dlsym(lumassbmi, funname)
+        #define CLOSE_LUMASSBMI dlclose( lumassbmi );
+    #endif
 #endif
 
 int BMIInit(const char* libpath)
 {
-#ifndef _WIN32
-    // linux
-    lumassbmi = dlopen(libpath, RTLD_LAZY);
+    GET_LIB_PTR(libpath)
+
     if (lumassbmi == nullptr)
     {
-        return 1;
+#ifdef WIN32
+        std::string funcmsg = GetErrorMsg();
+        std::cout << "Init of " << libpath << " failed with: \n" << funcmsg;
+#else
+        std::cout << "Init of " << libpath << " failed!";
+#endif
+        return EXIT_FAILURE;
     }
 
-    bmi_init = reinterpret_cast<_bmi_init>(dlsym(lumassbmi, "initialize"));
+    bmi_init = reinterpret_cast<_bmi_init>(GET_FUNC_PTR("initialize"));
     if (bmi_init == nullptr)
     {
-        return 1;
+        std::cout << "_bmi_init not initialised" << std::endl;
+        return EXIT_FAILURE;
     }
 
-    bmi_update = reinterpret_cast<_bmi_update>(dlsym(lumassbmi, "update"));
+    bmi_update = reinterpret_cast<_bmi_update>(GET_FUNC_PTR("update"));
     if (bmi_update == nullptr)
     {
-        return 1;
+        return EXIT_FAILURE;
     }
 
-    bmi_finalize = reinterpret_cast<_bmi_finalize>(dlsym(lumassbmi, "finalize"));
+    bmi_finalize = reinterpret_cast<_bmi_finalize>(GET_FUNC_PTR("finalize"));
     if (bmi_finalize == nullptr)
     {
-        return 1;
+        return EXIT_FAILURE;
     }
 
-    bmi_get_start_time = reinterpret_cast<_bmi_get_start_time>(dlsym(lumassbmi, "get_start_time"));
+    bmi_get_start_time = reinterpret_cast<_bmi_get_start_time>(GET_FUNC_PTR("get_start_time"));
     if (bmi_get_start_time == nullptr)
     {
-        return 1;
+        return EXIT_FAILURE;
     }
 
-    bmi_get_end_time = reinterpret_cast<_bmi_get_end_time>(dlsym(lumassbmi, "get_end_time"));
+    bmi_get_end_time = reinterpret_cast<_bmi_get_end_time>(GET_FUNC_PTR("get_end_time"));
     if (bmi_get_end_time == nullptr)
     {
-        return 1;
+        return EXIT_FAILURE;
     }
 
-    bmi_get_current_time = reinterpret_cast<_bmi_get_current_time>(dlsym(lumassbmi, "get_current_time"));
+    bmi_get_current_time = reinterpret_cast<_bmi_get_current_time>(GET_FUNC_PTR("get_current_time"));
     if (bmi_get_current_time == nullptr)
     {
-        return 1;
+        return EXIT_FAILURE;
     }
 
-    bmi_get_time_step = reinterpret_cast<_bmi_get_time_step>(dlsym(lumassbmi, "get_time_step"));
+    bmi_get_time_step = reinterpret_cast<_bmi_get_time_step>(GET_FUNC_PTR("get_time_step"));
     if (bmi_get_time_step == nullptr)
     {
-        return 1;
+        return EXIT_FAILURE;
     }
 
-#else
-    // windows
-	HMODULE lumassbmi = LoadLibraryA((LPCSTR)libpath);
-	
-	if (lumassbmi == nullptr)
-	{
-		std::string funcmsg = GetErrorMsg();
-		std::cout << "Init of " << libpath << " failed with: \n" << funcmsg;
-		return EXIT_FAILURE;
-	}
-
-	bmi_init = reinterpret_cast<_bmi_init>(GetProcAddress(lumassbmi, "initialize"));
-	if (bmi_init == nullptr)
-	{
-		std::cout << "_bmi_init not initialised" << std::endl;
-		return EXIT_FAILURE;
-	}
-
-	bmi_update = reinterpret_cast<_bmi_update>(GetProcAddress(lumassbmi, "update"));
-	if (bmi_update == nullptr)
-	{
-		return EXIT_FAILURE;
-	}
-
-	bmi_finalize = reinterpret_cast<_bmi_finalize>(GetProcAddress(lumassbmi, "finalize"));
-	if (bmi_finalize == nullptr)
-	{
-		return EXIT_FAILURE;
-	}
-
-	bmi_get_start_time = reinterpret_cast<_bmi_get_start_time>(GetProcAddress(lumassbmi, "get_start_time"));
-	if (bmi_get_start_time == nullptr)
-	{
-		return EXIT_FAILURE;
-	}
-
-	bmi_get_end_time = reinterpret_cast<_bmi_get_end_time>(GetProcAddress(lumassbmi, "get_end_time"));
-	if (bmi_get_end_time == nullptr)
-	{
-		return EXIT_FAILURE;
-	}
-
-	bmi_get_current_time = reinterpret_cast<_bmi_get_current_time>(GetProcAddress(lumassbmi, "get_current_time"));
-	if (bmi_get_current_time == nullptr)
-	{
-		return EXIT_FAILURE;
-	}
-
-	bmi_get_time_step = reinterpret_cast<_bmi_get_time_step>(GetProcAddress(lumassbmi, "get_time_step"));
-	if (bmi_get_time_step == nullptr)
-	{
-		return EXIT_FAILURE;
-	}
-
-	bmi_set_logger = reinterpret_cast<_bmi_set_logger>(GetProcAddress(lumassbmi, "set_logger"));
-	if (bmi_set_logger == nullptr)
-	{
-		return EXIT_FAILURE;
-	}
-
-#endif
+    bmi_set_logger = reinterpret_cast<_bmi_set_logger>(GET_FUNC_PTR("set_logger"));
+    if (bmi_set_logger == nullptr)
+    {
+        return EXIT_FAILURE;
+    }
 
     return 0;
 }
@@ -178,8 +138,8 @@ void log(int i, const char* msg)
 	case 1: level = "DEBUG"; break;
 	case 2: level = "INFO"; break;
 	case 3: level = "WARNING"; break;
-	case 4: level = "ERROR"; break;
-	case 5: level = "FATAL"; break;
+    case 4: level = "ERROR"; CLOSE_LUMASSBMI; break;
+    case 5: level = "FATAL"; CLOSE_LUMASSBMI; break;
 	default: level = "NONE";
 	}
 
@@ -203,6 +163,7 @@ int main(int argc, char** argv)
     {
         std::cout << "Usage: LumassBMITest <LUMASS BMI library path> "
                   << "<yaml configuration file>" << std::endl;
+        return EXIT_FAILURE;
     }
 
     const char* libpath = argv[1];
@@ -214,7 +175,7 @@ int main(int argc, char** argv)
         msg << "Initialization of LUMASS BMI interface failed!"
                   << std::endl;
 		log(4, msg.str().c_str());
-        return 1;
+        return EXIT_FAILURE;
     }
 
 	bmi_set_logger(log);
@@ -223,24 +184,25 @@ int main(int argc, char** argv)
     {
 		msg << "bmi_init failed!" << std::endl;
 		log(4, msg.str().c_str());
-        return 1;
+        return EXIT_FAILURE;
     }
 
     if (bmi_update(0) != 0)
     {
 		msg << "bmi_update failed!" << std::endl;
 		log(4, msg.str().c_str());
-        return 1;
+        return EXIT_FAILURE;
     }
 
     if (bmi_finalize() != 0)
     {
 		msg << "bmi_finalize failed!" << std::endl;
 		log(4, msg.str().c_str());
-        return 1;
+        return EXIT_FAILURE;
     }
 
     msg << "LumassBMITest successfully completed!" << std::endl;
 	log(2, msg.str().c_str());
-    return 0;
+    CLOSE_LUMASSBMI;
+    return EXIT_SUCCESS;
 }

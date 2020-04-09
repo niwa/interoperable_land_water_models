@@ -1,0 +1,88 @@
+### LUMASS Engine (BMI) configuration TEMPLATE
+# configuration of the LUMASS Engine
+#
+# *** NOTE: all pathnames must use slashes '/' as directory separator
+# *** regardless of the platform you're running LUMASS on!
+#
+EngineConfig:
+    # mandatory: <model | moso>
+    #    model: spatial system dynamics model (*.lmx)
+    #    moso:  multi-objective spatial optimisation scenario(s) (*.los)
+    mode: "moso"
+    # mandatory for 'model' mode: absolute path to the directory containing LumassBMI.<so | dll> 
+    # optional  for 'moso' mode: this setting is ignored in 'moso' mode
+    enginepath: "/opt/lutest/bin"
+    # mandatory: absolute path to the model file
+    #    model: spatial system dynamics model file (*.lmx)
+    #    moso:  LUMASS optimisation settings file (*.los)
+    #-----------------------------------------------------------
+    #  model file for the simple single (non-batch) scenario
+    #modelfile: "D:/Temp/IOMTest/AparimaOptimisation/los_files/Aparima_noARAtestOpt.los"
+    #-----------------------------------------------------------
+    #   model file for Inc Sediment batch-scenarios
+    #modelfile: "D:/Temp/IOMTest/AparimaOptimisation/AparimaBatchScenarios/MaxRevIncSediment/Aparima_maxRevenue_IncSediment.los"
+    #modelfile: "/home/alex/crunch/IOMTest/AparimaOptimisation/AparimaBatchScenarios/MaxRevIncSediment/Aparima_maxRevenue_IncSediment.los"
+    #-----------------------------------------------------------
+    #  model file for Inc Nleach batch-scenarios
+    #modelfile: "D:/Temp/IOMTest/AparimaOptimisation/AparimaBatchScenarios/MaxRevIncNleach/Aparima_maxRevenue_IncNleach.los"
+    modelfile: "/home/alex/crunch/IOMTest/AparimaOptimisation/AparimaBatchScenarios/MaxRevIncNleach/Aparima_maxRevenue_IncNleach.los"
+    #-----------------------------------------------------------
+    #  model file for Inc NleachSediment batch-scenarios
+    #modelfile: "D:/Temp/IOMTest/AparimaOptimisation/AparimaBatchScenarios/MaxRevIncNleachSediment/Aparima_maxRevenue_IncNleachSediment.los"
+    #modelfile: "/home/alex/crunch/IOMTest/AparimaOptimisation/AparimaBatchScenarios/MaxRevIncNleachSediment/Aparima_maxRevenue_IncNleachSediment.los"
+    #-----------------------------------------------------------
+    # mandatory: absolute path to the working directory for storing intermediary files; 
+    #            in 'model' mode this is the output directory for the provenance (PROV-N)   
+    #            file produced for each LUMASS model run
+    #workspace: "D:/Temp/IOMTest/working_directory"
+    workspace: "/home/alex/crunch/IOMTest/working_directory"
+    # optional: filename for LUMASS specific logging
+    #logfile: "D:/Temp/IOMTest/working_directory/IOM_Optimisation.log"
+    logfile: "/home/alex/crunch/IOMTest/working_directory/IOM_Optimisation.log"
+    # whether or not LUMASS should log data provenance
+    #    note: Currently, LUMASS only provides PROV-N-based provenance logging for 
+    #          LUMASS models; optimisation scenarios produce provenance information in form of 
+    #          text files (report), *.lp files (scenario equations), and CSV tables (optimisation results)
+    logprovenance: true
+ModelConfig:
+    # optional: this section contains optional configuration parameters
+    #           for a LUMASS model or optimisation scenario
+    #
+    # Specification of 'global' LUMASS model settings. 
+    # The specified settings can be accessed inside a LUMASS 
+    # model or an optimisation scenario file (*.los) using the 
+    # LUMASS expression '$[LUMASS:<parameter>]$', for example 
+    # '$[LUMASS:DataPath]$' is evaluated to 'D:/Temp/IOMTest/Data' during a model run
+    # or optimisation scenario; 
+    Settings:
+        # datapath for single (non-batch) sample scenario
+        #DataPath: "D:/Temp/IOMTest/AparimaOptimisation"
+        # datapath for Inc Nleach batch-scenarios
+        #DataPath: "D:/Temp/IOMTest/AparimaOptimisation/AparimaBatchScenarios/MaxRevIncNleach"
+        DataPath: "/home/alex/crunch/IOMTest/AparimaOptimisation/AparimaBatchScenarios/MaxRevIncNleach"
+        # datapath for Inc Sediment batch-scenarios
+        #DataPath: "D:/Temp/IOMTest/AparimaOptimisation/AparimaBatchScenarios/MaxRevIncSediment"
+        #DataPath: "/home/alex/crunch/IOMTest/AparimaOptimisation/AparimaBatchScenarios/MaxRevIncSediment"
+        # datapath for Inc NleachSediment batch-scenarios
+        #DataPath: "D:/Temp/IOMTest/AparimaOptimisation/AparimaBatchScenarios/MaxRevIncNleachSediment"
+        #DataPath: "/home/alex/crunch/IOMTest/AparimaOptimisation/AparimaBatchScenarios/MaxRevIncNleachSediment"
+        #========================================================
+        #  uncertainties for Inc Nleach
+        #Uncertainties: "0 -10 -20 -30 -40 -50 -60 -70 -80"
+        #Uncertainties: "-61"
+        #"-61 -62 -63 -64 -65 -66 -67 -68 -69"
+        Uncertainties: "-70 -80"
+        #-60 -61 -62 -65 -68 -69 -70 -80"
+        #"0 -40 -50 -60 -61 -62 -65 -68 -69 -70 -80"
+        #-65 -68 -69 -70 -80"
+        #  uncertainties for Inc Sediment
+        #Uncertainties: "2256"
+        #"2270 2290"
+        #"2300 2350 2400"
+        #"2000 2250 2500" 
+        #"1000 1250 1500 1750"
+        #"180 200 220 260"
+        #"100 90 80 70 60 50 40 30 20 10 0 -10 -20 -30 -40"
+        #  uncertainties for Inc NleachSediment
+        #Uncertainties: "-70,0 -68,0 -65,0 -70,1000 -68,1000 -65,1000"
+        

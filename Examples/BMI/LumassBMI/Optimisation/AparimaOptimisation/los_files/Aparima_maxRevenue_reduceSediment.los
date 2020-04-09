@@ -1,0 +1,70 @@
+#LUMASS Optimization Settings
+
+<PROBLEM>
+DVTYPE=DVTYPE_CONTINUOUS
+CRITERION_LAYER=combParcLU
+LAND_USE_FIELD=LuOpt
+AREA_FIELD=AreaHa
+OPT_FEATURES=opt
+PERFORMANCE_SUM_ZONES=DaiZone SnbZone ForZone
+DATAPATH=$[LUMASS:DataPath]$
+<PROBLEM_END>
+
+<CRITERIA>
+NUM_OPTIONS=3
+OPTIONS=DAI FOR SNB
+
+# optimisation criteria
+CRI_1=Nleach DaiAvgNl zero SnbEsNl
+EVAL_1=Nleach DaiAvgNl zero SnbEsNl
+CRI_2=Revenue DaiAvgRev ForRev SnbAvgRev
+EVAL_2=Revenue DaiAvgRev ForRev SnbAvgRev
+CRI_3=Greenhouse DaiAvgGhg zero SnbAvgGhg
+EVAL_3=Greenhouse DaiAvgGhg zero SnbAvgGhg
+CRI_4=MilkSolids DaiAvgMs zero zero
+EVAL_4=MilkSolids DaiAvgMs zero zero
+CRI_5=Sediment OthEro ForEro OthEro
+EVAL_5=Sediment OthEro ForEro OthEro
+CRI_6=Wool zero zero SnbAvgWool
+EVAL_6=Wool zero zero SnbAvgWool
+<CRITERIA_END>
+
+<INCENTIVES>
+#INC_1=Revenue_Nleach  GmNlInc
+#INC_2=Revenue_Sediment  GmSedInc
+<INCENTIVES_END>
+
+<OBJECTIVES>                  
+AGGR_METHOD=Interactive                              
+OBJ_1=max Revenue 1
+<OBJECTIVES_END>
+                      
+<AREAL_CONSTRAINTS>              
+# no dairy on slope class 4, 5, 6
+AREAL_CONS_2=DAI:NOOPT = 0 percent_of_zone
+
+# keep current forest untouched 
+#AREAL_CONS_6=DAI:NOFARM = 0 percent_of_zone
+#AREAL_CONS_7=SNB:NOFARM = 0 percent_of_zone
+AREAL_CONS_8=FOR:NOFARM = 100 percent_of_zone
+
+# keep all land uses in place
+#AREAL_CONS_8=DAI:KEEPLU = 0 percent_of_zone
+#AREAL_CONS_9=FOR:KEEPLU = 0 percent_of_zone
+#AREAL_CONS_10=SNB:KEEPLU = 0 percent_of_zone
+<AREAL_CONS_END>                                                
+
+<CRITERIA_CONSTRAINTS>  
+# baseline revenue thresholds
+##CRI_CONS_2=Revenue DAI DaiAvgRev  >=   56451425
+#CRI_CONS_3=Revenue FOR ForRev     >=    1293955
+##CRI_CONS_4=Revenue SNB SnbAvgRev  >=   13029150
+
+# baseline production
+#CRI_CONS_2=MilkSolids DAI DaiAvgMs  >=   27491214
+#CRI_CONS_4=Wool SNB SnbAvgWool      >=   959391
+<CRITERIA_CONS_END>
+
+<OBJECTIVE_CONSTRAINTS>
+OBJ_CONS_1=Sediment <= 59567
+<OBJECTIVE_CONS_END>
