@@ -1,0 +1,22 @@
+diff a/Examples/BMI/Iterator/src/bmi/bmi_iterator.cpp b/Examples/BMI/Iterator/src/bmi/bmi_iterator.cpp	(rejected hunks)
+@@ -23,19 +23,19 @@
+  	try {
+  		IT = bmit::Iterator::Create(config_file);
+  	}
+ -	catch (std::exception e) {
+ -		// ToDo: log exception
+ -		printf("%s", e.what());
+ +	catch (std::exception& e) {
+ +		auto msg = std::stringstream {};
+ +        msg << "Failed initializing iterator: " <<  e.what();
+ +        logger(LEVEL_FATAL, msg.str().c_str());
+  		IT = nullptr;
+-     	return -1;
++     	return -2;
+      }
+  
+ -	// OK
+ +	logger(LEVEL_INFO, "Initialized iterator");
+  	return 0;
+  }
+  
