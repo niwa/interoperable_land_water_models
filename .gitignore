@@ -1,0 +1,31 @@
+#ignore thumbnails created by windows
+Thumbs.db
+
+# binaries and backup files
+*.exe
+*.dll
+*.lib
+*.cache
+*.log
+*.bak
+
+#Ignore files build by Visual Studio
+*.pdb
+*.obj
+*.suo
+*.user
+lib/
+packages/
+[Bb]in
+[Dd]ebug*/
+[Rr]elease*/
+.vscode/
+.vs/
+
+# Apsim generated outputs and log
+*.sum
+*.out
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
