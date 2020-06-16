@@ -1,0 +1,31 @@
+dateSpecification: 2019-09-30
+apsimEXE:
+  path: C:\ApsimX\Bin\
+  fileName: Models.exe
+apsimBaseSim:
+  path: H:\My Documents\RCichota\Projects\InteroperableModels\GitHub\ApsimIOM\Config\
+  fileName: base.apsimx
+  #path: H:\My Documents\RCichota\Projects\InteroperableModels\GitHub\Simulations\
+  #fileName: test.apsimx
+apsimSettingsFile:
+  #path: H:\My Documents\RCichota\Projects\InteroperableModels\GitHub\Simulations\
+  #fileName: ApsimSimulationSettingsTest.yaml
+  path: H:\My Documents\RCichota\Projects\InteroperableModels\GitHub\ApsimIOM\Config\
+  fileName: ApsimSimulationSettings.yaml
+soilData:
+  path: H:\My Documents\RCichota\Projects\InteroperableModels\GitHub\Soils\
+  fileName: Aparima_SMap_SoilwatLibrary.soils
+  #fileName: SoilLibraryTest.soils
+weatherData:
+  path: H:\My Documents\RCichota\Projects\InteroperableModels\GitHub\Weather\
+  rainFile: rain_vclim_clidb_1972010100_2018101500_south-island_p05_daily_Aparima.nc
+  tminFile: tmin_vclim_clidb_1972010100_2018071400_south-island_p05_daily_Aparima.nc
+  tmaxFile: tmax_vclim_clidb_1972010100_2018071400_south-island_p05_daily_Aparima.nc
+  sradFile: srad_vclim_clidb_1972010100_2018071400_south-island_p05_daily_Aparima.nc
+outputsStructure:
+  dimensionsName: time,latitude,longitude
+  dimensionsUnits: number of days since 1959-12-31, decimal degrees, decimal degrees
+  outputVariablesName: yield, leached_n
+  outptuVariablesUnits: kg/ha, kg/ha
+  apsimCorrespondingVariables: Date, Latitude, Longitude, CropYield, TotalLeachedN
+  

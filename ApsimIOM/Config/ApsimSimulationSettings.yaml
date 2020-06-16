@@ -1,0 +1,250 @@
+dateSpecification: 2019-09-30
+locationSetup:
+  - Name: SomeWhere
+    Latitude: -46.025
+    Longitude: 168.125
+    SoilName: Aparima_6a1
+
+clockSetup:
+  - Name: SomeTimePeriod
+    StartDate: 1973-03-01
+    EndDate: 2018-03-31
+
+simulationSetup:
+  Surface.SurfaceOrganicMatter:
+    InitialResidueMass: 1250
+  Manager:
+    - Name: RotationManager
+      Parameters:
+        CropList: AutumnBarley,FodderBeetLiftedEarly,AutumnWheat
+        RotationHasPasture: true
+        RotationLength: 3
+        YearToKillOffPasture: 2
+    - Name: CropsAutomaticFertiliser
+      Parameters:
+        FertiliserManagementIsEnabled: true
+        CurrentCrop: Wheat
+
+farmingSystemsSetup:
+  - Name: Cropping.ContinuousWheat
+    Manager:
+      - Name: RotationManager
+        Parameters:
+          CropList: AutumnWheat
+          RotationHasPasture: false
+      - Name: CropsAutomaticFertiliser
+        Parameters:
+          FertiliserManagementIsEnabled: true
+          CurrentCrop: Wheat
+      - Name: PastureHarvestManager
+        Parameters:
+          ControlDefoliationIsEnabled: false
+      - Name: FertiliseOnFixedDates
+        Parameters:
+          FertiliserManagementIsEnabled: false
+  - Name: Cropping.Cereals1
+    Manager:
+      - Name: RotationManager
+        Parameters:
+          CropList: SpringBarley,AutumnWheat,AutumnWheat,AutumnWheat,AutumnBarley,AutumnOatsChop
+          RotationHasPasture: false
+      - Name: CropsAutomaticFertiliser
+        Parameters:
+          FertiliserManagementIsEnabled: true
+          CurrentCrop: Wheat
+      - Name: PastureHarvestManager
+        Parameters:
+          ControlDefoliationIsEnabled: false
+      - Name: FertiliseOnFixedDates
+        Parameters:
+          FertiliserManagementIsEnabled: false
+  - Name: Mixed.Cereals1
+    Manager:
+      - Name: RotationManager
+        Parameters:
+          CropList: SpringBarley,AutumnOatsChop,FieldPea,AutumnWheat,AutumnWheat,AutumnBarley
+          RotationHasPasture: true
+          RotationLength: 10
+          SeasonToKillPasture: Spring
+          SeasonToResowPasture: Autumn
+      - Name: CropsAutomaticFertiliser
+        Parameters:
+          FertiliserManagementIsEnabled: true
+          SoilTestIsEnabled: false
+      - Name: PastureHarvestManager
+        Parameters:
+          ControlDefoliationIsEnabled: true
+      - Name: FertiliseOnFixedDates
+        Parameters:
+          FertiliserManagementIsEnabled: true
+  - Name: Mixed.FBeetCereals1
+    Manager:
+      - Name: RotationManager
+        Parameters:
+          CropList: AutumnOatsChop,FodderBeetLiftedLate,SpringBarley,AutumnWheat,AutumnOatsChop
+          RotationHasPasture: true
+          RotationLength: 10
+          SeasonToKillPasture: Summer
+          SeasonToResowPasture: Spring
+      - Name: CropsAutomaticFertiliser
+        Parameters:
+          FertiliserManagementIsEnabled: true
+          SoilTestIsEnabled: false
+      - Name: PastureHarvestManager
+        Parameters:
+          ControlDefoliationIsEnabled: true
+      - Name: FertiliseOnFixedDates
+        Parameters:
+          FertiliserManagementIsEnabled: true
+
+  - Name: Pastoral.Dairy1
+    Manager:
+      - Name: RotationManager
+        Parameters:
+          CropList: None
+          RotationHasPasture: true
+          RotationLength: 100
+          YearToKillOffPasture: 99
+          SeasonToKillPasture: Spring
+          SeasonToResowPasture: Autumn
+      - Name: CropsAutomaticFertiliser
+        Parameters:
+          FertiliserManagementIsEnabled: false
+      - Name: PastureHarvestManager
+        Parameters:
+          ControlDefoliationIsEnabled: true
+          TargetDMValues: 2500,2500,2500,2500,2000,2000,2000,2500,2500,2500,2500,2500,2500
+          AmountDMValues: 1400,1400,1400,1400,1700,1700,1700,1400,1400,1400,1400,1400,1400
+          FractionN2Remove: 0.20
+          UrineDepth: 300
+      - Name: FertiliseOnFixedDates
+        Parameters:
+          FertiliserManagementIsEnabled: false
+          FertiliserDates: 15-Sep,30-Nov,15-Apr
+          FertNAmount: 25.0
+  - Name: Pastoral.Dairy2
+    Manager:
+      - Name: RotationManager
+        Parameters:
+          CropList: None
+          RotationHasPasture: true
+          RotationLength: 100
+          YearToKillOffPasture: 99
+          SeasonToKillPasture: Spring
+          SeasonToResowPasture: Autumn
+      - Name: CropsAutomaticFertiliser
+        Parameters:
+          FertiliserManagementIsEnabled: false
+      - Name: PastureHarvestManager
+        Parameters:
+          ControlDefoliationIsEnabled: true
+          TargetDMValues: 2500,2500,2500,2500,2000,2000,2000,2500,2500,2500,2500,2500,2500
+          AmountDMValues: 1300,1300,1300,1300,1600,1600,1600,1300,1300,1300,1300,1300,1300
+          FractionN2Remove: 0.25
+          UrineDepth: 300
+      - Name: FertiliseOnFixedDates
+        Parameters:
+          FertiliserManagementIsEnabled: false
+          FertiliserDates: 15-Sep,30-Nov,15-Feb,15-Apr
+          FertNAmount: 25.0
+  - Name: Pastoral.Dairy3
+    Manager:
+      - Name: RotationManager
+        Parameters:
+          CropList: None
+          RotationHasPasture: true
+          RotationLength: 100
+          YearToKillOffPasture: 99
+          SeasonToKillPasture: Spring
+          SeasonToResowPasture: Autumn
+      - Name: CropsAutomaticFertiliser
+        Parameters:
+          FertiliserManagementIsEnabled: false
+      - Name: PastureHarvestManager
+        Parameters:
+          ControlDefoliationIsEnabled: true
+          TargetDMValues: 2500,2500,2500,2500,2000,2000,2000,2500,2500,2500,2500,2500,2500
+          AmountDMValues: 1200,1200,1200,1200,1500,1500,1500,1200,1200,1200,1200,1200,1200
+          FractionN2Remove: 0.3
+          UrineDepth: 300
+      - Name: FertiliseOnFixedDates
+        Parameters:
+          FertiliserManagementIsEnabled: false
+          FertiliserDates: 5-Sep,30-Nov,15-Feb,15-Apr
+          FertNAmount: 37.5
+
+  - Name: Pastoral.SheepBeef1
+    Manager:
+      - Name: RotationManager
+        Parameters:
+          CropList: None
+          RotationHasPasture: true
+          RotationLength: 100
+          YearToKillOffPasture: 99
+          SeasonToKillPasture: Spring
+          SeasonToResowPasture: Autumn
+      - Name: CropsAutomaticFertiliser
+        Parameters:
+          FertiliserManagementIsEnabled: false
+      - Name: PastureHarvestManager
+        Parameters:
+          ControlDefoliationIsEnabled: true
+          TargetDMValues: 2500,2500,2500,2500,2000,2000,2000,2500,2500,2500,2500,2500,2500
+          AmountDMValues: 1400,1400,1400,1400,1700,1700,1700,1400,1400,1400,1400,1400,1400
+          FractionN2Remove: 0.05
+          UrineDepth: 150
+      - Name: FertiliseOnFixedDates
+        Parameters:
+          FertiliserManagementIsEnabled: false
+          FertiliserDates: 1-Sep
+          FertNAmount: 0.0
+  - Name: Pastoral.SheepBeef2
+    Manager:
+      - Name: RotationManager
+        Parameters:
+          CropList: None
+          RotationHasPasture: true
+          RotationLength: 100
+          YearToKillOffPasture: 99
+          SeasonToKillPasture: Spring
+          SeasonToResowPasture: Autumn
+      - Name: CropsAutomaticFertiliser
+        Parameters:
+          FertiliserManagementIsEnabled: false
+      - Name: PastureHarvestManager
+        Parameters:
+          ControlDefoliationIsEnabled: true
+          TargetDMValues: 2500,2500,2500,2500,2000,2000,2000,2500,2500,2500,2500,2500,2500
+          AmountDMValues: 1300,1300,1300,1300,1600,1600,1600,1300,1300,1300,1300,1300,1300
+          FractionN2Remove: 0.10
+          UrineDepth: 150
+      - Name: FertiliseOnFixedDates
+        Parameters:
+          FertiliserManagementIsEnabled: false
+          FertiliserDates: 30-Nov,15-Apr
+          FertNAmount: 25.0
+  - Name: Pastoral.SheepBeef3
+    Manager:
+      - Name: RotationManager
+        Parameters:
+          CropList: None
+          RotationHasPasture: true
+          RotationLength: 100
+          YearToKillOffPasture: 99
+          SeasonToKillPasture: Spring
+          SeasonToResowPasture: Autumn
+      - Name: CropsAutomaticFertiliser
+        Parameters:
+          FertiliserManagementIsEnabled: false
+      - Name: PastureHarvestManager
+        Parameters:
+          ControlDefoliationIsEnabled: true
+          TargetDMValues: 2500,2500,2500,2500,2000,2000,2000,2500,2500,2500,2500,2500,2500
+          AmountDMValues: 1200,1200,1200,1200,1500,1500,1500,1200,1200,1200,1200,1200,1200
+          FractionN2Remove: 0.15
+          UrineDepth: 150
+      - Name: FertiliseOnFixedDates
+        Parameters:
+          FertiliserManagementIsEnabled: false
+          FertiliserDates: 30-Sep,30-Dec,30-Apr
+          FertNAmount: 33.33
