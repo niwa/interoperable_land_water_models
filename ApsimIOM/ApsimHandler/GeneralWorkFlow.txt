@@ -1,0 +1,71 @@
+Basic work flow of ApsimHandler
+
++ ApsimHandler()
+	Initialises the handler: needs an address to the yaml file with the configuration; plus path for the output files (optional).
+ - readConfigFile() 
+    Reads the configuration file and checks that the files specified in it exist (Apsim.exe, BaseSimulation, SoilLibrary, Weather folder, Apsim SettingsFile). 
+    +-> Currently the SimulationSettings is a yaml file with info about location (for weather), soil name, and a series of model parameters to change in order to set up a particular farm system.
+ - readSettingsFile()
+	Reads the settings (model types and parameters) that will be used to change the base simulation and generate new scenarios. This method takes the data from the file and puts into a list of structures (ApsimModelSettings, ApsimClockSettings, and ApsimLocationSettings) that can/will be used later to generate new simulations.  The basic settings include locationSetup (weather and soil), clockSetup (start and end dates), and simulationSetup (model parameters). The later may be replaced or complemented by farmingSystemsSetup; in fact, farmingSystemsSetup is a list of simulationSetup's, each containing the settings for model parameters that define a given farming system, so they are stored as farmingSystemsSettings (a collection of ApsimModelSettings). All the three sets of settings (farmingSystemsSettings, clockSettings, and locationsSettings) are lists and are optional. If not given no changes apply, if given as lists multiple simulations can be generated, depending on the methods used to create/run simulations later on. These lists are read from the settings file, but can also be added later using specific methods. This provides the flexibility to define and set simulations directly by other means (e.g. input DB for spatial runs). Anyone of these settings can then be chosen to use when modifying the base simulation, either alone or in conjunction with each other.
+	Note that simulationSetup is basically intended to be used as an alternative to farmingSystemsSettings, but they are not exclusive. If simulationSetup is given in, it is added to the list of farmingSystemsSettings with the name "BasicUserDefinedSystem".
+  .gatherLocationInfo()
+    Gathers the name and parameters (coordinates and soil name) of given locations. These are stored in a list of ApsimLocationSettings for later use. This structure is also used to store the soil data, but its addition is done in a separate method (prepareSoilData); the weather file is also created by a separate method (prepareWeatherData).
+  .gatherClockSetup()
+    Gathers the name and parameters (start and end dates) for Apsim's simulation clock. These are store in a list of ApsimClockSettings to be used later. This structure also given the length (number of days) of each simulation.
+  .gatherFarmingSystemSetup()
+    Gathers the settings (parameter names and values) for a list of Apsim models that can be used to describe a given farming system. Each farm system description is store as a dictionary, which contains the list of ApsimModelSettings with the parameter that can be used later to define new simulations.
+ - AddLocationSetup()
+    Gets the info about a location, coordinates for weather file and/or soil name, and stores them in the list of ApsimLocationSettings.
+ - AddClockSetup()
+    Gets the info about the simulation clock, start and/or end dates, and stores them in the list of ApsimClockSettings.
+
++ CreateApsimSimulation()
+	Takes the baseSimulation and modifies it based on given simulation settings, generating a new simulation to describe a desired farming system in a given location. The settings are given by the names of any of the three settings structures (locationSettings, clockSettings, and farmingSystemsSettings). If weather and/or soil are to be modified, specific methods to prepare their data must be called before the actual creation of new simulations.
+	This method can be used in a loop to generate multiple simulations based on a list of locations, simulation dates, and farming systems to simulate. 
+ - PrepareWeatherData()
+	Creates on or several .met files with the weather data for the locations given (based on latitude and longitude). This assumes that these locations exist in the netcdf files provided in the weather folder. The handling of the data is actually done by an external dll (ApsimWeatherConverter.NetcdfToMet).
+ - PrepareSoilData() and GetSoilData()
+	Gathers the data for one or more soils from a xml library and converts them to json, ready to be inserted in a simulation. This uses methods coded in an external dll (ApsimSoilConverter.XmlToJson).
+
++ RunApsimSimulation()
+	Calls Apsim's Models.exe to run a given simulation. It also checks the exit code to verify that the simulation finished ok.
+
++ SaveOutputsTable()
+	Gathers the outputs from an Apsim simulation and saves them as a netcdf file, this will thus be a multi-dimensional file with values for each output given as sequence in time and for each location coordinate (latitude, longitude). This will overwrite any netCDF file already created.
+ - gatherSimulatedData()
+	Read the sql DB file with the results from a given simulation extract the values that have been marked as required outputs. 
+	
++ RunSimulationsAndSaveOutputs()
+	Calls the methods to create and run a set of simulations, then gathers the outputs and saves as netCDF file, and finally cleans up the files used and no longer needed. This will call CreateApsimSimulation and RunApsimSimulation to actually run the simulations and then gatherSimulatedData to collect the outputs, all within a loop. The outputs are stored in memory and saved to netCDF file when the loop is finished.
+ - appendToOutputList()
+	Appends the outputs gathers from an Apsim DB file to a table that will be used later to create the netCDF file.
+ - cleanUpSimulationFiles()
+	Delete the simulation file, including the met file, and the sql file with the results.
+ - saveSimulationOutputs()
+	Save the outputs gathered as a netcdf file, this will thus be a multi-dimensional file with values for each output given a location in space (latitude, longitude, elevation(?)) and a sequence in time.
+
+
+=========================================================================================================================================================================
+
+Work flow in ApsimWeatherUtilities
+Converts, or reorganises, weather data as supplied by NIWA stored as netcdf files into Apsim's .met files.
+ - gets a list of netcdf files (one variable per file) and verify that they exist;
+ - checks the content of each file (variable name, time span, number of locations (coordinates);
+ - defines which time span can be used (all, full overlap, or user-defined);
+ - defines for which locations the data will be reorganised (all or user-defined);
+ - gets the data and reorganise it, also compute derived values (date, tav and amp);
+ - saves the file or files (one for each location) in the appropriate folder. There is a method that simply return the string with data, not saving it;
+There is also methods to simply write out a summary of files and data in them.
+The data is expected to be for the following parameters and in that order:
+ Rain, Tmin, Tmax, Radn, Wind, PET, VP, RH
+However only the fist four are mandatory.
+
+=========================================================================================================================================================================
+
+Work flow in ApsimSoilUtilities
+Converts, or reorganises, soil data from a classic Apsim xml library file (.soils) into ApsimX file format (json). Uses a ApsimX base soil as reference/template.
+ - gets names of files with base soil structure and soil library, and verify that they exist;
+ - formats each soil to convert. This implies in a direct conversion from xml to json and a series of checks to ensure the format is compatible with ApsimX (fix some names, put soilCrop info in arrays, compute distribution of soil FOM and CN in the sol profile, etc.);
+ - copies data from inputSoil to a clone of base soil. This brings only data that exists in the base soil, except for SoilCrop and Memos, depth and KLat are also checked;
+ - saves the soil info into an ApsimX simulation file (there is no formal soil library). There is also a method that returns the data itself, without saving.
+

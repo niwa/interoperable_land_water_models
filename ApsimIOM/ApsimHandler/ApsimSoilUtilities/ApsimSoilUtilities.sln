@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.705
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApsimSoilConverter", "ApsimSoilConverter\ApsimSoilConverter.csproj", "{A540E5D7-AEB5-496D-83AA-0F4A09C7A01D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSoilConversion", "TestSoilConversion\TestSoilConversion.csproj", "{3A017D8E-B38C-4456-A4F1-80727676829D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A540E5D7-AEB5-496D-83AA-0F4A09C7A01D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A540E5D7-AEB5-496D-83AA-0F4A09C7A01D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A540E5D7-AEB5-496D-83AA-0F4A09C7A01D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A540E5D7-AEB5-496D-83AA-0F4A09C7A01D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A017D8E-B38C-4456-A4F1-80727676829D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A017D8E-B38C-4456-A4F1-80727676829D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A017D8E-B38C-4456-A4F1-80727676829D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A017D8E-B38C-4456-A4F1-80727676829D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F99B4396-7C9B-458D-8562-F342B12753DA}
+	EndGlobalSection
+EndGlobal
