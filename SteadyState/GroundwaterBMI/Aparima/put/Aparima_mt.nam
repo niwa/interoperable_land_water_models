@@ -1,0 +1,20 @@
+# Environment Southland, Aparima
+# Steady state
+LIST           0 Aparima_mt.list
+BTN            0 Aparima.btn
+ADV            0 Aparima.adv
+DSP            0 Aparima.dsp
+SSM            0 Aparima.ssm
+# RCT            0 Aparima.rct
+GCG            0 Aparima.gcg
+FTL            0 Aparima.ftl
+DATA          20 Aparima.Top.ref
+DATA          21 Aparima.DZ1.ref
+DATA          22 Aparima.DZ2.ref
+DATA          41 Aparima.IBOUND1.inf
+DATA          42 Aparima.IBOUND2.inf
+# DATA          61 Aparima.SCONC1.ref # data removed
+# DATA          62 Aparima.SCONC2.ref # data removed
+DATA          51 Aparima.CRCH.ref
+DATA(BINARY) 201 Aparima.ucn
+DATA         601 Aparima.mas

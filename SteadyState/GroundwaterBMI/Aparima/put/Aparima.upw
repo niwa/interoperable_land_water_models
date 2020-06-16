@@ -1,0 +1,12 @@
+# Environment Southland, Aparima, steady state
+# Aquifer property file compatible with UPW or LPF packages
+30        -888.0    0         0                   IUPWCB HDRY NPUPW IPHDRY
+1 0                                               LAYTYP
+0 0                                               LAYAVG
+1.0 1.0                                           CHANI
+0 0                                               LAYVKA
+0 0                                               LAYWET
+OPEN/CLOSE Aparima.HK1.ref 1.0 (FREE) -1          Layer 1, HK
+OPEN/CLOSE Aparima.VK1.ref 1.0 (FREE) -1                   VK
+OPEN/CLOSE Aparima.HK2.ref 1.0 (FREE) -1          Layer 2, HK
+OPEN/CLOSE Aparima.VK2.ref 1.0 (FREE) -1                   VK

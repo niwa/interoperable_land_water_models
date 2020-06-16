@@ -1,0 +1,4 @@
+# Environment Southland, Aparima
+3 30
+1 -1                        # Stress period 1
+EXTERNAL 22 1.0 (FREE) -1

@@ -1,0 +1,25 @@
+Environment Southland, Aparima
+Steady state
+DRYCELL
+2         364       118       1         1         1         0         NLAY NROW NCOL NPER NCOMP MCOMP IATS
+D   M   U                                         TUNIT LUNIT MUNIT
+T T T T T F F F F F                               TRNOP (ADV DSP SSM RCT GCG)
+1 0                                               LAYCON
+0         250.0                         -1        DELR
+0         250.0                         -1        DELC
+20        1.0       (118F9.3)           -1        HTOP
+21        1.0       (118F9.3)           -1        Layer 1, DZ
+22        1.0       (118F9.3)           -1              2
+0         0.2                           -1        Layer 1, PRSITY
+0         0.2                           -1              2
+41        1         (118I2)             -1        Layer 1, ICBUND
+42        1         (118I2)             -1              2
+0         0.0                           -1        Layer 1, SCONC  # data removed
+0         0.0                           -1              2         # data removed
+-1000.0   0.010                                   CINACT THKMIN
+0         0         0         0         T         T         IFMTCN IFMTNP IFMTRF IFMTDP SAVUCN ?
+-1                                                NPRS
+0         1                                       NOBS NPROBS
+T         1                                       CHKMAS NPRMAS
+36525.0   1         1.2                           PERLEN NSTP TSMULT [SSflag]
+0.0       1000      1.2       3652.0              DT0 MXSTRN TTSMULT TTSMAX
