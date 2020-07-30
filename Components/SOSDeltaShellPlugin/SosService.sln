@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.645
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaShell.Plugins.SosService", "DeltaShell.Plugins.SosService\DeltaShell.Plugins.SosService.csproj", "{137CABDD-83B8-4678-A1C3-AE44AEFB1E94}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SOSClientJSON", "..\..\..\Documents\OLW\SOSClientJSON\SOSClientJSON\SOSClientJSON.csproj", "{A7741125-998E-4228-8B3A-F771B2A274AC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{137CABDD-83B8-4678-A1C3-AE44AEFB1E94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{137CABDD-83B8-4678-A1C3-AE44AEFB1E94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{137CABDD-83B8-4678-A1C3-AE44AEFB1E94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{137CABDD-83B8-4678-A1C3-AE44AEFB1E94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7741125-998E-4228-8B3A-F771B2A274AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7741125-998E-4228-8B3A-F771B2A274AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7741125-998E-4228-8B3A-F771B2A274AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7741125-998E-4228-8B3A-F771B2A274AC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2B67966F-DAE5-473F-BA2F-CC06CDFDAF14}
+	EndGlobalSection
+EndGlobal
