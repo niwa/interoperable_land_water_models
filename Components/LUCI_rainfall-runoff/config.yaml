@@ -1,0 +1,7 @@
+common_dir: C:\Models\dev\lucitools\SMA
+in_netCDF: netCDF\input\LUCI_netCDF_input_climate_and_soil_data.nc
+out_netCDF_template: netCDF\output\LUCI_output_netCDF_template.nc
+out_netCDF: netCDF\output\LUCI_output.nc
+start_time: 01-02-2019 05.50.10 # dd-mm-yyyy hr.ss
+end_time: 01-11-2019 05.45.30 # dd-mm-yyyy hr.ss
+time_step: 1 # check - working in hours from unix start?

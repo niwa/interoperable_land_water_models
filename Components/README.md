@@ -1,6 +1,6 @@
-# Steady-State Models 
+# Components  
 
-Models to be joined in a loosly coupled system to represent steady-state, annualized, or average conditions in a basin.
+This directory contains the main components as well as utilities.
 
 ## Contents
 
@@ -17,3 +17,13 @@ A weighted-averaging program for rolling up results from small areas to large on
 
 A generic groundwater model BMI implementation, written in C++, but
 extensive calls are made to a Python module named run.py
+
+### APSIM loss
+
+
+### TopNet stream routing
+
+
+
+
+

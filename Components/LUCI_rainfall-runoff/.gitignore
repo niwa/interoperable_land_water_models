@@ -1,0 +1,5 @@
+*.vc.db
+*.ipch
+__pycache__/__init__.cpython-36.pyc
+__pycache__/rainfall_runoff.cpython-36.pyc
+netCDF/output/LUCI_output.nc

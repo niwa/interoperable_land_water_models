@@ -1,0 +1,67 @@
+# http://www.gnu.org/software/automake
+
+Makefile.in
+Makefile
+
+# http://www.gnu.org/software/autoconf
+
+/models/autom4te.cache
+/models/aclocal.m4
+/models/compile
+/models/configure
+/models/depcomp
+/models/install-sh
+/models/missing
+/models/stamp-h1
+/models/config.h
+/models/config.h.in
+/models/config.log
+/models/config.status
+/models/config
+
+# libtool
+
+libtool
+libtool.m4
+ltoptions.m4
+ltsugar.m4
+ltversion.m4
+lt~obsolete.m4
+.libs
+
+
+# Fortran
+*.mod
+
+# Dependencies
+.deps
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.out
+*.app
+models/vs2013/bmi.sdf
+models/vs2013/bmi.v12.suo
+models/vs2013/bin
+models/vs2013/model-c/Debug
+models/vs2013/model-c/Release
+models/vs2013/model-cpp/Debug
+models/vs2013/model-cpp/Release
+models/vs2013/model-fortran/Debug
+models/vs2013/model-fortran/Release
+models/vs2013/bmi.opensdf

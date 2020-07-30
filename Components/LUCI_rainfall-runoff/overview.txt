@@ -1,0 +1,24 @@
+C++
+	Create python RR obj
+	Call RR.Initialize(config)
+	Call RR.Update()
+
+Python
+	RR obj
+		pars
+
+		Initialize(config)
+			Reads from config YAML and puts into self.pars
+			Creates out_netCDF as a copy from in_netCDF
+			Adds new dims and vars to out_netCDF
+			Sets up first RRTS obj
+			Runs some RRTS methods to populate RRTS obj properties
+			Writes RRTS data to out_netCDF
+			Assigns RRTS obj to self.prevTSD
+
+		Update()
+			Creates new RRTS obj
+			Runs RRTS methods to populate RRTS obj properties, using prev_tsd rather than reading from out_netCDF
+			Writes RRTS data to out_netCDF
+			Assigns RRTS obj to self.prevTSD
+
