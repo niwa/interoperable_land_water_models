@@ -23,6 +23,20 @@ extensive calls are made to a Python module named run.py
 
 ### TopNet stream routing
 
+Kinematic wave lagrangian routing for the interoperable models. It is based on the TopNet routing.
+
+### TopNet Output Web Query
+
+Library to query a SOS webservice that contains results of TopNet simulations.
+
+### TopNet Output Delta Shell Plugin
+
+Plugin that uses the TopNet Output Web Query to plot time-series extracted on a SOS webserver within
+DeltaShell.
+
+### LUCI 
+
+The LUCI model is a rainfall-runoff model used for surface water calculations on the interoperable models.
 
 
 
