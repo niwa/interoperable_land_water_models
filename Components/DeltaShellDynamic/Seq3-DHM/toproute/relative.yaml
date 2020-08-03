@@ -1,0 +1,8 @@
+common_dir: .
+start_time: 01-01-2005 21.00.00 # dd-mm-yyyy hr.mm.ss
+end_time: 01-03-2005 00.00.00 # dd-mm-yyyy hr.mm.ss
+time_step: 1 # check - working in hours from unix start?
+input_vars:
+  - {name: ecotope_fast_flow, file: ../databases/SMA.Jan.2005.nc}
+fortran_config: toproute.cfg
+debug: false # true #

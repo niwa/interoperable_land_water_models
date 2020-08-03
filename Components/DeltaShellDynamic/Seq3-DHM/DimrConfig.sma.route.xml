@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<dimrConfig xmlns="http://schemas.deltares.nl/dimr" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.deltares.nl/dimr http://content.oss.deltares.nl/schemas/dimr-1.2.xsd">
+  <documentation>
+    <fileVersion>1.00</fileVersion>
+    <createdBy>Deltares, Coupling Team</createdBy>
+    <creationDate>2017-02-06T16:17:23.0641336Z</creationDate>
+  </documentation>
+  <!--<control>
+          The <control> specifies the workflow of the deltaresHydro executable.
+          It indicates which components are started in which order. If the data
+          transfer is to be arranged by the main program "d_hydro", then a coupler
+          should be included.
+          The main <control> block is a sequential block; this means that each
+          component is initialized, time stepped, and finalized before the next
+          component starts.
+      <parallel>
+          Within a <parallel> tag the components are started
+          concurrently (if the mpi process ids listed per component don't overlap)
+          or executed synchronously in sequence (first all initialize, then time
+          stepping, and to conclude all finalization calls).
+      <start>
+          A <parallel> block contains exactly one <start/> component, defining the
+          start and end time of the simulation. This is the component inside
+          the <parallel> block with the smallest time step. All other
+          components must be defined with a <startGroup>.
+      <startGroup>
+          A <startGroup> should be used if a component (possibly including couplers)
+          should only be executed at a subset of simulation time steps.
+
+      For each component/coupler there will be a corresponding component/coupler
+      specification block defined below.-->
+  <control>
+    <parallel>
+      <startGroup>
+        <time>0 1 99999999</time>
+        <start name="TopRoute"/>
+      </startGroup>
+      <start name="Rainfall_Runoff"/>
+    </parallel>
+    <start name="PythonShutdown" />
+  </control>
+  <component name="Rainfall_Runoff">
+    <library>BMI_SMA</library>
+    <workingDir>LUCI_RR</workingDir>
+    <inputFile>Jan.2005.yaml</inputFile>
+  </component>
+  <component name="TopRoute">
+    <library>bmi_toproute</library>
+    <workingDir>toproute</workingDir>
+    <inputFile>relative.yaml</inputFile>
+  </component>
+  <component name="PythonShutdown">
+    <library>bmi_PySwitch</library>
+    <workingDir>.</workingDir>
+    <inputFile>shutdown</inputFile>
+  </component>
+</dimrConfig>

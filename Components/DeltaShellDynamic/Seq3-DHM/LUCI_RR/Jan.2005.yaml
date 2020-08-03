@@ -1,0 +1,8 @@
+common_dir: C:/Models/data/Seq3-DHM
+in_netCDF: databases/LUCI_netCDF_input_climate_and_soil_data.nc
+out_netCDF_template: LUCI_RR/netCDF/template.nc
+out_netCDF: databases/SMA.Jan.2005.nc
+# date-time strings need to be 18 or 19 chars exactly
+start_time: 01-01-2005 21.00.0 # dd-mm-yyyy hr.mm.s (18)
+end_time: 01-03-2005 00.00.00  # dd-mm-yyyy hr.mm.ss (19)
+time_step: 1 # check - working in hours from unix start?

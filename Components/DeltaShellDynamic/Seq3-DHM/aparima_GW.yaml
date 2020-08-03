@@ -1,0 +1,7 @@
+run_dir: C:/Models/data/Aparima/aparima-groundwater/run
+args:
+  timeword: dynamic
+  common_dir: C:/Models/data/Seq3-DHM/databases
+  luci_nc_fname: SMA.Jan.2005.nc
+  # luci_nc_fname: None
+  verbose: 1
