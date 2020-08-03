@@ -1,0 +1,27 @@
+# Configuration file for testing aggregator model
+
+input:
+    format: sqlite
+    path: .\databases\ecotopeNutrients.db
+    table: nutrient_loads
+    entity_column: ecotope
+    value_column: N_Loss
+
+weights:
+    format: sqlite
+    path: .\databases\Rec_Ecotope_In.db
+    table: weight_s3
+    aggregate_column: REC3_ID
+    entity_column: ecotope_ID
+    weight_column: cell_count
+
+output:
+    format: sqlite
+    path: .\databases\catchmentNutrients.db
+    table: Results_S3
+    aggregate_column: REC3_ID
+    value_column: N_loss_tot
+
+aggregate:
+    operation: SUM
+    scale: 0.0064 # fraction of a hectare occupied by an 8x8m cell

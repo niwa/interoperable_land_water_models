@@ -1,0 +1,23 @@
+# Configuration file for testing aggregator model
+
+weights:
+    format: sqlite
+    path: C:\Models\data\Seq1-SSM\databases\NitrateWeights.db
+    table: Weights
+    aggregate_column: catchment
+    entity_column: ecotope
+    weight_column: weight
+
+output:
+    format: sqlite
+    path: C:\Models\data\Seq1-SSM\databases\AggResults.db
+    table: AveragedResults
+    aggregate_column: catchment
+    value_column: N_loss_avg
+
+input:
+    format: sqlite
+    path: C:\Models\data\Seq1-SSM\databases\ecotopeNutrient.db
+    table: nutrient_loads
+    entity_column: ecotope
+    value_column: N_Loss

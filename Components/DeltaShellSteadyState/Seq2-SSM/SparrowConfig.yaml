@@ -1,0 +1,4 @@
+DatabaseFile: .\databases\Aparima_Sparrow.db
+
+StreamDecayCoefficient: 0.0001 #decay coefficient per m is StreamDecayCoefficient*flow**StreamDecayExponent with flow in m3/s
+StreamDecayExponent: -0.7 #decay coefficient per km is StreamDecayCoefficient*flow**StreamDecayExponent with flow in m3/s

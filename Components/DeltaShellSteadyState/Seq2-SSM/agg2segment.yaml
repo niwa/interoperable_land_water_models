@@ -1,0 +1,11 @@
+# A list of links, representing the transfer of items between two tables
+-  LinkID: 1
+   Sourcedb: .\databases\catchmentNutrients.db
+   Destinationdb: .\databases\Aparima_Sparrow.db
+   SourceTable: Results_S3
+   DestinationTable: Segments # must be different from SourceTable if in the same database
+   SourceKeyColumn: REC3_ID
+   DestinationKeyColumn: SegmentID
+   Variables:        # a list of dictionaries, with each dictionary haveing source and destination column names
+       - {SourceColumn: N_loss_tot,DestinationColumn: SourceDirect}
+

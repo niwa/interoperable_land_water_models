@@ -1,0 +1,778 @@
+#====================================================================
+# Lookup format.
+#====================================================================
+# Inputs must have a type.
+# All outputs are doubles, type attribute will be ignored.
+# String inputs can have a mapping.
+# Numeric inputs must have a mapping.
+# All mappings assumed lower bound.
+#====================================================================
+
+inputs:
+  model_land-use-type__identification_number: {type: int}
+  model_mean_annual_temperature__class: {type: int}
+  model_basin__slope_class: {type: int}
+  model_soil-type__identification_number: {type: int}
+  model_basin_irrigation__class: {type: int}
+  atmosphere_water~10-year-average__precipitation_volume_class: {type: int}
+  # This is the same as model_soil-type__identification_number, but needed
+  # a second time to derive P-retention (ASC).
+  # The lookup only supports one mapping per input, so we use this hack for now.
+  model_asc-soil-type__identification_number: {type: int}
+
+outputs:
+  model_basin_N__loss: {type: double, units: kg_ha-1_yr-1}
+  model_basin_P__loss: {type: double, units: kg_ha-1_yr-1}
+
+fallback_output: [0.09, 0.09] # was [-999.9, -999.9]
+
+mappings:
+  # Land use
+  # Some of the land use classes are less detailed than available in the typology framework.
+  # Some of the typology land uses will not be used.
+  # The typology land uses are:
+  #    ARA: Arable
+  #    BEF: Beef
+  #    DAI: Dairy
+  #    DEE: Deer
+  #    FOR: Forestry
+  #    NAT: Native bush
+  #    NOF: Not farmed (Gorse)
+  #    OTH: Winter Crops
+  #    SHP: Sheep
+  #    SNB: Sheep & Beef
+  #    VEG: Vegatable growing
+  #    VIT: Viticulture
+  # The land use classes also contain a number of land covers not included in the typology
+  # framework (eg water bodies, tussock), for which loss numbers where retrieved from literature.
+  model_land-use-type__identification_number:
+    1: VEG # class 1: Crops and Horticulture
+           # There's a choice to be made here between `ARA` (arable land) and `VEG` (vegetable growing),
+           # maybe `OTH` (winter crops) as well. But not too significant as < 1% of catchment area.
+    2: DAI # class 2: Dairy
+    3: FWB # class 3: Freshwater Body NOT_PART_OF_TYPOLOGIES
+    4: ELS # class 4: Other (urban and ?) NOT_PART_OF_TYPOLOGIES
+    5: DEE # class 5: Other pasture
+           # Not dairy, nor SnB, so assuming deer.
+    6: SNB # class 6: Sheep & Beef (note that the typology framework also distinguishes sheep only and beef only)
+    7: TUS # class 7: Tussock NOT_PART_OF_TYPOLOGIES
+    8: FOR # class 8: Forestry
+    9: NAT # class 9: Native forest & scrub
+
+  # Typology climate
+  # cool: mean annual temperature <  12 °C
+  # warm: mean annual temperature >= 12 °C
+  model_mean_annual_temperature__class:
+    1: cool # All 5 classes are < 12
+    6: warm # Does not occur in Aparima
+
+  model_basin__slope_class:
+    1: low      # class 1 (0-3) & class 2 (3-7)
+    3: moderate # class 3 (7-15)
+    4: steep    # class 4 and up (>15)
+
+  # Soil to drainage class
+  model_soil-type__identification_number:
+    1 : light
+    2 : light
+    3 : well
+    4 : poor
+    5 : well
+    6 : light
+    7 : light
+    8 : well
+    9 : light
+    10: light
+    11: light
+    12: light
+    13: well
+    14: poor
+    15: light
+    16: light
+    17: light
+    18: light
+    19: well
+    20: well
+    21: light
+    22: poor
+    23: poor
+    24: well
+    25: poor
+    26: light
+    27: poor
+    28: well
+    29: poor
+    30: light
+    31: light
+    32: poor
+    33: light
+    34: poor
+    35: well
+    36: well
+    37: light
+    38: well
+    39: light
+    40: light
+    41: well
+    42: light
+    43: light
+    44: poor
+    45: light
+    46: light
+    47: well
+    48: well
+    49: well
+    50: light
+    51: well
+    52: well
+    53: well
+
+  model_basin_irrigation__class:
+    0: not_irrigated
+    1: irrigated
+
+  atmosphere_water~10-year-average__precipitation_volume_class:
+    1: dry   # class 1, 2 & 3 (800 - 1100)
+    4: moist # class 4, 5, 6, 7, 8 & 9 (1100 - 1700)
+    10: wet  # class 10 & 11 (1700 - 1900)
+
+  # Anion Storage Capacity (aka P retention)
+  model_asc-soil-type__identification_number:
+    1 : ten_to_sixty
+    2 : zero_to_ten
+    3 : ten_to_sixty
+    4 : ten_to_sixty
+    5 : ten_to_sixty
+    6 : ten_to_sixty
+    7 : ten_to_sixty
+    8 : ten_to_sixty
+    9 : ten_to_sixty
+    10: zero_to_ten
+    11: ten_to_sixty
+    12: ten_to_sixty
+    13: zero_to_ten
+    14: greater_than_sixty
+    15: ten_to_sixty
+    16: ten_to_sixty
+    17: greater_than_sixty
+    18: zero_to_ten
+    19: ten_to_sixty
+    20: ten_to_sixty
+    21: ten_to_sixty
+    22: ten_to_sixty
+    23: ten_to_sixty
+    24: ten_to_sixty
+    25: greater_than_sixty
+    26: ten_to_sixty
+    27: ten_to_sixty
+    28: zero_to_ten
+    29: ten_to_sixty
+    30: ten_to_sixty
+    31: ten_to_sixty
+    32: greater_than_sixty
+    33: greater_than_sixty
+    34: greater_than_sixty
+    35: ten_to_sixty
+    36: ten_to_sixty
+    37: zero_to_ten
+    38: ten_to_sixty
+    39: ten_to_sixty
+    40: ten_to_sixty
+    41: ten_to_sixty
+    42: zero_to_ten
+    43: ten_to_sixty
+    44: ten_to_sixty
+    45: zero_to_ten
+    46: zero_to_ten
+    47: ten_to_sixty
+    48: ten_to_sixty
+    49: ten_to_sixty
+    50: ten_to_sixty
+    51: ten_to_sixty
+    52: ten_to_sixty
+    53: ten_to_sixty
+
+lookup:
+  ARA:
+    warm:
+      low:
+        poor:
+          irrigated:
+            _ANY_:
+              zero_to_ten: [165.00, 0.41]
+          not_irrigated:
+            moist:
+              ten_to_sixty: [13.00, 0.41]
+        well:
+          not_irrigated:
+            moist:
+              zero_to_ten: [32.00, 2.80]
+            wet:
+              ten_to_sixty: [127.00, 2.80]
+  BEF:
+    cool:
+      low:
+        well:
+          not_irrigated:
+            dry:
+              _ANY_: [14.67, 0.07]
+            moist:
+              _ANY_: [14.00, 0.10]
+      moderate:
+        poor:
+          not_irrigated:
+            moist:
+              _ANY_: [22.00, 1.40]
+        well:
+          not_irrigated:
+            dry:
+              _ANY_: [14.00, 0.15]
+            moist:
+              _ANY_: [12.00, 0.20]
+      steep:
+        well:
+          not_irrigated:
+            dry:
+              _ANY_: [11.33, 0.27]
+            moist:
+              _ANY_: [10.20, 0.42]
+  DAI:
+    cool:
+      low:
+        light:
+          not_irrigated:
+            dry:
+              ten_to_sixty: [56.00, 0.60]
+              zero_to_ten: [56.00, 0.70]
+            moist:
+              ten_to_sixty: [53.00, 0.60]
+              zero_to_ten: [53.00, 0.70]
+            wet:
+              ten_to_sixty: [64.00, 0.60]
+              zero_to_ten: [64.00, 1.00]
+          irrigated:
+            _ANY_:
+              ten_to_sixty: [86.00, 1.40]
+              zero_to_ten: [86.00, 1.70]
+        poor:
+          not_irrigated:
+            dry:
+              ten_to_sixty: [32.00, 0.70]
+              zero_to_ten: [32.00, 0.90]
+            moist:
+              ten_to_sixty: [47.00, 1.00]
+              zero_to_ten: [47.00, 1.50]
+            wet:
+              ten_to_sixty: [41.00, 1.00]
+              zero_to_ten: [41.00, 1.70]
+          irrigated:
+            _ANY_:
+              ten_to_sixty: [54.00, 1.00]
+              zero_to_ten: [54.00, 1.30]
+        well:
+          not_irrigated:
+            dry:
+              ten_to_sixty: [31.00, 0.80]
+              zero_to_ten: [31.00, 1.00]
+            moist:
+              ten_to_sixty: [47.00, 1.10]
+              zero_to_ten: [47.00, 1.80]
+            wet:
+              ten_to_sixty: [58.00, 1.40]
+              zero_to_ten: [58.00, 2.60]
+          irrigated:
+            _ANY_:
+              ten_to_sixty: [78.00, 2.60]
+              zero_to_ten: [78.00, 3.40]
+      moderate:
+        light:
+          not_irrigated:
+            dry:
+              ten_to_sixty: [35.00, 0.70]
+              zero_to_ten: [35.00, 0.90]
+            moist:
+              ten_to_sixty: [61.00, 1.70]
+              zero_to_ten: [61.00, 2.50]
+            wet:
+              ten_to_sixty: [88.00, 2.30]
+              zero_to_ten: [88.00, 4.10]
+          irrigated:
+            _ANY_:
+              ten_to_sixty: [89.00, 2.80]
+              zero_to_ten: [89.00, 3.70]
+        poor:
+          not_irrigated:
+            dry:
+              ten_to_sixty: [25.00, 1.00]
+              zero_to_ten: [25.00, 1.10]
+            moist:
+              ten_to_sixty: [41.00, 0.90]
+              zero_to_ten: [41.00, 1.30]
+            wet:
+              ten_to_sixty: [73.00, 13.90]
+              zero_to_ten: [73.00, 21.50]
+          irrigated:
+            _ANY_:
+              ten_to_sixty: [105.00, 4.60]
+              zero_to_ten: [105.00, 7.00]
+        well:
+          not_irrigated:
+            dry:
+              ten_to_sixty: [38.00, 0.80]
+              zero_to_ten: [38.00, 1.00]
+            moist:
+              ten_to_sixty: [55.00, 1.00]
+              zero_to_ten: [55.00, 1.70]
+            wet:
+              ten_to_sixty: [56.00, 4.80]
+              zero_to_ten: [56.00, 11.80]
+          irrigated:
+            _ANY_:
+              ten_to_sixty: [163.00, 2.60]
+              zero_to_ten: [163.00, 9.90]
+      steep:
+        light:
+          not_irrigated:
+            dry:
+              ten_to_sixty: [18.00, 0.40]
+              zero_to_ten: [18.00, 0.60]
+            moist:
+              ten_to_sixty: [37.00, 1.20]
+              zero_to_ten: [37.00, 2.80]
+            wet:
+              ten_to_sixty: [66.00, 2.80]
+              zero_to_ten: [66.00, 5.80]
+          irrigated:
+            _ANY_:
+              ten_to_sixty: [31.00, 1.00]
+              zero_to_ten: [31.00, 2.20]
+        poor:
+          not_irrigated:
+            dry:
+              ten_to_sixty: [14.00, 1.00]
+              zero_to_ten: [14.00, 1.00]
+            moist:
+              ten_to_sixty: [20.00, 1.50]
+              zero_to_ten: [20.00, 2.50]
+            wet:
+              ten_to_sixty: [28.00, 2.60]
+              zero_to_ten: [28.00, 4.80]
+          irrigated:
+            _ANY_:
+              ten_to_sixty: [19.00, 1.10]
+              zero_to_ten: [19.00, 1.30]
+        well:
+          not_irrigated:
+            dry:
+              ten_to_sixty: [15.00, 1.00]
+              zero_to_ten: [15.00, 1.00]
+            moist:
+              ten_to_sixty: [22.00, 1.00]
+              zero_to_ten: [22.00, 1.50]
+            wet:
+              ten_to_sixty: [29.00, 1.60]
+              zero_to_ten: [29.00, 2.90]
+          irrigated:
+            _ANY_:
+              ten_to_sixty: [37.00, 1.20]
+              zero_to_ten: [37.00, 2.80]
+    warm:
+      low:
+        light:
+          not_irrigated:
+            dry:
+              ten_to_sixty: [30.00, 1.10]
+              zero_to_ten: [30.00, 1.60]
+            moist:
+              ten_to_sixty: [46.00, 1.40]
+              zero_to_ten: [46.00, 2.20]
+            wet:
+              ten_to_sixty: [58.00, 1.40]
+              zero_to_ten: [58.00, 3.20]
+          irrigated:
+            _ANY_:
+              ten_to_sixty: [60.00, 1.20]
+              zero_to_ten: [60.00, 1.90]
+        poor:
+          not_irrigated:
+            dry:
+              ten_to_sixty: [33.00, 1.20]
+              zero_to_ten: [33.00, 2.20]
+            moist:
+              ten_to_sixty: [31.00, 1.40]
+              zero_to_ten: [31.00, 2.60]
+            wet:
+              ten_to_sixty: [48.00, 2.70]
+              zero_to_ten: [48.00, 4.80]
+          irrigated:
+            _ANY_:
+              ten_to_sixty: [41.00, 1.40]
+              zero_to_ten: [41.00, 2.00]
+        well:
+          not_irrigated:
+            dry:
+              ten_to_sixty: [28.00, 0.80]
+              zero_to_ten: [28.00, 1.20]
+            moist:
+              ten_to_sixty: [42.00, 1.10]
+              zero_to_ten: [42.00, 1.90]
+            wet:
+              ten_to_sixty: [50.00, 1.40]
+              zero_to_ten: [50.00, 2.70]
+          irrigated:
+            _ANY_:
+              ten_to_sixty: [29.00, 0.90]
+              zero_to_ten: [29.00, 1.40]
+      moderate:
+        light:
+          not_irrigated:
+            dry:
+              ten_to_sixty: [44.00, 1.40]
+              zero_to_ten: [44.00, 2.40]
+            moist:
+              ten_to_sixty: [48.00, 1.90]
+              zero_to_ten: [48.00, 3.00]
+            wet:
+              ten_to_sixty: [43.00, 2.90]
+              zero_to_ten: [43.00, 7.00]
+          irrigated:
+            _ANY_:
+              ten_to_sixty: [71.00, 3.30]
+              zero_to_ten: [71.00, 6.80]
+        poor:
+          not_irrigated:
+            dry:
+              ten_to_sixty: [32.00, 3.00]
+              zero_to_ten: [32.00, 6.60]
+            moist:
+              ten_to_sixty: [28.00, 3.50]
+              zero_to_ten: [28.00, 6.70]
+            wet:
+              ten_to_sixty: [26.00, 6.00]
+              zero_to_ten: [26.00, 9.70]
+          irrigated:
+            _ANY_:
+              ten_to_sixty: [38.00, 4.00]
+              zero_to_ten: [38.00, 7.20]
+        well:
+          not_irrigated:
+            dry:
+              ten_to_sixty: [29.00, 1.00]
+              zero_to_ten: [29.00, 1.80]
+            moist:
+              ten_to_sixty: [33.00, 1.60]
+              zero_to_ten: [33.00, 3.20]
+            wet:
+              ten_to_sixty: [46.00, 2.00]
+              zero_to_ten: [46.00, 3.30]
+          irrigated:
+            _ANY_:
+              ten_to_sixty: [35.00, 1.00]
+              zero_to_ten: [35.00, 1.90]
+      steep:
+        light:
+          not_irrigated:
+            dry:
+              ten_to_sixty: [44.00, 2.00]
+              zero_to_ten: [44.00, 3.30]
+            moist:
+              ten_to_sixty: [47.00, 2.60]
+              zero_to_ten: [47.00, 4.50]
+            wet:
+              ten_to_sixty: [40.00, 4.50]
+              zero_to_ten: [40.00, 10.60]
+          irrigated:
+            _ANY_:
+              ten_to_sixty: [74.00, 5.20]
+              zero_to_ten: [74.00, 11.20]
+        poor:
+          not_irrigated:
+            dry:
+              ten_to_sixty: [28.00, 3.70]
+              zero_to_ten: [28.00, 6.80]
+            moist:
+              ten_to_sixty: [25.00, 4.30]
+              zero_to_ten: [25.00, 6.20]
+            wet:
+              ten_to_sixty: [31.00, 8.30]
+              zero_to_ten: [31.00, 21.70]
+          irrigated:
+            _ANY_:
+              ten_to_sixty: [33.00, 5.60]
+              zero_to_ten: [33.00, 12.40]
+        well:
+          not_irrigated:
+            dry:
+              ten_to_sixty: [28.00, 1.70]
+              zero_to_ten: [28.00, 3.10]
+            moist:
+              ten_to_sixty: [28.00, 2.10]
+              zero_to_ten: [28.00, 4.00]
+            wet:
+              ten_to_sixty: [37.00, 5.10]
+              zero_to_ten: [37.00, 12.50]
+          irrigated:
+            _ANY_:
+              ten_to_sixty: [37.00, 1.80]
+              zero_to_ten: [37.00, 3.70]
+  DEE:
+    _ANY_:
+      low:
+        _ANY_:
+          not_irrigated:
+            dry:
+              ten_to_sixty: [8.00, 0.20]
+              zero_to_ten: [8.00, 0.20]
+            moist:
+              ten_to_sixty: [10.00, 0.40]
+              zero_to_ten: [10.00, 0.60]
+            wet:
+              ten_to_sixty: [20.00, 0.60]
+              zero_to_ten: [20.00, 1.10]
+      moderate:
+        _ANY_:
+          not_irrigated:
+            dry:
+              ten_to_sixty: [11.00, 0.80]
+              zero_to_ten: [11.00, 1.00]
+            moist:
+              ten_to_sixty: [14.00, 2.40]
+              zero_to_ten: [14.00, 3.30]
+      steep:
+        _ANY_:
+          not_irrigated:
+            dry:
+              ten_to_sixty: [9.00, 1.10]
+              zero_to_ten: [9.00, 1.30]
+            moist:
+              ten_to_sixty: [16.00, 2.40]
+              zero_to_ten: [16.00, 3.40]
+  FOR:
+    _ANY_:
+      low:
+        well:
+          not_irrigated:
+            moist:
+              _ANY_: [4.50, 0.09]
+      steep:
+        well:
+          not_irrigated:
+            moist:
+              _ANY_: [3.50, 0.40]
+  NAT:
+    _ANY_:
+      low:
+        well:
+          not_irrigated:
+            wet:
+              _ANY_: [7.10, 0.60]
+      steep:
+        well:
+          not_irrigated:
+            moist:
+              _ANY_: [1.35, 0.22]
+            wet:
+              _ANY_: [1.60, 0.36]
+  NOF:
+    _ANY_:
+      steep:
+        well:
+          not_irrigated:
+            moist:
+              _ANY_: [26.00, nan]
+            wet:
+              _ANY_: [50.00, nan]
+  OTH:
+    _ANY_:
+      low:
+        light:
+          not_irrigated:
+            dry:
+              greater_than_sixty: [77.00, 0.10]
+              zero_to_ten: [77.00, 0.10]
+            moist:
+              greater_than_sixty: [150.00, 0.30]
+              zero_to_ten: [150.00, 0.60]
+            wet:
+              greater_than_sixty: [150.00, 0.70]
+              zero_to_ten: [150.00, 1.50]
+          irrigated:
+            _ANY_:
+              greater_than_sixty: [166.00, 1.10]
+              zero_to_ten: [166.00, 1.80]
+        poor:
+          not_irrigated:
+            dry:
+              greater_than_sixty: [86.00, 0.50]
+              zero_to_ten: [86.00, 0.70]
+            moist:
+              greater_than_sixty: [129.00, 1.30]
+              zero_to_ten: [129.00, 2.10]
+            wet:
+              greater_than_sixty: [150.00, 2.80]
+              zero_to_ten: [150.00, 8.80]
+          irrigated:
+            _ANY_:
+              greater_than_sixty: [110.00, 1.10]
+              zero_to_ten: [110.00, 1.90]
+        well:
+          not_irrigated:
+            dry:
+              greater_than_sixty: [57.00, 0.20]
+              zero_to_ten: [57.00, 0.30]
+            moist:
+              greater_than_sixty: [147.00, 0.80]
+              zero_to_ten: [147.00, 1.30]
+            wet:
+              greater_than_sixty: [152.00, 1.20]
+              zero_to_ten: [152.00, 2.30]
+          irrigated:
+            _ANY_:
+              greater_than_sixty: [107.00, 0.10]
+              zero_to_ten: [107.00, 0.20]
+      moderate:
+        light:
+          not_irrigated:
+            dry:
+              greater_than_sixty: [79.00, 0.10]
+              zero_to_ten: [79.00, 0.20]
+            moist:
+              greater_than_sixty: [150.00, 1.30]
+              zero_to_ten: [150.00, 1.70]
+            wet:
+              greater_than_sixty: [150.00, 0.80]
+              zero_to_ten: [150.00, 1.60]
+          irrigated:
+            _ANY_:
+              greater_than_sixty: [139.00, 1.30]
+              zero_to_ten: [139.00, 2.10]
+        poor:
+          not_irrigated:
+            dry:
+              greater_than_sixty: [85.00, 0.30]
+              zero_to_ten: [85.00, 0.30]
+            moist:
+              greater_than_sixty: [111.00, 10.80]
+              zero_to_ten: [111.00, 1.30]
+            wet:
+              greater_than_sixty: [150.00, 5.50]
+              zero_to_ten: [150.00, 9.30]
+          irrigated:
+            _ANY_:
+              greater_than_sixty: [150.00, 1.20]
+              zero_to_ten: [150.00, 1.70]
+        well:
+          not_irrigated:
+            dry:
+              greater_than_sixty: [130.00, 0.50]
+              zero_to_ten: [130.00, 0.80]
+            moist:
+              greater_than_sixty: [67.00, 0.40]
+              zero_to_ten: [67.00, 0.90]
+            wet:
+              greater_than_sixty: [88.00, 2.90]
+              zero_to_ten: [88.00, 7.70]
+          irrigated:
+            _ANY_:
+              greater_than_sixty: [150.00, 0.30]
+              zero_to_ten: [150.00, 0.40]
+  SHP:
+    cool:
+      low:
+        well:
+          not_irrigated:
+            dry:
+              _ANY_: [7.33, 0.07]
+            moist:
+              _ANY_: [7.00, 0.10]
+      moderate:
+        poor:
+          not_irrigated:
+            moist:
+              _ANY_: [11.00, 1.40]
+        well:
+          not_irrigated:
+            dry:
+              _ANY_: [7.50, 0.15]
+            moist:
+              _ANY_: [6.00, 0.20]
+      steep:
+        well:
+          not_irrigated:
+            dry:
+              _ANY_: [5.67, 0.27]
+            moist:
+              _ANY_: [5.20, 0.42]
+  SNB:
+    cool:
+      low:
+        well:
+          not_irrigated:
+            dry:
+              _ANY_: [8.67, 0.07]
+            moist:
+              _ANY_: [7.50, 0.10]
+      moderate:
+        poor:
+          not_irrigated:
+            moist:
+              _ANY_: [12.00, 1.40]
+        well:
+          not_irrigated:
+            dry:
+              _ANY_: [8.50, 0.15]
+            moist:
+              _ANY_: [7.00, 0.20]
+      steep:
+        well:
+          not_irrigated:
+            dry:
+              _ANY_: [6.67, 0.27]
+            moist:
+              _ANY_: [5.60, 0.42]
+  VEG:
+    _ANY_:
+      low:
+        poor:
+          irrigated:
+            _ANY_:
+              _ANY_: [165.00, 0.41]
+          not_irrigated:
+            moist:
+              _ANY_: [13.00, 0.41]
+        well:
+          not_irrigated:
+            moist:
+              _ANY_: [32.00, 2.80]
+            wet:
+              _ANY_: [127.00, 2.80]
+  VIT:
+    _ANY_:
+      low:
+        _ANY_:
+          _ANY_:
+            _ANY_:
+              _ANY_: [10.50, 0.16]
+  # From here on land uses/covers are not part of the typology framework
+  # Numbers retrieved from literature
+  FWB:
+    _ANY_:
+      _ANY_:
+        _ANY_:
+          _ANY_:
+            _ANY_:
+              _ANY_: [0.5, 0.01] # `Other` from Mojsilovic et al. 2015
+  TUS:
+    _ANY_:
+      _ANY_:
+        _ANY_:
+          _ANY_:
+            _ANY_:
+              _ANY_: [1.0, 0.01] # `Tussock` from Mojsilovic et al. 2015
+  ELS:
+    _ANY_:
+      _ANY_:
+        _ANY_:
+          _ANY_:
+            _ANY_:
+              _ANY_: [0.5, 0.4] # `Urban` from Mojsilovic et al. 2015

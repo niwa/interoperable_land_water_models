@@ -1,0 +1,81 @@
+inputs:
+  # Land use categories, see table in Annette’s DataReadme -- range: 1 to 9
+  model_land-use-type__identification_number:
+    table: Ecotope
+    pk_name: Ecotope_ID
+    type: int
+    format: sqlite
+    path: .\databases\Rec_Ecotope_In.db
+    column: LUSEID_SEPT4
+
+  # temperature categories, bigger is hotter -- range: 1 to 5
+  model_mean_annual_temperature__class:
+    table: Ecotope
+    pk_name: Ecotope_ID
+    type: int
+    format: sqlite
+    path: .\databases\Rec_Ecotope_In.db
+    column: TEMPCLASS2DEG
+
+  # slope categories, bigger is steeper -- range: 1 to 6 (
+  model_basin__slope_class:
+    table: Ecotope
+    pk_name: Ecotope_ID
+    type: int
+    format: sqlite
+    path: .\databases\Rec_Ecotope_In.db
+    column: APALRIGEO8M
+
+  # Soil series, see table in Annette’s DataReadme -- range: 1 to 53
+  model_soil-type__identification_number:
+    table: Ecotope
+    pk_name: Ecotope_ID
+    type: int
+    format: sqlite
+    path: .\databases\Rec_Ecotope_In.db
+    column: FSLSERIESCONCAT
+
+  # Irrigation -- range: 1 or 0 (Boolean, I presume)
+  model_basin_irrigation__class:
+    table: Ecotope
+    pk_name: Ecotope_ID
+    type: int
+    format: sqlite
+    path: .\databases\Rec_Ecotope_In.db
+    column: IRRIG2017
+
+  # rain categories, bigger is wetter -- range: 1 to 8 (
+  atmosphere_water~10-year-average__precipitation_volume_class:
+    table: Ecotope
+    pk_name: Ecotope_ID
+    type: int
+    format: sqlite
+    path: .\databases\Rec_Ecotope_In.db
+    column: RAINCLAS100MM
+
+  model_asc-soil-type__identification_number:
+    table: Ecotope
+    pk_name: Ecotope_ID
+    type: int
+    format: sqlite
+    path: .\databases\Rec_Ecotope_In.db
+    column: FSLSERIESCONCAT
+    
+outputs:
+  model_basin_N__loss:
+    pk_name: ecotope
+    type: double
+    format: sqlite
+    path: .\databases\ecotopeNutrients.db
+    table: nutrient_loads
+    column: N_Loss
+  model_basin_P__loss:
+    pk_name: ecotope
+    type: double
+    format: sqlite
+    path: .\databases\ecotopeNutrients.db
+    table: nutrient_loads
+    column: P_Loss
+target:
+  library: bmi_lookup.dll
+  config: .\typologies-revised.yaml

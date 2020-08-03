@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<dimrConfig xmlns="http://schemas.deltares.nl/dimr" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.deltares.nl/dimr http://content.oss.deltares.nl/schemas/dimr-1.2.xsd">
+  <documentation>
+    <fileVersion>1.00</fileVersion>
+    <createdBy>OLW/NIWA, Interoperable Models Team</createdBy>
+    <creationDate>2019-08-13</creationDate>
+  </documentation>
+  <control>
+        <start name="lookup-iterator" />
+        <start name="lookup-aggregator" />
+  </control>
+  <component name="lookup-iterator">
+    <library>bmi_iterator</library>
+    <workingDir>.</workingDir>
+    <inputFile>lookup-RevisedTypology-iterator.yaml</inputFile>
+  </component>
+  <component name="lookup-aggregator">
+    <library>bmi_aggregator</library>
+    <workingDir>.</workingDir>
+    <inputFile>lookup-aggregator.yaml</inputFile>
+  </component>
+</dimrConfig>

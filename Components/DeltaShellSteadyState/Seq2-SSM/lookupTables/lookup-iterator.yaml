@@ -1,0 +1,33 @@
+inputs:
+  climate:
+    pk_name: Ecotope_ID
+    path: C:\temp\Seq2-SSM\databases\Rec_Ecotope_In.db
+    table: Ecotope
+    type: int
+    format: sqlite
+    column: TEMPCLASS2DEG
+  luid:
+    pk_name: Ecotope_ID
+    path: C:\temp\Seq2-SSM\databases\Rec_Ecotope_In.db
+    table: Ecotope
+    type: int
+    format: sqlite
+    column: LUSEID_SEPT4
+outputs:
+  TN:
+    pk_name: ecotope
+    type: double
+    format: sqlite
+    path: C:\temp\Seq2-SSM\databases\ecotopeNutrient.db
+    table: nutrient_loads
+    column: N_Loss
+  TP:
+    pk_name: ecotope
+    type: double
+    format: sqlite
+    path: C:\temp\Seq2-SSM\databases\ecotopeNutrient.db
+    table: nutrient_loads
+    column: P_Loss
+target:
+  library: bmi_lookup.dll
+  config: C:\temp\Seq2-SSM\lookup-EcotopeNutrient.yaml

@@ -1,0 +1,39 @@
+inputs:
+  climate: {type: int}
+  luid: {type: int}
+
+outputs:
+  TN: {type: double, units: kg_ha-1}
+  TP: {type: double, units: kg_ha-1}
+
+mappings:
+  # Mapping 6 possible input values to 2 classes
+  climate:
+
+    1: cool # Cool-Dry
+    2: cool # Cool-Wet
+    3: cool # Cool-Extremely-Wet
+    4: warm # Warm-Dry
+    5: warm # Warm-Wet
+    6: warm # Warm-Extremely-Wet
+  # Mapping slope value to slope classes
+  luid:
+    1: crop
+    2: stock
+    5: stock
+    6: stock
+    3: open
+    4: open
+    7: open
+    8: open
+    9: open
+
+lookup:
+  warm:
+    open: [1.1, 0.2]
+    crop: [2.1, 0.8]
+    stock: [3.1, 0.9]
+  cool:
+    open: [2.1, 0.4]
+    crop: [3.1, 0.8]
+    stock: [3.5, 1.1]

@@ -1,0 +1,5 @@
+run_dir: C:\\Models\\data\\Aparima\\aparima-groundwater\\run
+args:
+  timeword: steady
+  common_dir: C:\Models\data\Seq2-SSM\databases
+  verbose: 1

@@ -1,0 +1,31 @@
+inputs:
+  climate: {type: double}
+  slope: {type: double, units: \"%\"}
+
+outputs:
+  TN: {type: double, units: kg_ha-1}
+  TP: {type: double, units: kg_ha-1}
+
+mappings:
+  # Mapping 6 possible input values to 2 classes
+  climate:
+    1.: warm # Warm-Extremely-Wet
+    2.: warm # Warm-Wet
+    3.: warm # Warm-Dry
+    4.: cool # Cool-Extremely-Wet
+    5.: cool # Cool-Wet
+    6.: cool # Cool-Dry
+  # Mapping slope value to slope classes
+  slope:
+    0.: low      # >=  0
+    7.: moderate # >=  7
+    15.: steep   # >= 15
+
+lookup:
+  warm:
+    low: [1.1, 0.2]
+    moderate: [2.1, 0.8]
+    steep: [3.1, 0.9]
+  cool:
+    low: [4.1, 1.8]
+    _: [5.1, 2.8]
